@@ -2479,6 +2479,81 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ledgerhq/devices@npm:8.4.4, @ledgerhq/devices@npm:^8.4.4":
+  version: 8.4.4
+  resolution: "@ledgerhq/devices@npm:8.4.4"
+  dependencies:
+    "@ledgerhq/errors": ^6.19.1
+    "@ledgerhq/logs": ^6.12.0
+    rxjs: ^7.8.1
+    semver: ^7.3.5
+  checksum: 370fb38d484665c92165580e285cc792e7af0bf114a5d1e855aec602c6e39592090d0de7a43addeb4c13622f734ddd4f25be82f07507e14550753ce5473eea66
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/errors@npm:^6.19.1":
+  version: 6.19.1
+  resolution: "@ledgerhq/errors@npm:6.19.1"
+  checksum: f4e1cf0d6a5808c58235c54e2a1565556de8e683552bd94d97609f790e8c25226114bfa2af9914bb329c3e7c314585b60c66ddac8d8f8f1d072b7e791a889ad8
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/hw-transport-web-ble@npm:^6.29.4":
+  version: 6.29.4
+  resolution: "@ledgerhq/hw-transport-web-ble@npm:6.29.4"
+  dependencies:
+    "@ledgerhq/devices": ^8.4.4
+    "@ledgerhq/errors": ^6.19.1
+    "@ledgerhq/hw-transport": ^6.31.4
+    "@ledgerhq/logs": ^6.12.0
+    rxjs: ^7.8.1
+  checksum: f545611eea5489c82eeafc8ff251e4d3c0152f0b4fe4aeff915caf4d4ec24d7eaaa7f5390d5c219eccb493d904f6863db71b660af394c475e646a8873981ddc8
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/hw-transport-webhid@npm:^6.29.4":
+  version: 6.30.0
+  resolution: "@ledgerhq/hw-transport-webhid@npm:6.30.0"
+  dependencies:
+    "@ledgerhq/devices": 8.4.4
+    "@ledgerhq/errors": ^6.19.1
+    "@ledgerhq/hw-transport": ^6.31.4
+    "@ledgerhq/logs": ^6.12.0
+  checksum: 6d9751edbba544c1fde82c6d80589ffec12bc0375763d4ea0205d476c7aeaf3b15a23f1fc3ee342a3760a028ff190acb80d0b4afae498e111ff8dc68fa6ad327
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/hw-transport-webusb@npm:^6.29.4":
+  version: 6.29.4
+  resolution: "@ledgerhq/hw-transport-webusb@npm:6.29.4"
+  dependencies:
+    "@ledgerhq/devices": ^8.4.4
+    "@ledgerhq/errors": ^6.19.1
+    "@ledgerhq/hw-transport": ^6.31.4
+    "@ledgerhq/logs": ^6.12.0
+  checksum: 430afb3b71a3225438c3420c29c43945a38d9c8fef1aade7cd844e37d22ae981da7d0f11c75794e2a478cae4a2984cd41b249b674087b566124111d245fdfb75
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/hw-transport@npm:^6.31.4":
+  version: 6.31.4
+  resolution: "@ledgerhq/hw-transport@npm:6.31.4"
+  dependencies:
+    "@ledgerhq/devices": ^8.4.4
+    "@ledgerhq/errors": ^6.19.1
+    "@ledgerhq/logs": ^6.12.0
+    events: ^3.3.0
+  checksum: bb5204513f2df3dbb646265954d1539bf6117cc08e73a4d1761ec10cb5f8255fe2b30112debc2433608de7260ee8878340c9f67690f5f62447a1466daa241ea7
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/logs@npm:^6.12.0":
+  version: 6.12.0
+  resolution: "@ledgerhq/logs@npm:6.12.0"
+  checksum: 53fb9ceaf26b2a9fd6e7639b19119f4fef2f814d465fdd910e69c9486dce78137a1790e24f019a03bfabc87e19b2e6683f4da93a7fd203a61117a709fdf6484c
+  languageName: node
+  linkType: hard
+
 "@lezer/common@npm:^0.15.0, @lezer/common@npm:^0.15.7":
   version: 0.15.12
   resolution: "@lezer/common@npm:0.15.12"
@@ -2831,7 +2906,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/key-tree@npm:^10.0.1":
+"@metamask/key-tree@npm:^10.0.1, @metamask/key-tree@npm:^10.0.2":
   version: 10.0.2
   resolution: "@metamask/key-tree@npm:10.0.2"
   dependencies:
@@ -3199,6 +3274,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/snaps-ui@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@metamask/snaps-ui@npm:3.1.0"
+  dependencies:
+    "@metamask/utils": ^8.1.0
+    is-svg: ^4.4.0
+    superstruct: ^1.0.3
+  checksum: a234217e961a103b89708d46732481e82c0778b3ebbecddabc9351eee48d082cdc231102442c3ae5c76aa33b24c24aad70e84fee9d7b492641f290a10c3211c1
+  languageName: node
+  linkType: hard
+
 "@metamask/snaps-utils@npm:^8.7.0":
   version: 8.7.0
   resolution: "@metamask/snaps-utils@npm:8.7.0"
@@ -3243,7 +3329,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/superstruct@npm:^3.1.0":
+"@metamask/superstruct@npm:^3.0.0, @metamask/superstruct@npm:^3.1.0":
   version: 3.1.0
   resolution: "@metamask/superstruct@npm:3.1.0"
   checksum: 00e4d0c0aae8b25ccc1885c1db0bb4ed1590010570140c255e4deee3bf8a10c859c8fce5e475b4ae09c8a56316207af87585b91f7f5a5c028d668ccd111f19e3
@@ -3281,6 +3367,23 @@ __metadata:
     semver: ^7.5.4
     uuid: ^9.0.1
   checksum: a5072f87157f6763328767bf1ddc01deb94e13f32af58d0993e0450e7e211fb29882280a1013cbdc7752b152a662be3d9beef8129a9097dba7d465389c398b3c
+  languageName: node
+  linkType: hard
+
+"@metamask/utils@npm:^8.1.0":
+  version: 8.5.0
+  resolution: "@metamask/utils@npm:8.5.0"
+  dependencies:
+    "@ethereumjs/tx": ^4.2.0
+    "@metamask/superstruct": ^3.0.0
+    "@noble/hashes": ^1.3.1
+    "@scure/base": ^1.1.3
+    "@types/debug": ^4.1.7
+    debug: ^4.3.4
+    pony-cause: ^2.1.10
+    semver: ^7.5.4
+    uuid: ^9.0.1
+  checksum: e8eac1c796c3f6b623be3c2736e8682248620f666b180f5c12ce56ee09587d4e28b6811862139a05c7a1bec91415f10ccf0516f3cdf342f88b0189d2a057c24b
   languageName: node
   linkType: hard
 
@@ -3493,6 +3596,46 @@ __metadata:
   checksum: 7a671d7dbeae376496e1c6242f02384928617dc66cd22881b2387272205c3668f8490ec2da4ad63e1abf979efdd2bdf4ea0926601d78578e07d83cfb233b3a1a
   languageName: node
   linkType: hard
+
+"@obsidia/xnap@workspace:packages/snap":
+  version: 0.0.0-use.local
+  resolution: "@obsidia/xnap@workspace:packages/snap"
+  dependencies:
+    "@jest/globals": ^29.5.0
+    "@metamask/auto-changelog": ^3.4.4
+    "@metamask/eslint-config": ^12.2.0
+    "@metamask/eslint-config-jest": ^12.1.0
+    "@metamask/eslint-config-nodejs": ^12.1.0
+    "@metamask/eslint-config-typescript": ^12.1.0
+    "@metamask/key-tree": ^10.0.2
+    "@metamask/snaps-cli": ^6.6.0
+    "@metamask/snaps-jest": ^8.9.0
+    "@metamask/snaps-sdk": ^6.14.0
+    "@metamask/snaps-ui": ^3.1.0
+    "@types/react": 18.2.4
+    "@types/react-dom": 18.2.4
+    "@typescript-eslint/eslint-plugin": ^5.42.1
+    "@typescript-eslint/parser": ^5.42.1
+    crypto-js: ^4.2.0
+    eslint: ^8.45.0
+    eslint-config-prettier: ^8.5.0
+    eslint-plugin-import: ~2.26.0
+    eslint-plugin-jest: ^27.1.5
+    eslint-plugin-jsdoc: ^41.1.2
+    eslint-plugin-n: ^15.7.0
+    eslint-plugin-prettier: ^4.2.1
+    eslint-plugin-promise: ^6.1.1
+    jest: ^29.5.0
+    libnemo: ^0.0.21
+    mersenne-twister: ^1.1.0
+    prettier: ^2.7.1
+    prettier-plugin-packagejson: ^2.2.11
+    rimraf: ^3.0.2
+    ts-jest: ^29.1.0
+    typescript: ^4.7.4
+    uqr: ^0.1.2
+  languageName: unknown
+  linkType: soft
 
 "@parcel/bundler-default@npm:2.8.3":
   version: 2.8.3
@@ -6120,6 +6263,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"b4a@npm:^1.0.1":
+  version: 1.6.7
+  resolution: "b4a@npm:1.6.7"
+  checksum: afe4e239b49c0ef62236fe0d788ac9bd9d7eac7e9855b0d1835593cd0efcc7be394f9cc28a747a2ed2cdcb0a48c3528a551a196f472eb625457c711169c9efa2
+  languageName: node
+  linkType: hard
+
 "b4a@npm:^1.6.4":
   version: 1.6.4
   resolution: "b4a@npm:1.6.4"
@@ -6525,6 +6675,26 @@ __metadata:
     inherits: ^2.0.4
     readable-stream: ^3.4.0
   checksum: 9e8521fa7e83aa9427c6f8ccdcba6e8167ef30cc9a22df26effcc5ab682ef91d2cbc23a239f945d099289e4bbcfae7a192e9c28c84c6202e710a0dfec3722662
+  languageName: node
+  linkType: hard
+
+"blake2b-wasm@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "blake2b-wasm@npm:2.4.0"
+  dependencies:
+    b4a: ^1.0.1
+    nanoassert: ^2.0.0
+  checksum: 1839dd0693681228d81f781dd8680a6803a629ca374aed5ac02fa649ce40a67a85eb49eeb2ec6aeb7ef3ef5aa169b3579b50eabf7afa360d190338bc3e8666bd
+  languageName: node
+  linkType: hard
+
+"blake2b@npm:^2.1.4":
+  version: 2.1.4
+  resolution: "blake2b@npm:2.1.4"
+  dependencies:
+    blake2b-wasm: ^2.4.0
+    nanoassert: ^2.0.0
+  checksum: cd598c96d459017714b7f9cb8892ef2b0a94f362e26e6baa46b7b8b189af0006ce25ab1713e3ec1484eb18ce7ebe1eb24e07d01e42ab1147067de2419c7f6158
   languageName: node
   linkType: hard
 
@@ -7920,6 +8090,13 @@ __metadata:
     randombytes: ^2.0.0
     randomfill: ^1.0.3
   checksum: c1609af82605474262f3eaa07daa0b2140026bd264ab316d4bf1170272570dbe02f0c49e29407fe0d3634f96c507c27a19a6765fb856fed854a625f9d15618e2
+  languageName: node
+  linkType: hard
+
+"crypto-js@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "crypto-js@npm:4.2.0"
+  checksum: f051666dbc077c8324777f44fbd3aaea2986f198fe85092535130d17026c7c2ccf2d23ee5b29b36f7a4a07312db2fae23c9094b644cc35f7858b1b4fcaf27774
   languageName: node
   linkType: hard
 
@@ -9914,6 +10091,17 @@ __metadata:
   dependencies:
     punycode: ^1.3.2
   checksum: 5043d0c4a8d775ff58504d56c096563c11b113e4cb8a2668c6f824a1cd4fb3812e2fdf76537eb24a7ce4ae7def6bd9747da630c617cf2a4b6ce0c42514e4f21c
+  languageName: node
+  linkType: hard
+
+"fast-xml-parser@npm:^4.1.3":
+  version: 4.5.1
+  resolution: "fast-xml-parser@npm:4.5.1"
+  dependencies:
+    strnum: ^1.0.5
+  bin:
+    fxparser: src/cli/cli.js
+  checksum: aab32d7f08a95b20f9ecdc2d769531a9dc454faf12740873972f8169c04ab9335ac5df1029ebfe829a01ddbb0ec60572cb7769d6be2409e95a9be8fc6a86e92c
   languageName: node
   linkType: hard
 
@@ -12172,6 +12360,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-svg@npm:^4.4.0":
+  version: 4.4.0
+  resolution: "is-svg@npm:4.4.0"
+  dependencies:
+    fast-xml-parser: ^4.1.3
+  checksum: cd5a0ba1af653e4897721913b0b80de968fa5b19eb1a592412f4672d3a1203935d183c2a9dbf61d68023739ee43d3761ea795ae1a9f618c6098a9e89eacdd256
+  languageName: node
+  linkType: hard
+
 "is-symbol@npm:^1.0.2, is-symbol@npm:^1.0.3":
   version: 1.0.4
   resolution: "is-symbol@npm:1.0.4"
@@ -13200,6 +13397,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"libnemo@npm:^0.0.21":
+  version: 0.0.21
+  resolution: "libnemo@npm:0.0.21"
+  dependencies:
+    "@ledgerhq/hw-transport-web-ble": ^6.29.4
+    "@ledgerhq/hw-transport-webhid": ^6.29.4
+    "@ledgerhq/hw-transport-webusb": ^6.29.4
+    blake2b: ^2.1.4
+  dependenciesMeta:
+    "@ledgerhq/hw-transport-web-ble":
+      optional: true
+    "@ledgerhq/hw-transport-webhid":
+      optional: true
+    "@ledgerhq/hw-transport-webusb":
+      optional: true
+  checksum: 0c7d496bd45c83b0aceb28c8bfc62c11e97d9fa3cf8f52b6e8beb06b033cd24e3f6204a88dfc368efef1c93cddb1df133f802ad099c287e702ea061dd2b0ed52
+  languageName: node
+  linkType: hard
+
 "lilconfig@npm:^2.0.3":
   version: 2.0.6
   resolution: "lilconfig@npm:2.0.6"
@@ -13720,6 +13936,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mersenne-twister@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "mersenne-twister@npm:1.1.0"
+  checksum: 7de1940ded117f2aad9320ae4d21d647b0ecf0667abbadcfe6a2835c669feb674ef46cb7a72da7af69a56d8b19e50e95e2fb7ef6d780efab7a6acd4d87f4cb2d
+  languageName: node
+  linkType: hard
+
 "methods@npm:~1.1.2":
   version: 1.1.2
   resolution: "methods@npm:1.1.2"
@@ -14133,6 +14356,13 @@ __metadata:
   version: 0.0.8
   resolution: "mute-stream@npm:0.0.8"
   checksum: ff48d251fc3f827e5b1206cda0ffdaec885e56057ee86a3155e1951bc940fd5f33531774b1cc8414d7668c10a8907f863f6561875ee6e8768931a62121a531a1
+  languageName: node
+  linkType: hard
+
+"nanoassert@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "nanoassert@npm:2.0.0"
+  checksum: b1d366f9524405f3337192d32dda6ac0b02374e4d0550c9aad33480caf2eb3c84c06f18f41f4c5404c14f6fc1ae6b84692b4375166dcb9f2d04a2ea9b9bccba0
   languageName: node
   linkType: hard
 
@@ -16564,6 +16794,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rxjs@npm:^7.8.1":
+  version: 7.8.1
+  resolution: "rxjs@npm:7.8.1"
+  dependencies:
+    tslib: ^2.1.0
+  checksum: de4b53db1063e618ec2eca0f7965d9137cabe98cf6be9272efe6c86b47c17b987383df8574861bcced18ebd590764125a901d5506082be84a8b8e364bf05f119
+  languageName: node
+  linkType: hard
+
 "safe-array-concat@npm:^1.1.0":
   version: 1.1.0
   resolution: "safe-array-concat@npm:1.1.0"
@@ -17055,40 +17294,6 @@ __metadata:
   checksum: 0a7a79900bbb36f8aaa922cf111702a3647ac6165736d5dc96d3ef367efc50465cac70c53cd172c382b022dac72ec91710608e5393de71f76d7142e6fd80e8a3
   languageName: node
   linkType: hard
-
-"snap@workspace:packages/snap":
-  version: 0.0.0-use.local
-  resolution: "snap@workspace:packages/snap"
-  dependencies:
-    "@jest/globals": ^29.5.0
-    "@metamask/auto-changelog": ^3.4.4
-    "@metamask/eslint-config": ^12.2.0
-    "@metamask/eslint-config-jest": ^12.1.0
-    "@metamask/eslint-config-nodejs": ^12.1.0
-    "@metamask/eslint-config-typescript": ^12.1.0
-    "@metamask/snaps-cli": ^6.6.0
-    "@metamask/snaps-jest": ^8.9.0
-    "@metamask/snaps-sdk": ^6.14.0
-    "@types/react": 18.2.4
-    "@types/react-dom": 18.2.4
-    "@typescript-eslint/eslint-plugin": ^5.42.1
-    "@typescript-eslint/parser": ^5.42.1
-    eslint: ^8.45.0
-    eslint-config-prettier: ^8.5.0
-    eslint-plugin-import: ~2.26.0
-    eslint-plugin-jest: ^27.1.5
-    eslint-plugin-jsdoc: ^41.1.2
-    eslint-plugin-n: ^15.7.0
-    eslint-plugin-prettier: ^4.2.1
-    eslint-plugin-promise: ^6.1.1
-    jest: ^29.5.0
-    prettier: ^2.7.1
-    prettier-plugin-packagejson: ^2.2.11
-    rimraf: ^3.0.2
-    ts-jest: ^29.1.0
-    typescript: ^4.7.4
-  languageName: unknown
-  linkType: soft
 
 "socket.io-adapter@npm:~2.5.2":
   version: 2.5.4
@@ -18508,6 +18713,13 @@ __metadata:
   dependencies:
     tslib: ^2.0.3
   checksum: 508723a2b03ab90cf1d6b7e0397513980fab821cbe79c87341d0e96cedefadf0d85f9d71eac24ab23f526a041d585a575cfca120a9f920e44eb4f8a7cf89121c
+  languageName: node
+  linkType: hard
+
+"uqr@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "uqr@npm:0.1.2"
+  checksum: 717766f03814172f5a9934dae2c4c48f6de065a4fd7da82aa513bd8300b621c1e606efdd174478cab79093e5ba244a99f0c0b1b0b9c0175656ab5e637a006d92
   languageName: node
   linkType: hard
 

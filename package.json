@@ -1,15 +1,15 @@
 {
   "name": "root",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
-  "description": "",
-  "homepage": "https://github.com/MetaMask/template-snap-monorepo#readme",
+  "description": "Xnap: Metamask snap to manage your Nano",
+  "homepage": "https://github.com/ObsidiaHQ/xnap#readme",
   "bugs": {
-    "url": "https://github.com/MetaMask/template-snap-monorepo/issues"
+    "url": "https://github.com/ObsidiaHQ/xnap/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MetaMask/template-snap-monorepo.git"
+    "url": "git+https://github.com/ObsidiaHQ/xnap.git"
   },
   "license": "(MIT-0 OR Apache-2.0)",
   "author": "",

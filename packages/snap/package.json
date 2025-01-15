@@ -1,15 +1,17 @@
 {
-  "name": "snap",
-  "version": "0.1.0",
-  "description": "The 'Hello, world!' of MetaMask Snaps, now written in TypeScript.",
+  "name": "@obsidia/xnap",
+  "version": "1.0.0",
+  "description": "Xnap: Metamask snap to manage your Nano",
+  "homepage": "https://xnap.xyz",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MetaMask/template-snap-monorepo.git"
+    "url": "https://github.com/ObsidiaHQ/xnap.git"
   },
   "license": "(MIT-0 OR Apache-2.0)",
   "main": "./dist/bundle.js",
   "files": [
     "dist/",
+    "images/icon.svg",
     "snap.manifest.json"
   ],
   "scripts": {
@@ -27,7 +29,14 @@
     "test": "jest"
   },
   "dependencies": {
-    "@metamask/snaps-sdk": "^6.14.0"
+    "@metamask/key-tree": "^10.0.2",
+    "@metamask/snaps-cli": "^6.6.0",
+    "@metamask/snaps-sdk": "^6.14.0",
+    "@metamask/snaps-ui": "^3.1.0",
+    "crypto-js": "^4.2.0",
+    "libnemo": "^0.0.21",
+    "mersenne-twister": "^1.1.0",
+    "uqr": "^0.1.2"
   },
   "devDependencies": {
     "@jest/globals": "^29.5.0",
