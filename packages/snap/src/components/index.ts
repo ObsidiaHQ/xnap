@@ -7,3 +7,4 @@ export * from "./ShowKeys";
 export * from "./ShowKeysConfirmation";
 export * from "./Transactions";
 export * from "./Address";
+export * from "./AccountSelector";

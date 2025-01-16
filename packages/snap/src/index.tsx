@@ -1,5 +1,4 @@
 import { Snap, MetamaskXNORpcRequest } from './interface';
-import { nano } from './rpc';
 import { SnapError, RequestErrors } from './errors';
 import {
   UserInputEventType,
@@ -7,8 +6,8 @@ import {
   type OnUserInputHandler,
 } from '@metamask/snaps-sdk';
 import { Homepage, Transaction } from './components/';
-import { confirmSend, receivePage, sendPage, showKeys, showKeysConfirmation } from './rpc/handlers';
-import { getAddress } from './rpc/nano';
+import { confirmSend, receivePage, selectAccount, sendPage, showKeys, showKeysConfirmation } from './rpc/handlers';
+import { AccountManager } from './rpc/account-manager';
 
 declare let snap: Snap;
 
@@ -18,9 +17,11 @@ export type RpcRequest = {
 };
 
 export const onRpcRequest = async ({ origin, request }: RpcRequest) => {
+  await AccountManager.initialize();
+
   switch (request.method) {
     case 'xno_getCurrentAddress':
-      return { address: (await nano.getAddress()) };
+      return { address: (await AccountManager.getActiveAccount())!.address };
     // case 'xno_getTransactions':
     //   return nano.getTransactions(origin);
     // case 'xno_getCurrentBalance':
@@ -33,16 +34,8 @@ export const onRpcRequest = async ({ origin, request }: RpcRequest) => {
 };
 
 export const onHomePage: OnHomePageHandler = async () => {
-  const accounts = [
-    {
-      name: "Account 1",
-      address: "nano_1d19hmdmcwadysdphqkksd43sy6jqd98fydpeq7e5su87rhkkmexxaojm9m3"
-    },
-    {
-      name: "Account 2",
-      address: "nano_38a7gdnswrx3ep9pb9j1at5cnwx56dpiu7h5sr4hkaawoi4dr1pqbb8ozdwt"
-    }
-  ];
+  await AccountManager.initialize();
+
   let txs: Transaction[] = [
     {
       value: "1.23",
@@ -75,7 +68,7 @@ export const onHomePage: OnHomePageHandler = async () => {
   ];
 
   return {
-    content: <Homepage txs={txs} accounts={accounts} />,
+    content: <Homepage txs={txs} accounts={await AccountManager.getAccounts()} />,
   };
 };
 
@@ -103,11 +96,17 @@ export const onUserInput: OnUserInputHandler = async ({ event, id, context }) =>
       case 'receive-page':
         await receivePage();
         break;
+      case 'add-account':
+        await AccountManager.addAccount();
+        break;
+      case 'switch-account':
+        await selectAccount();
+        break;
     }
   }
   if (event.type === UserInputEventType.FormSubmitEvent && event.name === 'send-xno-form') {
     const { value, to } = event.value as { value: string, to: string };
-    const from = await getAddress();
+    const from = (await AccountManager.getActiveAccount())!.address!;
 
     await confirmSend({ value, to, from, origin: null });
   }

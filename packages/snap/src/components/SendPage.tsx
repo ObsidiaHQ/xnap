@@ -9,13 +9,22 @@ import {
   Button,
   Divider,
 } from '@metamask/snaps-sdk/jsx';
+import { AccountSelector } from './AccountSelector';
+import { Account } from 'libnemo';
 
-export const SendPage: SnapComponent = () => {
+type Accounts = {
+    accounts: Pick<Account, 'address'>[]
+}
+
+export const SendPage: SnapComponent<Accounts> = ({ accounts }) => {
   return (
     <Container>
       <Box>
         <Heading>Send nano</Heading>
         <Form name="send-xno-form">
+          <Field label="Account">
+            <AccountSelector accounts={accounts}/>
+          </Field>
           <Field label="Amount (XNO)">
             <Input name="value" placeholder="2.5" type='number' min={0} />
           </Field>

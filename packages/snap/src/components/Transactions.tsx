@@ -18,7 +18,7 @@ export type Transaction = {
 export const Transactions: SnapComponent<Transactions> = ({ txs }) => {
   return (
     <Box>
-      <Box direction="horizontal">
+      <Box direction="horizontal" alignment="space-between">
         <Heading>Activity</Heading>
         <Button name="refresh-txs">
           <Image src={refreshIcon} alt='refresh' />

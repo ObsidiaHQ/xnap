@@ -2,12 +2,10 @@ import { Box, Button, Container, Divider, Heading, Image, SnapComponent, Text } 
 import { Accounts, Transaction, Transactions, Address } from "./";
 import sendIcon from "../../images/send.svg";
 import qrcIcon from "../../images/qrcode.svg";
+import { Account } from "libnemo";
 
 type HomepageProps = {
-  accounts: {
-    name: string;
-    address: string;
-  }[],
+  accounts: any[],
   txs: Transaction[],
 }
 
