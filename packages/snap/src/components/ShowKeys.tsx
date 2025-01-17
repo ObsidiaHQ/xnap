@@ -5,6 +5,8 @@ import {
   Heading,
   Copyable,
   Text,
+  Footer,
+  Button,
 } from '@metamask/snaps-sdk/jsx';
 
 type CredentialsProps = {
@@ -19,14 +21,19 @@ export const ShowKeys: SnapComponent<CredentialsProps> = ({
   secretKey,
 }) => {
   return (
-    <Box>
-      <Heading>Account Credentials</Heading>
-      <Text>Nano address:</Text>
-      <Copyable value={address} />
-      <Text>Public Key:</Text>
-      <Copyable value={publicKey} />
-      <Text>Private Key:</Text>
-      <Copyable value={secretKey} sensitive />
-    </Box>
+    <Container>
+      <Box>
+        <Heading>Account Credentials</Heading>
+        <Text>Nano address:</Text>
+        <Copyable value={address} />
+        <Text>Public Key:</Text>
+        <Copyable value={publicKey} />
+        <Text>Private Key:</Text>
+        <Copyable value={secretKey} sensitive />
+      </Box>
+      <Footer>
+        <Button name="back">Close</Button>
+      </Footer>
+    </Container>
   );
 };

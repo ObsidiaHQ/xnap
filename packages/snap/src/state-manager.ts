@@ -7,7 +7,7 @@ export const STORE_KEYS = {
   HD_NODE: 'nanoNode',
 } as const;
 
-export interface State extends JSON {
+interface State extends JSON {
   [STORE_KEYS.ACCOUNTS]: Partial<Account>[];
   [STORE_KEYS.ACTIVE_ACCOUNT]: string | undefined;
   [STORE_KEYS.HD_NODE]: BIP44Node | undefined;

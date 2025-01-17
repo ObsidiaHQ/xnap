@@ -13,17 +13,18 @@ import { AccountSelector } from './AccountSelector';
 import { Account } from 'libnemo';
 
 type Accounts = {
-    accounts: Pick<Account, 'address'>[]
+    accounts: Pick<Account, 'address'>[],
+    active: string;
 }
 
-export const SendPage: SnapComponent<Accounts> = ({ accounts }) => {
+export const SendPage: SnapComponent<Accounts> = ({ accounts, active }) => {
   return (
     <Container>
       <Box>
         <Heading>Send nano</Heading>
         <Form name="send-xno-form">
           <Field label="Account">
-            <AccountSelector accounts={accounts}/>
+            <AccountSelector accounts={accounts} active={active} />
           </Field>
           <Field label="Amount (XNO)">
             <Input name="value" placeholder="2.5" type='number' min={0} />
@@ -32,7 +33,8 @@ export const SendPage: SnapComponent<Accounts> = ({ accounts }) => {
             <Input name="to" placeholder="nano_123.." />
           </Field>
           <Divider />
-          <Box center>
+          <Box alignment="space-around" direction="horizontal">
+            <Button name="back">Back</Button>
             <Button type="submit" name="submit">
               Continue
             </Button>

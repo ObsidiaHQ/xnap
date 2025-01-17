@@ -15,7 +15,10 @@ export const ShowKeysConfirmation = () => {
         <Text>Are you sure you want to reveal your account credentials?</Text>
       </Box>
       <Footer>
-        <Button name="show-keys" type="button">
+        <Button name="back">
+          Cancel
+        </Button>
+        <Button name="show-keys">
           Yes
         </Button>
       </Footer>

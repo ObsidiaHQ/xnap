@@ -2,18 +2,18 @@ import { Box, Button, Container, Divider, Heading, Image, SnapComponent, Text } 
 import { Accounts, Transaction, Transactions, Address } from "./";
 import sendIcon from "../../images/send.svg";
 import qrcIcon from "../../images/qrcode.svg";
-import { Account } from "libnemo";
 
 type HomepageProps = {
+  active: string;
   accounts: any[],
   txs: Transaction[],
 }
 
-export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts }) => {
+export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, active }) => {
   return (
     <Container>
       <Box>
-        <Address address={accounts[0]?.address || ''} prefix="Account: "></Address>
+        <Address address={active} prefix="Account: "></Address>
 
         <Heading size='lg'>123.45 XNO</Heading>
 

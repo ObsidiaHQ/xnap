@@ -3,15 +3,16 @@ import { SendPage, ShowKeysConfirmation, ShowKeys, ReceivePage, Insight, Account
 import { renderSVG } from 'uqr';
 import { DialogType } from '@metamask/snaps-sdk';
 import { AccountManager } from './account-manager';
-import { Box, Heading } from '@metamask/snaps-sdk/jsx';
+import { Box, Button, Container, Divider, Footer, Form, Heading } from '@metamask/snaps-sdk/jsx';
 
 declare let snap: Snap;
 
-export async function showKeysConfirmation() {
+export async function showKeysConfirmation(id: string) {
   await snap.request({
-    method: 'snap_dialog',
+    method: 'snap_updateInterface',
     params: {
-      content: <ShowKeysConfirmation />,
+      id,
+      ui: <ShowKeysConfirmation />,
     },
   });
 }
@@ -39,15 +40,13 @@ export async function sendPage(id: string) {
     method: 'snap_updateInterface',
     params: {
       id,
-      ui: <SendPage accounts={await AccountManager.getAccounts() as any} />,
+      ui: <SendPage accounts={await AccountManager.getAccounts() as any} active={(await AccountManager.getActiveAccount())!.address!}  />,
     },
   });
 }
 
 export async function confirmSend(tx: InsightProps) {
   const from = await AccountManager.getActiveAccount();
-
-  console.log("from", from)
 
   const result: boolean = await snap.request({
     method: 'snap_dialog',
@@ -59,36 +58,41 @@ export async function confirmSend(tx: InsightProps) {
   return result;
 }
 
-export async function receivePage() {
+export async function receivePage(id: string) {
   const account = await AccountManager.getActiveAccount();
   const qr = renderSVG(account!.address!);
 
   await snap.request({
-    method: 'snap_dialog',
+    method: 'snap_updateInterface',
     params: {
-      type: DialogType.Alert,
-      content: <ReceivePage qr={qr} address={account!.address!} />,
+      id,
+      ui: <ReceivePage qr={qr} address={account!.address!} />,
     },
   });
 }
 
-export async function selectAccount() {
-  const interfaceId = await snap.request({
-    method: "snap_createInterface",
-    params: {
-      ui: (
-        <Box>
-          <Heading>Select an account</Heading>
-          <AccountSelector accounts={await AccountManager.getAccounts() as any} />
-        </Box>
-      ),
-    },
-  });
-  
+export async function selectAccount(id: string) {
   await snap.request({
-    method: 'snap_dialog',
+    method: "snap_updateInterface",
     params: {
-      id: interfaceId,
+      id,
+      ui: (
+        <Container>
+          <Box>
+            <Heading>Select an account</Heading>
+            <Form name="switch-account-form">
+              <AccountSelector accounts={await AccountManager.getAccounts() as any} active={(await AccountManager.getActiveAccount())!.address!} />
+              <Divider />
+              <Box alignment="space-around" direction="horizontal">
+                <Button name="back">Back</Button>
+                <Button type="submit" name="submit">
+                  Select
+                </Button>
+              </Box>
+            </Form>
+          </Box>
+        </Container>
+      ),
     },
   });
 }

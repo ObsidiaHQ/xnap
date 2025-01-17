@@ -8,17 +8,18 @@ import { createJazzicon, truncateAddress } from '../utils';
 import { Account } from 'libnemo';
 
 type Accounts = {
-    accounts: Pick<Account, 'address'>[]
+    accounts: Pick<Account, 'address'>[],
+    active: string;
 }
 
-export const AccountSelector: SnapComponent<Accounts> = ({ accounts }) => {
+export const AccountSelector: SnapComponent<Accounts> = ({ accounts, active }) => {
   return (
-    <Selector name="account-selected" title="Select an account">
-      {accounts.map((account) => (
+    <Selector name="selectedAddress" title="Select an account">
+      {accounts.map((account, index) => (
         <SelectorOption value={account.address!}>
           <Card
             image={createJazzicon(account.address!, 20)}
-            title={""}
+            title={(index + 1) + "." + (account.address === active ? ' ⭐' : '')}
             value={truncateAddress(account.address!)}
           />
         </SelectorOption>

@@ -9,7 +9,6 @@ export class AccountManager {
      * Initializes the account manager with an HD Node
      */
     public static async initialize(): Promise<void> {
-        console.log("initialize")
         const [nanoNode, accounts] = await Promise.all([
             StateManager.getState(STORE_KEYS.HD_NODE),
             StateManager.getState(STORE_KEYS.ACCOUNTS)
@@ -38,7 +37,6 @@ export class AccountManager {
      * @returns The newly created account
      */
     public static async addAccount(): Promise<Pick<Account, 'address' | 'balance' | 'privateKey' | 'publicKey'>> {
-        console.log("addAccount")
         const hdNode = await this.getHDNode();
         const accounts = await this.getAccounts();
 
@@ -64,8 +62,6 @@ export class AccountManager {
      * @returns The active account or undefined if none is set
      */
     public static async getActiveAccount(): Promise<Partial<Account> | undefined> {
-        console.log("getActiveAccount")
-
         const accounts = await this.getAccounts();
         const activeAddress = await StateManager.getState(STORE_KEYS.ACTIVE_ACCOUNT);
 
@@ -81,7 +77,6 @@ export class AccountManager {
      * @param address The address of the account to set as active
      */
     public static async setActiveAccount(address: string): Promise<void> {
-        console.log("setActiveAccount", address)
         const accounts = await this.getAccounts();
         const accountExists = accounts.some(account => account.address === address);
 
@@ -91,37 +86,10 @@ export class AccountManager {
     }
 
     /**
-     * Removes an account by address
-     * @param address The address of the account to remove
-     */
-    public static async removeAccount(address: string): Promise<void> {
-        console.log("removeAccount", address)
-        const accounts = await this.getAccounts();
-
-        if (accounts.length <= 1) {
-            return;
-        }
-
-        const accountExists = accounts.some(account => account.address === address);
-        if (!accountExists) {
-            return;
-        }
-
-        const newAccounts = accounts.filter(account => account.address !== address);
-        await StateManager.setState(STORE_KEYS.ACCOUNTS, newAccounts);
-
-        const activeAccount = await this.getActiveAccount();
-        if (activeAccount?.address === address) {
-            await this.setActiveAccount(newAccounts[0]?.address!);
-        }
-    }
-
-    /**
      * Gets all available accounts
      * @returns Array of accounts
      */
     public static async getAccounts(): Promise<Partial<Account>[]> {
-        console.log("getAccounts")
         let accounts = await StateManager.getState(STORE_KEYS.ACCOUNTS);
 
         if (!accounts?.length) {
@@ -133,7 +101,6 @@ export class AccountManager {
     }
 
     private static async getHDNode(): Promise<BIP44Node> {
-        console.log("getHDNode")
         const hdNode = await StateManager.getState(STORE_KEYS.HD_NODE);
 
         if (!hdNode) {
@@ -145,7 +112,6 @@ export class AccountManager {
     }
 
     private static isValidAccount(account: any): boolean {
-        console.log(account?.address)
         return account 
             && typeof account.address === 'string' 
             && account.address?.length > 0;
