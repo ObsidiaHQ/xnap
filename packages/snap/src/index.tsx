@@ -1,4 +1,4 @@
-import { Snap, MetamaskXNORpcRequest } from './interface';
+import { Snap, MetamaskXNORpcRequest, ServerOption } from './lib/interfaces';
 import { SnapError, RequestErrors } from './errors';
 import {
   UserInputEventType,
@@ -6,8 +6,10 @@ import {
   type OnUserInputHandler,
 } from '@metamask/snaps-sdk';
 import { Homepage, Transaction } from './components/';
-import { confirmSend, receivePage, selectAccount, sendPage, showKeys, showKeysConfirmation } from './rpc/handlers';
-import { AccountManager } from './rpc/account-manager';
+import { confirmSend, receivePage, selectAccount, selectRpc, sendPage, showKeys, showKeysConfirmation } from './lib/handlers';
+import { AccountManager } from './lib/account-manager';
+import { StateManager, STORE_KEYS } from './lib/state-manager';
+import { ServerOptions } from './lib/constants';
 
 declare let snap: Snap;
 const txs: Transaction[] = [
@@ -67,7 +69,12 @@ export const onHomePage: OnHomePageHandler = async () => {
   await AccountManager.initialize();
 
   return {
-    content: <Homepage txs={txs} accounts={await AccountManager.getAccounts()} active={(await AccountManager.getActiveAccount())!.address!}  />,
+    content: <Homepage 
+      txs={txs} 
+      accounts={await AccountManager.getAccounts()} 
+      active={(await AccountManager.getActiveAccount())!.address!} 
+      defaultRpc={(await StateManager.getState(STORE_KEYS.DEFAULT_RPC))?.name!} 
+    />,
   };
 };
 
@@ -99,19 +106,22 @@ export const onUserInput: OnUserInputHandler = async ({ event, id, context }) =>
           method: 'snap_updateInterface',
           params: {
             id,
-            ui: <Homepage txs={txs} accounts={await AccountManager.getAccounts()} active={(await AccountManager.getActiveAccount())!.address!}  />,
+            ui: <Homepage txs={txs} accounts={await AccountManager.getAccounts()} active={(await AccountManager.getActiveAccount())!.address!} defaultRpc={(await StateManager.getState(STORE_KEYS.DEFAULT_RPC))?.name!} />,
           },
         });
         break;
       case 'switch-account':
         await selectAccount(id);
         break;
+      case 'switch-rpc':
+        await selectRpc(id);
+        break;
       case 'back':
         await snap.request({
           method: 'snap_updateInterface',
           params: {
             id,
-            ui: <Homepage txs={txs} accounts={await AccountManager.getAccounts()} active={(await AccountManager.getActiveAccount())!.address!} />,
+            ui: <Homepage txs={txs} accounts={await AccountManager.getAccounts()} active={(await AccountManager.getActiveAccount())!.address!} defaultRpc={(await StateManager.getState(STORE_KEYS.DEFAULT_RPC))?.name!} />,
           },
         });
         break;
@@ -129,7 +139,27 @@ export const onUserInput: OnUserInputHandler = async ({ event, id, context }) =>
           method: 'snap_updateInterface',
           params: {
             id,
-            ui: <Homepage txs={txs} accounts={await AccountManager.getAccounts()} active={event.value.selectedAddress as string} />,
+            ui: <Homepage txs={txs} accounts={await AccountManager.getAccounts()} active={event.value.selectedAddress as string} defaultRpc={(await StateManager.getState(STORE_KEYS.DEFAULT_RPC))?.name!} />,
+          },
+        });
+        break;
+      case 'switch-rpc-form':
+        const { api, auth, selectedRpc } = event.value as { api?: string, auth?: string, selectedRpc: string };
+        const selected = ServerOptions.find(opt => opt.value === selectedRpc) || {} as ServerOption;
+        
+        if (selectedRpc === 'custom') {
+          selected.name = 'Custom';
+          selected.value = selectedRpc;
+          selected.api = api || 'Not set';
+          selected.auth = auth!;
+        }
+        
+        await StateManager.setState(STORE_KEYS.DEFAULT_RPC, selected);
+        await snap.request({
+          method: 'snap_updateInterface',
+          params: {
+            id,
+            ui: <Homepage txs={txs} accounts={await AccountManager.getAccounts()} active={(await AccountManager.getActiveAccount())?.address!} defaultRpc={(await StateManager.getState(STORE_KEYS.DEFAULT_RPC))?.name!} />,
           },
         });
         break;

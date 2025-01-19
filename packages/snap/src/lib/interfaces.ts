@@ -1,3 +1,19 @@
+// import * as rpcMethods from './nano';
+
+// type RpcMethods = typeof rpcMethods;
+// type InferArgs<M extends keyof RpcMethods> = RpcMethods[M] extends (
+//   ...args: infer A
+// ) => unknown
+//   ? A[0]
+//   : never;
+
+// export type RpcMethodTypes = {
+//   [Method in keyof RpcMethods]: {
+//     input: InferArgs<Method>;
+//     output: ReturnType<RpcMethods[Method]>;
+//   };
+// };
+
 export type InsightProps = {
   from: string;
   to: string;
@@ -73,4 +89,11 @@ export interface SLIP10Node {
    * The name of the curve used by the node.
    */
   readonly curve: 'ed25519' | 'secp256k1';
+}
+
+export type ServerOption = {
+  name: string;
+  value: string;
+  api: string;
+  auth: string | null;
 }

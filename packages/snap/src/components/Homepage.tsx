@@ -7,9 +7,10 @@ type HomepageProps = {
   active: string;
   accounts: any[],
   txs: Transaction[],
+  defaultRpc: string
 }
 
-export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, active }) => {
+export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, active, defaultRpc }) => {
   return (
     <Container>
       <Box>
@@ -41,8 +42,15 @@ export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, active }
 
         <Divider />
 
-        <Heading>Backup</Heading>
-        <Button name="show-keys-warning">Show key pair</Button>
+        <Box direction='horizontal' alignment='space-between'>
+          <Heading>Default RPC</Heading>
+          <Button name="switch-rpc">{defaultRpc ? defaultRpc : 'Not set'}</Button>
+        </Box>
+        <Box direction='horizontal' alignment='space-between'>
+          <Heading>Backup</Heading>
+          <Button name="show-keys-warning">Show key pair</Button>
+        </Box>
+        
       </Box>
     </Container>
   )

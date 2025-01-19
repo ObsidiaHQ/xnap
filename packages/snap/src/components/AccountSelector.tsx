@@ -4,7 +4,7 @@ import {
   SelectorOption,
   Card,
 } from '@metamask/snaps-sdk/jsx';
-import { createJazzicon, truncateAddress } from '../utils';
+import { createJazzicon, truncateAddress } from '../lib/utils';
 import { Account } from 'libnemo';
 
 type Accounts = {

@@ -1,5 +1,5 @@
 import { Image, Row, SnapComponent } from "@metamask/snaps-sdk/jsx";
-import { createJazzicon, truncateAddress } from "../utils";
+import { createJazzicon, truncateAddress } from "../lib/utils";
 
 type Address = {
   address: string;

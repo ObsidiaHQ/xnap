@@ -1,9 +1,11 @@
-import { Snap, InsightProps } from '../interface';
-import { SendPage, ShowKeysConfirmation, ShowKeys, ReceivePage, Insight, AccountSelector } from '../components';
+import { Snap, InsightProps } from './interfaces';
+import { SendPage, ShowKeysConfirmation, ShowKeys, ReceivePage, Insight, AccountSelector, RpcSelector } from '../components';
 import { renderSVG } from 'uqr';
 import { DialogType } from '@metamask/snaps-sdk';
 import { AccountManager } from './account-manager';
 import { Box, Button, Container, Divider, Footer, Form, Heading } from '@metamask/snaps-sdk/jsx';
+import { ServerOptions } from './constants';
+import { StateManager, STORE_KEYS } from './state-manager';
 
 declare let snap: Snap;
 
@@ -92,6 +94,18 @@ export async function selectAccount(id: string) {
             </Form>
           </Box>
         </Container>
+      ),
+    },
+  });
+}
+
+export async function selectRpc(id: string) {
+  await snap.request({
+    method: "snap_updateInterface",
+    params: {
+      id,
+      ui: (
+        <RpcSelector options={ServerOptions} active={(await StateManager.getState(STORE_KEYS.DEFAULT_RPC))} />
       ),
     },
   });

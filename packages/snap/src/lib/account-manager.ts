@@ -1,5 +1,5 @@
 import { BIP44Node, SLIP10Node } from "@metamask/key-tree";
-import { StateManager, STORE_KEYS } from "../state-manager";
+import { StateManager, STORE_KEYS } from "./state-manager";
 import { remove0x } from "@metamask/utils";
 import { Account } from "libnemo";
 

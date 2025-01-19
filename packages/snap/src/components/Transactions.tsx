@@ -1,5 +1,5 @@
 import { Box, Button, Card, Heading, Image, Section, SnapComponent } from "@metamask/snaps-sdk/jsx";
-import { createJazzicon, formatRelativeDate, truncateAddress } from "../utils";
+import { createJazzicon, formatRelativeDate, truncateAddress } from "../lib/utils";
 import refreshIcon from "../../images/refresh.svg";
 
 type Transactions = {

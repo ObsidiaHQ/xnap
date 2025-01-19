@@ -8,3 +8,4 @@ export * from "./ShowKeysConfirmation";
 export * from "./Transactions";
 export * from "./Address";
 export * from "./AccountSelector";
+export * from "./RpcSelector";
