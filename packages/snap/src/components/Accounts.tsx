@@ -1,13 +1,9 @@
 import { Box, Button, Heading, Image, SnapComponent } from "@metamask/snaps-sdk/jsx";
-import { Address } from "./Address";
-import { Account } from "libnemo";
+import { Address } from "./";
+import { Account } from "../lib/interfaces";
 import addIcon from "../../images/add.svg";
 
-type Accounts = {
-    accounts: Pick<Account, 'address'>[]
-}
-
-export const Accounts: SnapComponent<Accounts> = ({ accounts }) => {
+export const Accounts: SnapComponent<{ accounts: Account[] }> = ({ accounts }) => {
   return (
     <Box>
       <Box direction="horizontal" alignment="space-between">

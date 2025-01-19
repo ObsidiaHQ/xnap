@@ -1,6 +1,5 @@
 import { BIP44Node } from "@metamask/key-tree";
-import { Account } from "libnemo";
-import { ServerOption } from "./interfaces";
+import { ServerOption, Account } from "./interfaces";
 
 export const STORE_KEYS = {
   ACCOUNTS: 'accounts',
@@ -10,7 +9,7 @@ export const STORE_KEYS = {
 } as const;
 
 interface State extends JSON {
-  [STORE_KEYS.ACCOUNTS]: Partial<Account>[];
+  [STORE_KEYS.ACCOUNTS]: Account[];
   [STORE_KEYS.ACTIVE_ACCOUNT]: string | null;
   [STORE_KEYS.HD_NODE]: BIP44Node | null;
   [STORE_KEYS.DEFAULT_RPC]: ServerOption | null;

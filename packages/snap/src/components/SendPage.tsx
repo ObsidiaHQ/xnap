@@ -9,15 +9,10 @@ import {
   Button,
   Divider,
 } from '@metamask/snaps-sdk/jsx';
-import { AccountSelector } from './AccountSelector';
-import { Account } from 'libnemo';
+import { AccountSelector } from './';
+import { Account } from '../lib/interfaces';
 
-type Accounts = {
-    accounts: Pick<Account, 'address'>[],
-    active: string;
-}
-
-export const SendPage: SnapComponent<Accounts> = ({ accounts, active }) => {
+export const SendPage: SnapComponent<{ accounts: Account[], active: string }> = ({ accounts, active }) => {
   return (
     <Container>
       <Box>

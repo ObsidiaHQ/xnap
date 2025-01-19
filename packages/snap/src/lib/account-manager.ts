@@ -1,7 +1,9 @@
 import { BIP44Node, SLIP10Node } from "@metamask/key-tree";
 import { StateManager, STORE_KEYS } from "./state-manager";
 import { remove0x } from "@metamask/utils";
-import { Account } from "libnemo";
+import { Account } from "./interfaces";
+import { Account as NanoAccount } from "libnemo";
+import { accountBalance } from "./rpc";
 
 export class AccountManager {
 
@@ -36,7 +38,7 @@ export class AccountManager {
      * Adds a new account derived from the HD Node
      * @returns The newly created account
      */
-    public static async addAccount(): Promise<Pick<Account, 'address' | 'balance' | 'privateKey' | 'publicKey'>> {
+    public static async addAccount(): Promise<Account> {
         const hdNode = await this.getHDNode();
         const accounts = await this.getAccounts();
 
@@ -45,7 +47,8 @@ export class AccountManager {
 
         const newAccountNode = await nanoSlip10Node.derive([`slip10:${newIndex}'`]);
         const privKey = remove0x(newAccountNode.toJSON().privateKey!);
-        const { address, privateKey, balance, publicKey } = await Account.fromPrivateKey(privKey);
+        const { address, privateKey, publicKey } = await NanoAccount.fromPrivateKey(privKey);
+        const balance = await accountBalance(address);
 
         await StateManager.setState(STORE_KEYS.ACCOUNTS, [...accounts, { address, privateKey, balance, publicKey }]);
 
@@ -61,7 +64,7 @@ export class AccountManager {
      * Gets the currently active account
      * @returns The active account or undefined if none is set
      */
-    public static async getActiveAccount(): Promise<Partial<Account> | undefined> {
+    public static async getActiveAccount(): Promise<Account | undefined> {
         const accounts = await this.getAccounts();
         const activeAddress = await StateManager.getState(STORE_KEYS.ACTIVE_ACCOUNT);
 
@@ -89,7 +92,7 @@ export class AccountManager {
      * Gets all available accounts
      * @returns Array of accounts
      */
-    public static async getAccounts(): Promise<Partial<Account>[]> {
+    public static async getAccounts(): Promise<Account[]> {
         let accounts = await StateManager.getState(STORE_KEYS.ACCOUNTS);
 
         if (!accounts?.length) {

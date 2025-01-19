@@ -14,7 +14,7 @@ export function truncateAddress(address: string) {
 
 export function formatRelativeDate(date: string) {
     const now = new Date();
-    const input = new Date(date);
+    const input = new Date(parseInt(date + '000'));
     const diffMs = +now - +input;
     const diffSecs = Math.floor(diffMs / 1000);
     const diffMins = Math.floor(diffSecs / 60);
@@ -266,4 +266,10 @@ export function createJazzicon(seed: string, size = 30): string {
             <svg ${attributes}>${children}</svg>
         </g>
     </svg>`;
+}
+
+export function rawToNano(raw: any): string {
+    if (!raw) return '0';
+    const mrai = 1000000000000000000000000000000;
+    return (raw / mrai).toFixed(6).replace(/\.0+$|(\.\d*[1-9])0+$/, '$1');
 }

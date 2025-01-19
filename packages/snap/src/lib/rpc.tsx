@@ -6,11 +6,16 @@
 // import { Heading, Button, Box, Text, Copyable } from '@metamask/snaps-sdk/jsx';
 // import { StateManager } from '../state-manager';
 
+import { AccountManager } from "./account-manager";
+import { Transaction } from "./interfaces";
+import { StateManager, STORE_KEYS } from "./state-manager";
+import { formatRelativeDate, rawToNano } from "./utils";
+
 // declare let snap: Snap;
 
 // export async function initHDNode(): Promise<void> {
 //   let nanoNode = await StateManager.getState('nanoNode') as BIP44Node;
-  
+
 //   if (!nanoNode) {
 //     nanoNode = (await snap.request({
 //       method: 'snap_getBip32Entropy',
@@ -123,3 +128,85 @@
 //   });
 //   return amount as number;
 // }
+
+type HistoryResponse = {
+    account: string;
+    amount: string;
+    local_timestamp: string;
+    type: 'receive' | 'send' | 'other';
+    hash: string;
+}
+
+async function request(action: string, data: any, skipError: boolean, url = '', validateResponse?: Function): Promise<any> {
+    const defaultRpc = await StateManager.getState(STORE_KEYS.DEFAULT_RPC);
+    data.action = action;
+    const apiUrl = url === '' ? defaultRpc?.api : url;
+    if (!apiUrl) {
+        return;
+    }
+
+    let options: any = {
+        "responseType": "application/json",
+        "Content-Type": "application/json"
+    };
+
+    if (!defaultRpc?.auth && defaultRpc?.auth !== '') {
+        options = { ...options, Authorization: defaultRpc?.auth }
+    }
+
+    return fetch(apiUrl, { method: 'post', body: JSON.stringify(data) })
+        .then(res => {
+            if (typeof validateResponse === 'function') {
+                const { err } = validateResponse(res);
+                const isValidResponse = (err == null);
+
+                if (isValidResponse === false) {
+                    throw {
+                        isValidationFailure: true,
+                        status: 500,
+                        reason: err,
+                        res,
+                    };
+                };
+            };
+
+            return res;
+        })
+        .catch(async err => {
+            if (skipError) return;
+
+            if (err.isValidationFailure === true) {
+                console.log(
+                    'Node response failed validation.',
+                    err.reason,
+                    err.res
+                );
+            } else {
+                console.log('Node responded with error', err.status);
+            }
+
+            throw err;
+        });
+}
+
+export async function accountInfo(account: string): Promise<any> {
+    if (!account) return {};
+    return await request('account_info', { account, pending: true, representative: true, weight: true }, false).then(res => res.json());
+}
+
+export async function accountHistory(account?: string, count = 5, raw = false, offset = 0, reverse = false): Promise<Transaction[]> {
+    if (!account) {
+        account = (await AccountManager.getActiveAccount())?.address;
+    };
+    
+    return await request('account_history', { account, count, raw, offset, reverse }, false).then(res => res.json()).then(res => res.history.map((tx: HistoryResponse) => ({
+        ...tx,
+        amount: rawToNano(tx.amount),
+        time: formatRelativeDate(tx.local_timestamp),
+    })));;
+}
+
+export async function accountBalance(account?: string): Promise<string> {
+    if (!account) return '0';
+    return await request('account_info', { account, pending: true }, false).then(res => res.json()).then(res => rawToNano(res.balance));
+}

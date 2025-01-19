@@ -6,6 +6,7 @@ import { AccountManager } from './account-manager';
 import { Box, Button, Container, Divider, Footer, Form, Heading } from '@metamask/snaps-sdk/jsx';
 import { ServerOptions } from './constants';
 import { StateManager, STORE_KEYS } from './state-manager';
+import { accountBalance } from './rpc';
 
 declare let snap: Snap;
 
@@ -50,11 +51,17 @@ export async function sendPage(id: string) {
 export async function confirmSend(tx: InsightProps) {
   const from = await AccountManager.getActiveAccount();
 
+  const props = {
+    ...tx,
+    from: tx.from || from?.address!,
+    balance: await accountBalance(tx.from || from?.address)
+  }
+
   const result: boolean = await snap.request({
     method: 'snap_dialog',
     params: {
       type: DialogType.Confirmation,
-      content: <Insight from={tx.from || from!.address!} to={tx.to} value={tx.value} origin={tx.origin} />,
+      content: <Insight {...props} />,
     },
   });
   return result;

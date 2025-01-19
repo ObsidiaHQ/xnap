@@ -14,11 +14,27 @@
 //   };
 // };
 
+export type Account = {
+  address: string;
+  publicKey: string;
+  privateKey: string | null;
+  balance: any; // TODO
+};
+
+export type Transaction = {
+  account: string;
+  amount: string;
+  time: string;
+  type: 'receive' | 'send' | 'other';
+  hash: string;
+}
+
 export type InsightProps = {
   from: string;
   to: string;
   value: string;
   origin: string | null;
+  balance?: string;
 };
 
 export interface GetCurrentAddress {

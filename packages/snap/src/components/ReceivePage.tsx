@@ -10,12 +10,7 @@ import {
   Footer,
 } from '@metamask/snaps-sdk/jsx';
 
-type ReceiveProps = {
-  qr: string;
-  address: string;
-}
-
-export const ReceivePage: SnapComponent<ReceiveProps> = ({ qr, address }) => {
+export const ReceivePage: SnapComponent<{ qr: string, address: string }> = ({ qr, address }) => {
   return (
     <Container>
       <Box>

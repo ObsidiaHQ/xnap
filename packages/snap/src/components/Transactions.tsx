@@ -1,21 +1,9 @@
 import { Box, Button, Card, Heading, Image, Section, SnapComponent } from "@metamask/snaps-sdk/jsx";
-import { createJazzicon, formatRelativeDate, truncateAddress } from "../lib/utils";
+import { createJazzicon, truncateAddress } from "../lib/utils";
 import refreshIcon from "../../images/refresh.svg";
+import { Transaction } from "../lib/interfaces";
 
-type Transactions = {
-  txs: Transaction[]
-}
-
-export type Transaction = {
-  to: string;
-  from: string;
-  type: 'send' | 'receive' | 'other';
-  value: string;
-  date: string;
-  natricon?: string;
-}
-
-export const Transactions: SnapComponent<Transactions> = ({ txs }) => {
+export const Transactions: SnapComponent<{ txs: Transaction[] }> = ({ txs }) => {
   return (
     <Box>
       <Box direction="horizontal" alignment="space-between">
@@ -28,10 +16,10 @@ export const Transactions: SnapComponent<Transactions> = ({ txs }) => {
         return (
           <Section>
             <Card
-              image={createJazzicon(tx.type === 'receive' ? tx.from : tx.to, 20)}
-              title={tx.type === 'receive' ? truncateAddress(tx.from) : truncateAddress(tx.to)}
-              description={formatRelativeDate(tx.date)}
-              value={tx.value}
+              image={createJazzicon(tx.account, 20)}
+              title={truncateAddress(tx.account)}
+              description={tx.time}
+              value={tx.amount}
               extra={tx.type}
             />
           </Section>
