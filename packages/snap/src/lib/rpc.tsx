@@ -199,11 +199,11 @@ export async function accountHistory(account?: string, count = 5, raw = false, o
         account = (await AccountManager.getActiveAccount())?.address;
     };
     
-    return await request('account_history', { account, count, raw, offset, reverse }, false).then(res => res.json()).then(res => res.history.map((tx: HistoryResponse) => ({
+    return await request('account_history', { account, count, raw, offset, reverse }, false).then(res => res.json()).then(res => (res.history || []).map((tx: HistoryResponse) => ({
         ...tx,
         amount: rawToNano(tx.amount),
         time: formatRelativeDate(tx.local_timestamp),
-    })));;
+    })));
 }
 
 export async function accountBalance(account?: string): Promise<string> {
