@@ -1,12 +1,12 @@
 import { Snap, InsightProps } from './interfaces';
-import { SendPage, ShowKeysConfirmation, ShowKeys, ReceivePage, Insight, AccountSelector, RpcSelector } from '../components';
+import { SendPage, ShowKeysConfirmation, ShowKeys, ReceivePage, Insight, AccountSelector, RpcSelector, Address } from '../components';
 import { renderSVG } from 'uqr';
-import { DialogType } from '@metamask/snaps-sdk';
+import { DialogType, NotificationType } from '@metamask/snaps-sdk';
 import { AccountManager } from './account-manager';
-import { Box, Button, Container, Divider, Footer, Form, Heading } from '@metamask/snaps-sdk/jsx';
+import { Box, Button, Container, Divider, Form, Heading, Row } from '@metamask/snaps-sdk/jsx';
 import { ServerOptions } from './constants';
 import { StateManager, STORE_KEYS } from './state-manager';
-import { accountBalance } from './rpc';
+import { accountBalance, generateSend } from './rpc';
 
 declare let snap: Snap;
 
@@ -57,14 +57,22 @@ export async function confirmSend(tx: InsightProps) {
     balance: await accountBalance(tx.from || from?.address)
   }
 
-  const result: boolean = await snap.request({
+  const confirmed: boolean = await snap.request({
     method: 'snap_dialog',
     params: {
       type: DialogType.Confirmation,
       content: <Insight {...props} />,
     },
   });
-  return result;
+
+  if (confirmed) {
+    const hash = await generateSend(from!, props.to, props.value);
+    if (hash) {
+      await notifyUser(hash, props.value, props.to);
+    }
+  }
+
+  return confirmed;
 }
 
 export async function receivePage(id: string) {
@@ -114,6 +122,37 @@ export async function selectRpc(id: string) {
       ui: (
         <RpcSelector options={ServerOptions} active={(await StateManager.getState(STORE_KEYS.DEFAULT_RPC))} />
       ),
+    },
+  });
+}
+
+export async function notifyUser(hash: string, amount: string, to: string) {
+  await snap.request({
+    method: 'snap_notify',
+    params: {
+      type: NotificationType.Native,
+      message: `Successfully sent ${amount}.`,
+    },
+  });
+
+  await snap.request({
+    method: 'snap_notify',
+    params: {
+      type: NotificationType.InApp,
+      message: `Successfully sent ${amount}.`,
+      title: 'Hello World!',
+      content: (
+        <Box>
+          <Row
+            label="From"
+            variant="warning"
+            tooltip="This address has been deemed dangerous."
+          >
+            <Address address={to} />
+          </Row>
+        </Box>
+      ),
+      footerLink: { text: 'View on explorer', href: `https://blocklattice.io/block/${hash}` },
     },
   });
 }

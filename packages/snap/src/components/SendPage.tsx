@@ -22,7 +22,7 @@ export const SendPage: SnapComponent<{ accounts: Account[], active: string }> = 
             <AccountSelector accounts={accounts} active={active} />
           </Field>
           <Field label="Amount (XNO)">
-            <Input name="value" placeholder="2.5" type='number' min={0} />
+            <Input name="value" placeholder="2.5" type='number' />
           </Field>
           <Field label="Recipient">
             <Input name="to" placeholder="nano_123.." />

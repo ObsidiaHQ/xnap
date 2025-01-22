@@ -7,7 +7,7 @@
     "url": "https://github.com/ObsidiaHQ/xnap.git"
   },
   "source": {
-    "shasum": "e7h1y5DxubXwq8fiFJvDH9JT5TME4bHRb3+3HqD8JyM=",
+    "shasum": "0cIyFEaYGDzhKKRsg+zxCfr1l4moOAkQbg3gIYor5T8=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
@@ -26,6 +26,7 @@
       }
     ],
     "snap_manageState": {},
+    "snap_notify": {},
     "endowment:network-access": {},
     "endowment:page-home": {},
     "endowment:rpc": {

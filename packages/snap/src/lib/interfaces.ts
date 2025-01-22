@@ -19,15 +19,18 @@ export type Account = {
   publicKey: string;
   privateKey: string | null;
   balance: any; // TODO
+  frontier?: string;
 };
 
 export type Transaction = {
   account: string;
   amount: string;
   time: string;
-  type: 'receive' | 'send' | 'other';
+  type: TxType;
   hash: string;
 }
+
+export type TxType = 'receive' | 'send' | 'open' | 'change';
 
 export type InsightProps = {
   from: string;

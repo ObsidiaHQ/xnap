@@ -1,7 +1,8 @@
+import { ALPHABET } from "./constants";
 const MersenneTwister = require('mersenne-twister');
 
 export function isValidAddress(address: string): boolean {
-    const ALPHABET = '13456789abcdefghijkmnopqrstuwxyz'
+    
     const pattern = new RegExp(`^(nano_|xrb_)[13]{1}[${ALPHABET}]{59}$`);
     return !!address && pattern.test(address);
 }
