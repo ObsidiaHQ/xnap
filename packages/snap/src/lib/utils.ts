@@ -1,4 +1,4 @@
-import { ALPHABET } from "./constants";
+import { ALPHABET, RepAccounts, ServerOptions } from "./constants";
 const MersenneTwister = require('mersenne-twister');
 
 export function isValidAddress(address: string): boolean {
@@ -273,4 +273,12 @@ export function rawToNano(raw: any): string {
     if (!raw) return '0';
     const mrai = 1000000000000000000000000000000;
     return (raw / mrai).toFixed(6).replace(/\.0+$|(\.\d*[1-9])0+$/, '$1');
+}
+
+export function getRandomRepresentative() {
+    return RepAccounts[Math.floor(Math.random() * RepAccounts.length)]!;
+}
+
+export function getRandomRPC() {
+    return ServerOptions[Math.floor(Math.random() * ServerOptions.length)]!;
 }

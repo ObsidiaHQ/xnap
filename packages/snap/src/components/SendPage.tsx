@@ -19,7 +19,7 @@ export const SendPage: SnapComponent<{ accounts: Account[], active: string }> = 
         <Heading>Send nano</Heading>
         <Form name="send-xno-form">
           <Field label="Account">
-            <AccountSelector accounts={accounts} active={active} />
+            <AccountSelector accounts={accounts} />
           </Field>
           <Field label="Amount (XNO)">
             <Input name="value" placeholder="2.5" type='number' />

@@ -2,22 +2,28 @@ import { Box, Button, Container, Divider, Heading, Image, SnapComponent, Text } 
 import { Accounts, Transactions, Address } from "./";
 import sendIcon from "../../images/send.svg";
 import qrcIcon from "../../images/qrcode.svg";
+import receiveIcon from "../../images/receive.svg";
 import { Account, Transaction } from "../lib/interfaces";
 
 type HomepageProps = {
-  active: Account;
   accounts: Account[];
   txs: Transaction[];
   defaultRpc: string;
 }
 
-export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, active, defaultRpc }) => {
+const hasReceiveable = (rec: string | undefined) => rec && rec !== '0';
+
+export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, defaultRpc }) => {
+  const active = accounts.find(acc => acc.active)!;
   return (
     <Container>
       <Box>
         <Address address={active.address} prefix="Account: "></Address>
 
-        <Heading size='lg'>{(active.balance || '0')} XNO</Heading>
+        <Box direction='horizontal'>
+          <Heading size='lg'>{(active.balance || '0')} XNO</Heading>
+          {hasReceiveable(active.receivable) ? (<Button name="receive-funds"><Image src={receiveIcon}></Image> {active.receivable!}</Button>) : null}
+        </Box>
 
         <Box direction='horizontal' alignment='space-around'>
           <Box alignment='center'>
@@ -51,7 +57,7 @@ export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, active, 
           <Heading>Backup</Heading>
           <Button name="show-keys-warning">Show key pair</Button>
         </Box>
-        
+
       </Box>
     </Container>
   )

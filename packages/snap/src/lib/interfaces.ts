@@ -20,6 +20,8 @@ export type Account = {
   privateKey: string | null;
   balance: any; // TODO
   frontier?: string;
+  receivable?: string;
+  active?: boolean;
 };
 
 export type Transaction = {

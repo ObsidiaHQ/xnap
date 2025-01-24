@@ -3,7 +3,8 @@ import { StateManager, STORE_KEYS } from "./state-manager";
 import { remove0x } from "@metamask/utils";
 import { Account } from "./interfaces";
 import { Account as NanoAccount } from "libnemo";
-import { accountBalance } from "./rpc";
+import { accountInfo } from "./rpc";
+import { getRandomRPC } from "./utils";
 
 export class AccountManager {
 
@@ -11,12 +12,18 @@ export class AccountManager {
      * Initializes the account manager with an HD Node
      */
     public static async initialize(): Promise<void> {
-        const [nanoNode, accounts] = await Promise.all([
+        const [nanoNode, accounts, rpc] = await Promise.all([
             StateManager.getState(STORE_KEYS.HD_NODE),
-            StateManager.getState(STORE_KEYS.ACCOUNTS)
+            StateManager.getState(STORE_KEYS.ACCOUNTS),
+            StateManager.getState(STORE_KEYS.DEFAULT_RPC)
         ]);
 
         let updatedNode = nanoNode;
+
+        if (!rpc) {
+            await StateManager.setState(STORE_KEYS.DEFAULT_RPC, getRandomRPC());
+        }
+
         if (!updatedNode) {
             updatedNode = (await snap.request({
                 method: 'snap_getBip32Entropy',
@@ -48,44 +55,53 @@ export class AccountManager {
         const newAccountNode = await nanoSlip10Node.derive([`slip10:${newIndex}'`]);
         const privKey = remove0x(newAccountNode.toJSON().privateKey!);
         const { address, privateKey, publicKey } = await NanoAccount.fromPrivateKey(privKey);
-        const balance = await accountBalance(address);
+        const { confirmed_balance, confirmed_frontier, confirmed_receivable } = await accountInfo(address);
 
-        await StateManager.setState(STORE_KEYS.ACCOUNTS, [...accounts, { address, privateKey, balance, publicKey }]);
+        const newAccount: Account = {
+            address, privateKey, balance: confirmed_balance, frontier: confirmed_frontier, receivable: confirmed_receivable, publicKey
+        };
 
         // If this is the first account, set it as active
         if (accounts.length === 0) {
-            await this.setActiveAccount(address);
+            newAccount.active = true;
         }
 
-        return { address, privateKey, balance, publicKey };
+        await StateManager.setState(STORE_KEYS.ACCOUNTS, [...accounts, newAccount]);
+
+        return newAccount;
     }
 
     /**
      * Gets the currently active account
-     * @returns The active account or undefined if none is set
+     * @returns The active account or null if none is set
      */
-    public static async getActiveAccount(): Promise<Account | undefined> {
+    public static async getActiveAccount(): Promise<Account | null> {
         const accounts = await this.getAccounts();
-        const activeAddress = await StateManager.getState(STORE_KEYS.ACTIVE_ACCOUNT);
+        let activeAccount = accounts.find(acc => acc.active)!;
 
-        if (!activeAddress) {
-            await this.setActiveAccount(accounts[0]!.address!);
+        if (!activeAccount) {
+            activeAccount = await this.setActiveAccount(accounts[0]!);
         };
-        
-        return accounts.find(account => account.address === activeAddress);
+
+        return activeAccount;
     }
 
     /**
      * Sets the active account by address
      * @param address The address of the account to set as active
      */
-    public static async setActiveAccount(address: string): Promise<void> {
-        const accounts = await this.getAccounts();
-        const accountExists = accounts.some(account => account.address === address);
+    public static async setActiveAccount(account: Account): Promise<Account> {
+        let accounts = await this.getAccounts();
+        accounts = accounts.map(acc => {
+            if (acc.address !== account.address) {
+                return ({ ...acc, active: false });
+            }
+            return ({ ...account, active: true })
+        });
 
-        if (accountExists) {
-            await StateManager.setState(STORE_KEYS.ACTIVE_ACCOUNT, address);
-        }
+        await StateManager.setState(STORE_KEYS.ACCOUNTS, accounts);
+
+        return accounts.find(acc => acc.active)!;
     }
 
     /**
@@ -99,7 +115,7 @@ export class AccountManager {
             accounts = [];
             await StateManager.setState(STORE_KEYS.ACCOUNTS, accounts);
         }
-        
+
         return accounts;
     }
 
@@ -115,8 +131,8 @@ export class AccountManager {
     }
 
     private static isValidAccount(account: any): boolean {
-        return account 
-            && typeof account.address === 'string' 
+        return account
+            && typeof account.address === 'string'
             && account.address?.length > 0;
     }
 }

@@ -3,14 +3,12 @@ import { ServerOption, Account } from "./interfaces";
 
 export const STORE_KEYS = {
   ACCOUNTS: 'accounts',
-  ACTIVE_ACCOUNT: 'activeAccount',
   HD_NODE: 'nanoNode',
   DEFAULT_RPC: 'defaultRpc'
 } as const;
 
 interface State extends JSON {
   [STORE_KEYS.ACCOUNTS]: Account[];
-  [STORE_KEYS.ACTIVE_ACCOUNT]: string | null;
   [STORE_KEYS.HD_NODE]: BIP44Node | null;
   [STORE_KEYS.DEFAULT_RPC]: ServerOption | null;
 }

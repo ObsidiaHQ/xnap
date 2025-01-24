@@ -3,10 +3,10 @@ import { SendPage, ShowKeysConfirmation, ShowKeys, ReceivePage, Insight, Account
 import { renderSVG } from 'uqr';
 import { DialogType, NotificationType } from '@metamask/snaps-sdk';
 import { AccountManager } from './account-manager';
-import { Box, Button, Container, Divider, Form, Heading, Row } from '@metamask/snaps-sdk/jsx';
+import { Box, Button, Container, Divider, Form, Heading, Row, Text } from '@metamask/snaps-sdk/jsx';
 import { ServerOptions } from './constants';
 import { StateManager, STORE_KEYS } from './state-manager';
-import { accountBalance, generateSend } from './rpc';
+import { accountBalance, generateReceive, generateSend } from './rpc';
 
 declare let snap: Snap;
 
@@ -75,6 +75,34 @@ export async function confirmSend(tx: InsightProps) {
   return confirmed;
 }
 
+export async function confirmReceive() {
+  // const from = await AccountManager.getActiveAccount();
+
+  // const props = {
+  //   ...tx,
+  //   from: tx.from || from?.address!,
+  //   balance: await accountBalance(tx.from || from?.address)
+  // }
+
+  // TODO: make interface
+  const confirmed: boolean = await snap.request({
+    method: 'snap_dialog',
+    params: {
+      type: DialogType.Confirmation,
+      content: <Text>Do you want to receive the funds?</Text>,
+    },
+  });
+
+  // if (confirmed) {
+  //   const hash = await generateReceive();
+  //   if (hash) {
+  //     await notifyUser(hash, props.value, props.to);
+  //   }
+  // }
+
+  return confirmed;
+}
+
 export async function receivePage(id: string) {
   const account = await AccountManager.getActiveAccount();
   const qr = renderSVG(account!.address!);
@@ -98,7 +126,7 @@ export async function selectAccount(id: string) {
           <Box>
             <Heading>Select an account</Heading>
             <Form name="switch-account-form">
-              <AccountSelector accounts={await AccountManager.getAccounts() as any} active={(await AccountManager.getActiveAccount())!.address!} />
+              <AccountSelector accounts={await AccountManager.getAccounts() as any} />
               <Divider />
               <Box alignment="space-around" direction="horizontal">
                 <Button name="back">Back</Button>

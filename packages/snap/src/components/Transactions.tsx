@@ -1,4 +1,4 @@
-import { Box, Button, Card, Heading, Image, Section, SnapComponent } from "@metamask/snaps-sdk/jsx";
+import { Box, Button, Card, Heading, Image, Section, SnapComponent, Text } from "@metamask/snaps-sdk/jsx";
 import { createJazzicon, truncateAddress } from "../lib/utils";
 import refreshIcon from "../../images/refresh.svg";
 import { Transaction } from "../lib/interfaces";
@@ -12,7 +12,7 @@ export const Transactions: SnapComponent<{ txs: Transaction[] }> = ({ txs }) => 
           <Image src={refreshIcon} alt='refresh' />
         </Button>
       </Box>
-      {txs.map((tx) => {
+      {txs?.length ? txs.map((tx) => {
         return (
           <Section>
             <Card
@@ -24,7 +24,7 @@ export const Transactions: SnapComponent<{ txs: Transaction[] }> = ({ txs }) => 
             />
           </Section>
         )
-      })}
+      }) : <Text color="muted" alignment="center">No transaction found.</Text>}
     </Box>
   );
 };
