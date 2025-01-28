@@ -1,4 +1,4 @@
-import { ALPHABET, RepAccounts, ServerOptions } from "./constants";
+import { ALPHABET, RepAccounts, RpcEndpoints } from "./constants";
 const MersenneTwister = require('mersenne-twister');
 
 export function isValidAddress(address: string): boolean {
@@ -280,5 +280,5 @@ export function getRandomRepresentative() {
 }
 
 export function getRandomRPC() {
-    return ServerOptions[Math.floor(Math.random() * ServerOptions.length)]!;
+    return RpcEndpoints[Math.floor(Math.random() * RpcEndpoints.length)]!;
 }

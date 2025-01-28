@@ -1,4 +1,4 @@
-import { Snap, MetamaskXNORpcRequest, ServerOption } from './lib/interfaces';
+import { Snap, MetamaskXNORpcRequest, RpcEndpoint } from './lib/interfaces';
 import { SnapError, RequestErrors } from './errors';
 import {
   UserInputEventType,
@@ -9,8 +9,8 @@ import { Homepage } from './components/';
 import { confirmReceive, confirmSend, receivePage, selectAccount, selectRpc, sendPage, showKeys, showKeysConfirmation } from './lib/handlers';
 import { AccountManager } from './lib/account-manager';
 import { StateManager, STORE_KEYS } from './lib/state-manager';
-import { ServerOptions } from './lib/constants';
-import { accountBalance, accountHistory, accountInfo } from './lib/rpc';
+import { RpcEndpoints } from './lib/constants';
+import { accountHistory, accountInfo } from './lib/rpc';
 
 declare let snap: Snap;
 
@@ -24,11 +24,8 @@ export const onRpcRequest = async ({ origin, request }: RpcRequest) => {
 
   switch (request.method) {
     case 'xno_getCurrentAddress':
-      return { address: (await AccountManager.getActiveAccount())!.address };
-    // case 'xno_getTransactions':
-    //   return nano.getTransactions(origin);
-    // case 'xno_getCurrentBalance':
-    //   return nano.getBalance(origin, snap);
+      const address = (await AccountManager.getActiveAccount())?.address;
+      return { address };
     case 'xno_makeTransaction':
       return { result: (await confirmSend({ ...request.params, origin })) };
     default:
@@ -38,16 +35,24 @@ export const onRpcRequest = async ({ origin, request }: RpcRequest) => {
 
 export const onHomePage: OnHomePageHandler = async () => {
   await AccountManager.initialize();
-  const active = await AccountManager.getActiveAccount();
-  const activeInfo = await accountInfo(active?.address);
+  const [accounts, active, defaultRpc] = await Promise.all([
+    AccountManager.getAccounts(),
+    AccountManager.getActiveAccount(),
+    StateManager.getState(STORE_KEYS.DEFAULT_RPC)
+  ]);
+  const [activeInfo, txs] = await Promise.all([
+    accountInfo(active?.address),
+    accountHistory(active?.address)
+  ]);
+  
   active!.balance = activeInfo.confirmed_balance;
   active!.receivable = activeInfo.confirmed_receivable;
   
   return {
     content: <Homepage 
-      txs={await accountHistory(active?.address)} 
-      accounts={await AccountManager.getAccounts()} 
-      defaultRpc={(await StateManager.getState(STORE_KEYS.DEFAULT_RPC))?.name!} 
+      txs={txs} 
+      accounts={accounts} 
+      defaultRpc={defaultRpc?.name!} 
     />,
   };
 };
@@ -123,7 +128,7 @@ export const onUserInput: OnUserInputHandler = async ({ event, id, context }) =>
         break;
       case 'switch-rpc-form':
         const { api, auth, selectedRpc } = event.value as { api?: string, auth?: string, selectedRpc: string };
-        const selected = ServerOptions.find(opt => opt.value === selectedRpc) || {} as ServerOption;
+        const selected = RpcEndpoints.find(opt => opt.value === selectedRpc) || {} as RpcEndpoint;
         
         if (selectedRpc === 'custom') {
           selected.name = 'Custom';

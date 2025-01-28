@@ -14,11 +14,11 @@ import {
   Text,
   Link,
 } from '@metamask/snaps-sdk/jsx';
-import { ServerOption } from '../lib/interfaces';
+import { RpcEndpoint } from '../lib/interfaces';
 
 type Options = {
-  options: ServerOption[],
-  active: ServerOption | null,
+  options: RpcEndpoint[],
+  active: RpcEndpoint | null,
 }
 
 export const RpcSelector: SnapComponent<Options> = ({ options, active }) => {

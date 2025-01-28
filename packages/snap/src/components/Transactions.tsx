@@ -24,7 +24,7 @@ export const Transactions: SnapComponent<{ txs: Transaction[] }> = ({ txs }) => 
             />
           </Section>
         )
-      }) : <Text color="muted" alignment="center">No transaction found.</Text>}
+      }) : <Text color="muted" alignment="center">No transactions found.</Text>}
     </Box>
   );
 };

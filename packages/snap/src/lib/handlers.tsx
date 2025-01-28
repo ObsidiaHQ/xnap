@@ -4,7 +4,7 @@ import { renderSVG } from 'uqr';
 import { DialogType, NotificationType } from '@metamask/snaps-sdk';
 import { AccountManager } from './account-manager';
 import { Box, Button, Container, Divider, Form, Heading, Row, Text } from '@metamask/snaps-sdk/jsx';
-import { ServerOptions } from './constants';
+import { RpcEndpoints } from './constants';
 import { StateManager, STORE_KEYS } from './state-manager';
 import { accountBalance, generateReceive, generateSend } from './rpc';
 
@@ -148,7 +148,7 @@ export async function selectRpc(id: string) {
     params: {
       id,
       ui: (
-        <RpcSelector options={ServerOptions} active={(await StateManager.getState(STORE_KEYS.DEFAULT_RPC))} />
+        <RpcSelector options={RpcEndpoints} active={(await StateManager.getState(STORE_KEYS.DEFAULT_RPC))} />
       ),
     },
   });

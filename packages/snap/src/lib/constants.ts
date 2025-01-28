@@ -1,8 +1,17 @@
-import { ServerOption } from "./interfaces";
+import { RpcEndpoint } from "./interfaces";
 
 export const ALPHABET = '13456789abcdefghijkmnopqrstuwxyz';
 
-export const ServerOptions: ServerOption[] = [
+export enum RpcAction {
+  ACCOUNT_INFO = 'account_info',
+  ACCOUNT_HISTORY = 'account_history',
+  BLOCKS_INFO = 'blocks_info',
+  RECEIVABLE = 'receivable',
+  PROCESS = 'process',
+  WORK_GENERATE = 'work_generate'
+}
+
+export const RpcEndpoints: RpcEndpoint[] = [
     {
       name: 'Rainstorm City',
       value: 'rainstorm',

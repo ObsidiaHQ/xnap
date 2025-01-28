@@ -1,4 +1,4 @@
-import { Box, Button, Container, Divider, Heading, Image, SnapComponent, Text } from "@metamask/snaps-sdk/jsx"
+import { Box, Button, Container, Divider, Heading, Image, Link, SnapComponent, Text } from "@metamask/snaps-sdk/jsx"
 import { Accounts, Transactions, Address } from "./";
 import sendIcon from "../../images/send.svg";
 import qrcIcon from "../../images/qrcode.svg";
@@ -58,6 +58,9 @@ export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, defaultR
           <Button name="show-keys-warning">Show key pair</Button>
         </Box>
 
+        <Divider />
+
+        <Text alignment="center"><Link href={'https://blocklattice.io/account/' + active.address}>View on block explorer</Link></Text>
       </Box>
     </Container>
   )
