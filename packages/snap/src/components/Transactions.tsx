@@ -1,5 +1,5 @@
 import { Box, Button, Card, Heading, Image, Section, SnapComponent, Text } from "@metamask/snaps-sdk/jsx";
-import { createJazzicon, truncateAddress } from "../lib/utils";
+import { createJazzicon, rawToNano, truncateAddress } from "../lib/utils";
 import refreshIcon from "../../images/refresh.svg";
 import { Transaction } from "../lib/interfaces";
 
@@ -19,7 +19,7 @@ export const Transactions: SnapComponent<{ txs: Transaction[] }> = ({ txs }) => 
               image={createJazzicon(tx.account, 20)}
               title={truncateAddress(tx.account)}
               description={tx.time}
-              value={tx.amount}
+              value={rawToNano(tx.amount)}
               extra={tx.type}
             />
           </Section>

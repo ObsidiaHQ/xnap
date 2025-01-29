@@ -5,12 +5,10 @@ import {
   type OnHomePageHandler,
   type OnUserInputHandler,
 } from '@metamask/snaps-sdk';
-import { Homepage } from './components/';
-import { confirmReceive, confirmSend, receivePage, selectAccount, selectRpc, sendPage, showKeys, showKeysConfirmation } from './lib/handlers';
+import { confirmReceive, confirmSend, receivePage, refreshHomepage, selectAccount, selectRpc, sendPage, showKeys, showKeysConfirmation } from './lib/handlers';
 import { AccountManager } from './lib/account-manager';
 import { StateManager, STORE_KEYS } from './lib/state-manager';
 import { RpcEndpoints } from './lib/constants';
-import { accountHistory, accountInfo } from './lib/rpc';
 
 declare let snap: Snap;
 
@@ -35,25 +33,9 @@ export const onRpcRequest = async ({ origin, request }: RpcRequest) => {
 
 export const onHomePage: OnHomePageHandler = async () => {
   await AccountManager.initialize();
-  const [accounts, active, defaultRpc] = await Promise.all([
-    AccountManager.getAccounts(),
-    AccountManager.getActiveAccount(),
-    StateManager.getState(STORE_KEYS.DEFAULT_RPC)
-  ]);
-  const [activeInfo, txs] = await Promise.all([
-    accountInfo(active?.address),
-    accountHistory(active?.address)
-  ]);
-  
-  active!.balance = activeInfo.confirmed_balance;
-  active!.receivable = activeInfo.confirmed_receivable;
-  
+
   return {
-    content: <Homepage 
-      txs={txs} 
-      accounts={accounts} 
-      defaultRpc={defaultRpc?.name!} 
-    />,
+    content: await refreshHomepage(),
   };
 };
 
@@ -67,6 +49,18 @@ export const onHomePage: OnHomePageHandler = async () => {
 export const onUserInput: OnUserInputHandler = async ({ event, id, context }) => {
   if (event.type === UserInputEventType.ButtonClickEvent) {
     switch (event.name) {
+      case 'add-account':
+        await AccountManager.addAccount();
+      case 'back':
+      case 'refresh-txs':
+        await snap.request({
+          method: 'snap_updateInterface',
+          params: {
+            id,
+            ui: await refreshHomepage(),
+          },
+        });
+        break;
       case 'show-keys-warning':
         await showKeysConfirmation(id);
         break;
@@ -79,16 +73,6 @@ export const onUserInput: OnUserInputHandler = async ({ event, id, context }) =>
       case 'receive-page':
         await receivePage(id);
         break;
-      case 'add-account':
-        await AccountManager.addAccount();
-        await snap.request({
-          method: 'snap_updateInterface',
-          params: {
-            id,
-            ui: <Homepage txs={await accountHistory()} accounts={await AccountManager.getAccounts()} defaultRpc={(await StateManager.getState(STORE_KEYS.DEFAULT_RPC))?.name!} />,
-          },
-        });
-        break;
       case 'switch-account':
         await selectAccount(id);
         break;
@@ -96,16 +80,7 @@ export const onUserInput: OnUserInputHandler = async ({ event, id, context }) =>
         await selectRpc(id);
         break;
       case 'receive-funds':
-          await confirmReceive();
-          break;
-      case 'back':
-        await snap.request({
-          method: 'snap_updateInterface',
-          params: {
-            id,
-            ui: <Homepage txs={await accountHistory()} accounts={await AccountManager.getAccounts()} defaultRpc={(await StateManager.getState(STORE_KEYS.DEFAULT_RPC))?.name!} />,
-          },
-        });
+        await confirmReceive();
         break;
     }
   }
@@ -122,27 +97,27 @@ export const onUserInput: OnUserInputHandler = async ({ event, id, context }) =>
           method: 'snap_updateInterface',
           params: {
             id,
-            ui: <Homepage txs={await accountHistory()} accounts={await AccountManager.getAccounts()} defaultRpc={(await StateManager.getState(STORE_KEYS.DEFAULT_RPC))?.name!} />,
+            ui: await refreshHomepage(),
           },
         });
         break;
       case 'switch-rpc-form':
         const { api, auth, selectedRpc } = event.value as { api?: string, auth?: string, selectedRpc: string };
         const selected = RpcEndpoints.find(opt => opt.value === selectedRpc) || {} as RpcEndpoint;
-        
+
         if (selectedRpc === 'custom') {
           selected.name = 'Custom';
           selected.value = selectedRpc;
           selected.api = api || 'Not set';
           selected.auth = auth!;
         }
-        
+
         await StateManager.setState(STORE_KEYS.DEFAULT_RPC, selected);
         await snap.request({
           method: 'snap_updateInterface',
           params: {
             id,
-            ui: <Homepage txs={await accountHistory()} accounts={await AccountManager.getAccounts()} defaultRpc={(await StateManager.getState(STORE_KEYS.DEFAULT_RPC))?.name!} />,
+            ui: await refreshHomepage(),
           },
         });
         break;

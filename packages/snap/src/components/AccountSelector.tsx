@@ -4,7 +4,7 @@ import {
   SelectorOption,
   Card,
 } from '@metamask/snaps-sdk/jsx';
-import { createJazzicon, truncateAddress } from '../lib/utils';
+import { createJazzicon, rawToNano, truncateAddress } from '../lib/utils';
 import { Account } from '../lib/interfaces';
 
 export const AccountSelector: SnapComponent<{ accounts: Account[] }> = ({ accounts }) => {
@@ -16,7 +16,7 @@ export const AccountSelector: SnapComponent<{ accounts: Account[] }> = ({ accoun
             image={createJazzicon(account.address!, 20)}
             title={(index + 1) + "." + (account.active ? ' ⭐' : '')}
             value={truncateAddress(account.address!)}
-            extra={(account.balance || '0') + ' XNO'}
+            extra={rawToNano(account.balance) + ' XNO'}
           />
         </SelectorOption>
       ))}

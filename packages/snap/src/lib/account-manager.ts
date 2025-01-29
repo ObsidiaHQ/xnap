@@ -55,7 +55,7 @@ export class AccountManager {
         const newAccountNode = await nanoSlip10Node.derive([`slip10:${newIndex}'`]);
         const privKey = remove0x(newAccountNode.toJSON().privateKey!);
         const { address, privateKey, publicKey } = await NanoAccount.fromPrivateKey(privKey);
-        const { confirmed_balance, confirmed_frontier, confirmed_receivable } = await accountInfo(address);
+        const { confirmed_balance, confirmed_frontier, confirmed_receivable } = (await accountInfo(address))!;
 
         const newAccount: Account = {
             address, privateKey, balance: confirmed_balance, frontier: confirmed_frontier, receivable: confirmed_receivable, publicKey

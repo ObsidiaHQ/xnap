@@ -1,14 +1,35 @@
 import { Snap, InsightProps } from './interfaces';
-import { SendPage, ShowKeysConfirmation, ShowKeys, ReceivePage, Insight, AccountSelector, RpcSelector, Address } from '../components';
+import { SendPage, ShowKeysConfirmation, ShowKeys, ReceivePage, Insight, AccountSelector, RpcSelector, Address, Homepage } from '../components';
 import { renderSVG } from 'uqr';
 import { DialogType, NotificationType } from '@metamask/snaps-sdk';
 import { AccountManager } from './account-manager';
 import { Box, Button, Container, Divider, Form, Heading, Row, Text } from '@metamask/snaps-sdk/jsx';
 import { RpcEndpoints } from './constants';
 import { StateManager, STORE_KEYS } from './state-manager';
-import { accountBalance, generateReceive, generateSend } from './rpc';
+import { accountBalance, accountHistory, accountInfo, generateReceive, generateSend } from './rpc';
 
 declare let snap: Snap;
+
+export async function refreshHomepage() {
+  const [accounts, active, defaultRpc] = await Promise.all([
+    AccountManager.getAccounts(),
+    AccountManager.getActiveAccount(),
+    StateManager.getState(STORE_KEYS.DEFAULT_RPC)
+  ]);
+  const [activeInfo, txs] = await Promise.all([
+    accountInfo(active?.address!),
+    accountHistory(active?.address)
+  ]);
+  
+  active!.balance = activeInfo?.confirmed_balance!;
+  active!.receivable = activeInfo?.confirmed_receivable!;
+  
+  return <Homepage 
+    txs={txs} 
+    accounts={accounts} 
+    defaultRpc={defaultRpc?.name!} 
+  />;
+}
 
 export async function showKeysConfirmation(id: string) {
   await snap.request({
@@ -54,7 +75,7 @@ export async function confirmSend(tx: InsightProps) {
   const props = {
     ...tx,
     from: tx.from || from?.address!,
-    balance: await accountBalance(tx.from || from?.address)
+    balance: (await accountBalance(tx.from || from?.address))!
   }
 
   const confirmed: boolean = await snap.request({

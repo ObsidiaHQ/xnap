@@ -4,6 +4,7 @@ import sendIcon from "../../images/send.svg";
 import qrcIcon from "../../images/qrcode.svg";
 import receiveIcon from "../../images/receive.svg";
 import { Account, Transaction } from "../lib/interfaces";
+import { rawToNano } from "../lib/utils";
 
 type HomepageProps = {
   accounts: Account[];
@@ -21,7 +22,7 @@ export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, defaultR
         <Address address={active.address} prefix="Account: "></Address>
 
         <Box direction='horizontal'>
-          <Heading size='lg'>{(active.balance || '0')} XNO</Heading>
+          <Heading size='lg'>{rawToNano(active.balance)} XNO</Heading>
           {hasReceiveable(active.receivable) ? (<Button name="receive-funds"><Image src={receiveIcon}></Image> {active.receivable!}</Button>) : null}
         </Box>
 

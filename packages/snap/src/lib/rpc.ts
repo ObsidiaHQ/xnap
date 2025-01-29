@@ -2,13 +2,12 @@ import { ReceiveBlock, Rpc, SendBlock, Tools } from "libnemo";
 import { AccountManager } from "./account-manager";
 import { Account, Transaction, TxType } from "./interfaces";
 import { StateManager, STORE_KEYS } from "./state-manager";
-import { formatRelativeDate, getRandomRepresentative, rawToNano } from "./utils";
+import { formatRelativeDate, getRandomRepresentative } from "./utils";
 import { request } from "./request";
 import { RpcAction } from "./constants";
 
-export async function accountInfo(account?: string) {
-    if (!account) return {} as any;
-    return await request(RpcAction.ACCOUNT_INFO, { account, receivable: true, include_confirmed: true }).then(res => ({ ...res, confirmed_balance: rawToNano(res?.confirmed_balance), confirmed_receivable: rawToNano(res?.confirmed_receivable) }));
+export async function accountInfo(account: string) {
+    return await request(RpcAction.ACCOUNT_INFO, { account, receivable: true, include_confirmed: true });
 }
 
 export async function accountHistory(account?: string, count = 5, raw = false, offset = 0, reverse = false): Promise<Transaction[]> {
@@ -18,14 +17,13 @@ export async function accountHistory(account?: string, count = 5, raw = false, o
 
     return await request(RpcAction.ACCOUNT_HISTORY, { account, count, raw, offset, reverse }).then(res => (res?.history || []).map((tx) => ({
         ...tx,
-        amount: rawToNano(tx.amount),
         time: formatRelativeDate(tx.local_timestamp),
     })));
 }
 
 export async function accountBalance(account?: string) {
     if (!account) return '0';
-    return await request(RpcAction.ACCOUNT_INFO, { account, receivable: true, include_confirmed: true }).then(res => rawToNano(res?.confirmed_balance));
+    return await request(RpcAction.ACCOUNT_INFO, { account, receivable: true, include_confirmed: true }).then(res => res?.confirmed_balance);
 }
 
 export async function blocksInfo(blocks: string[]) {
