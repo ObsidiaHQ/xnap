@@ -2,6 +2,8 @@ import { RpcEndpoint } from "./interfaces";
 
 export const ALPHABET = '13456789abcdefghijkmnopqrstuwxyz';
 
+export const ZERO_HASH = '0000000000000000000000000000000000000000000000000000000000000000';
+
 export enum RpcAction {
   ACCOUNT_INFO = 'account_info',
   ACCOUNT_HISTORY = 'account_history',

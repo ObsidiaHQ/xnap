@@ -26,6 +26,13 @@ export type InsightProps = {
   balance?: string;
 };
 
+export type TxConfirmation = {
+  from: string;
+  to: string;
+  value: string;
+  confirmed: boolean;
+}
+
 export interface GetCurrentAddress {
   method: 'xno_getCurrentAddress';
   params: {};

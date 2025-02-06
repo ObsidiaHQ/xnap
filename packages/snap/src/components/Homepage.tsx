@@ -1,8 +1,6 @@
 import { Box, Button, Container, Divider, Heading, Image, Link, SnapComponent, Text } from "@metamask/snaps-sdk/jsx"
 import { Accounts, Transactions, Address } from "./";
-import sendIcon from "../../images/send.svg";
-import qrcIcon from "../../images/qrcode.svg";
-import receiveIcon from "../../images/receive.svg";
+import { SendIcon, QRCodeIcon, ReceiveIcon } from "../../images/icons";
 import { Account, Transaction } from "../lib/interfaces";
 import { rawToNano } from "../lib/utils";
 
@@ -23,20 +21,20 @@ export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, defaultR
 
         <Box direction='horizontal'>
           <Heading size='lg'>{rawToNano(active.balance)} XNO</Heading>
-          {hasReceiveable(active.receivable) ? (<Button name="receive-funds-confirm"><Image src={receiveIcon}></Image> {rawToNano(active.receivable!)}</Button>) : null}
+          {hasReceiveable(active.receivable) ? (<Button name="receive-funds-confirm"><Image src={ReceiveIcon}></Image> {rawToNano(active.receivable!)}</Button>) : null}
         </Box>
 
         <Box direction='horizontal' alignment='space-around'>
           <Box alignment='center'>
             <Button name='send-page'>
-              <Image src={sendIcon} alt='Send nano' />
+              <Image src={SendIcon} alt='Send nano' />
             </Button>
             <Text color='alternative'>Send</Text>
           </Box>
 
           <Box alignment='center'>
             <Button name='receive-page'>
-              <Image src={qrcIcon} alt='Receive nano' />
+              <Image src={QRCodeIcon} alt='Receive nano' />
             </Button>
             <Text color='alternative'>Receive</Text>
           </Box>

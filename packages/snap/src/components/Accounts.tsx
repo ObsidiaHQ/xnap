@@ -1,7 +1,7 @@
 import { Box, Button, Heading, Image, SnapComponent } from "@metamask/snaps-sdk/jsx";
 import { Address } from "./";
 import { Account } from "../lib/interfaces";
-import addIcon from "../../images/add.svg";
+import { AddIcon } from "../../images/icons";
 
 export const Accounts: SnapComponent<{ accounts: Account[] }> = ({ accounts }) => {
   return (
@@ -14,7 +14,7 @@ export const Accounts: SnapComponent<{ accounts: Account[] }> = ({ accounts }) =
           </Button>
         </Box>
         <Button name="add-account">
-          <Image src={addIcon} alt='Add account' />
+          <Image src={AddIcon} alt='Add account' />
         </Button>
       </Box>
       {accounts.map((account) => (

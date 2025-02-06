@@ -4,7 +4,7 @@ import { remove0x } from "@metamask/utils";
 import { Account } from "./interfaces";
 import { Account as NanoAccount } from "libnemo";
 import { accountInfo } from "./rpc";
-import { getRandomRPC } from "./utils";
+import { getRandomRPC, isValidAddress } from "./utils";
 
 export class AccountManager {
 
@@ -119,6 +119,22 @@ export class AccountManager {
         return accounts;
     }
 
+    /**
+     * Gets account by address
+     * @param address The address of the account to get
+     * @returns The account or null if not found
+     */
+    public static async getAccountByAddress(address: string): Promise<Account | null> {
+        let accounts = await StateManager.getState(STORE_KEYS.ACCOUNTS) || [];
+        const account = accounts.find(acc => acc.address === address);
+
+        if (!account) {
+            return null;
+        }
+
+        return account;
+    }
+
     private static async getHDNode(): Promise<BIP44Node> {
         const hdNode = await StateManager.getState(STORE_KEYS.HD_NODE);
 
@@ -133,6 +149,6 @@ export class AccountManager {
     private static isValidAccount(account: any): boolean {
         return account
             && typeof account.address === 'string'
-            && account.address?.length > 0;
+            && isValidAddress(account.address);
     }
 }

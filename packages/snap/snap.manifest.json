@@ -7,11 +7,11 @@
     "url": "https://github.com/ObsidiaHQ/xnap.git"
   },
   "source": {
-    "shasum": "PgpO1zgUbRN1lDRUlkRNAebRzTcBNqmucKiFb6aiTcQ=",
+    "shasum": "PrdAdHuqNSeq6WgGxv2xS5vkqQPzOpjEmySHMPAFnC0=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
-        "iconPath": "images/icon.svg",
+        "iconPath": "images/xno.svg",
         "packageName": "@obsidia/xnap",
         "registry": "https://registry.npmjs.org/"
       }

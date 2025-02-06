@@ -1,7 +1,7 @@
 import { ALPHABET, RepAccounts, RpcEndpoints } from "./constants";
 const MersenneTwister = require('mersenne-twister');
 
-export function isValidAddress(address: string): boolean {
+export function isValidAddress(address: string | undefined): boolean {
     const pattern = new RegExp(`^(nano_|xrb_)[13]{1}[${ALPHABET}]{59}$`);
     return !!address && pattern.test(address);
 }
@@ -323,7 +323,7 @@ export function nanoAddressToHex(nanoAddress: string) {
     // Convert the 256-bit string into hex (32 bytes) 
     let hex = "";
     for (let i = 0; i < publicKeyBits.length; i += 8) {
-        let byte = publicKeyBits.substring(i, 8);
+        let byte = publicKeyBits.substring(i, i + 8);
         // Parse as integer then convert to hex
         let hexByte = parseInt(byte, 2).toString(16).padStart(2, "0");
         hex += hexByte;

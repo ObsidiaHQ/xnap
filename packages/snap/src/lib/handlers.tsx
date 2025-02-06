@@ -1,12 +1,12 @@
-import { Snap, InsightProps } from './interfaces';
-import { SendPage, ShowKeys, ReceivePage, Insight, AccountSelector, RpcSelector, Homepage, ConfirmDialog } from '../components';
-import { renderSVG } from 'uqr';
 import { DialogType, NotificationType } from '@metamask/snaps-sdk';
-import { AccountManager } from './account-manager';
 import { Box, Button, Container, Divider, Form, Heading, Text } from '@metamask/snaps-sdk/jsx';
+import { renderSVG } from 'uqr';
+import { Snap, InsightProps, TxConfirmation } from './interfaces';
+import { SendPage, ShowKeys, ReceivePage, Insight, AccountSelector, RpcSelector, Homepage, ConfirmDialog } from '../components';
+import { AccountManager } from './account-manager';
 import { RpcEndpoints } from './constants';
 import { StateManager, STORE_KEYS } from './state-manager';
-import { accountBalance, accountHistory, accountInfo, generateReceive, generateSend } from './rpc';
+import { accountBalance, accountHistory, accountInfo, generateReceiveBlock, generateSendBlock, receivables } from './rpc';
 
 declare let snap: Snap;
 
@@ -16,18 +16,19 @@ export async function refreshHomepage() {
     AccountManager.getActiveAccount(),
     StateManager.getState(STORE_KEYS.DEFAULT_RPC)
   ]);
-  const [activeInfo, txs] = await Promise.all([
+  const [activeInfo, txs, receivableBlocks] = await Promise.all([
     accountInfo(active?.address!),
-    accountHistory(active?.address)
+    accountHistory(active?.address),
+    receivables(active?.address)
   ]);
-  
+
   active!.balance = activeInfo?.confirmed_balance!;
-  active!.receivable = activeInfo?.confirmed_receivable!;
-  
-  return <Homepage 
-    txs={txs} 
-    accounts={accounts} 
-    defaultRpc={defaultRpc?.name!} 
+  active!.receivable = Object.values(receivableBlocks).reduce((acc, block) => acc + BigInt(block.amount), BigInt(0)).toString();
+
+  return <Homepage
+    txs={txs}
+    accounts={accounts}
+    defaultRpc={defaultRpc?.name!}
   />;
 }
 
@@ -39,7 +40,7 @@ export async function showKeysConfirmation(id: string) {
       ui: <ConfirmDialog question='Are you sure you want to reveal your account credentials?' event='show-keys' />,
     },
   });
-  }
+}
 
 export async function showKeys(id: string) {
   const account = await AccountManager.getActiveAccount();
@@ -64,12 +65,12 @@ export async function sendPage(id: string) {
     method: 'snap_updateInterface',
     params: {
       id,
-      ui: <SendPage accounts={await AccountManager.getAccounts() as any} active={(await AccountManager.getActiveAccount())!.address!}  />,
+      ui: <SendPage accounts={await AccountManager.getAccounts() as any} active={(await AccountManager.getActiveAccount())!.address!} />,
     },
   });
 }
 
-export async function confirmSend(tx: InsightProps) {
+export async function sendConfirmation(tx: InsightProps): Promise<TxConfirmation> {
   const from = await AccountManager.getActiveAccount();
 
   const props = {
@@ -86,31 +87,22 @@ export async function confirmSend(tx: InsightProps) {
     },
   });
 
-  if (confirmed) {
-    const hash = await generateSend(from!, props.to, props.value);
-    if (hash) {
-      await notifyUser(`Successfully sent ${props.value} XNO.`);
-    }
+  return { from: props.from, to: props.to, value: props.value, confirmed };
+}
+
+/**
+ * ⚠️ This function must ONLY be called AFTER user confirmation! ⚠️
+ */
+export async function sendFunds(tx: InsightProps) {
+  let from = await AccountManager.getAccountByAddress(tx.from);
+  if (!from) {
+    from = await AccountManager.getActiveAccount();
   }
-
-  return confirmed;
-}
-
-export async function receiveConfirmation(id: string) {
-  await snap.request({
-    method: 'snap_updateInterface',
-    params: {
-      id,
-      ui: <ConfirmDialog question='Do you want to receive the funds?' event='receive-funds' />,
-    },
-  });
-}
-
-export async function receiveFunds() {
-  const processed = await generateReceive();
-    if (processed) {
-      await notifyUser(`Successfully received ${processed} transaction(s).`);
-    }
+  const hash = await generateSendBlock(from!, tx.to, tx.value);
+  if (hash) {
+    await notifyUser(`Successfully sent ${tx.value} XNO.`);
+  }
+  return hash;
 }
 
 export async function receivePage(id: string) {
@@ -124,6 +116,26 @@ export async function receivePage(id: string) {
       ui: <ReceivePage qr={qr} address={account!.address!} />,
     },
   });
+}
+
+export async function receiveConfirmation(id: string) {
+  await snap.request({
+    method: 'snap_updateInterface',
+    params: {
+      id,
+      ui: <ConfirmDialog question='Do you want to receive the funds?' event='receive-funds' />,
+    },
+  });
+}
+
+/**
+ * ⚠️ This function must ONLY be called AFTER user confirmation! ⚠️
+ */
+export async function receiveFunds() {
+  const processed = await generateReceiveBlock();
+  if (processed) {
+    await notifyUser(`Successfully received ${processed} transaction(s).`);
+  }
 }
 
 export async function selectAccount(id: string) {

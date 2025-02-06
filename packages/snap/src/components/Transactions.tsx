@@ -1,6 +1,6 @@
 import { Box, Button, Card, Heading, Image, Section, SnapComponent, Text } from "@metamask/snaps-sdk/jsx";
 import { createJazzicon, rawToNano, truncateAddress } from "../lib/utils";
-import refreshIcon from "../../images/refresh.svg";
+import { RefreshIcon } from "../../images/icons";
 import { Transaction } from "../lib/interfaces";
 
 export const Transactions: SnapComponent<{ txs: Transaction[] }> = ({ txs }) => {
@@ -9,7 +9,7 @@ export const Transactions: SnapComponent<{ txs: Transaction[] }> = ({ txs }) => 
       <Box direction="horizontal" alignment="space-between">
         <Heading>Activity</Heading>
         <Button name="refresh-txs">
-          <Image src={refreshIcon} alt='refresh' />
+          <Image src={RefreshIcon} alt='refresh' />
         </Button>
       </Box>
       {txs?.length ? txs.map((tx) => {

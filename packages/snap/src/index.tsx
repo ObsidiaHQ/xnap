@@ -1,11 +1,11 @@
-import { Snap, MetamaskXNORpcRequest, RpcEndpoint } from './lib/interfaces';
-import { SnapError, RequestErrors } from './errors';
 import {
   UserInputEventType,
   type OnHomePageHandler,
   type OnUserInputHandler,
 } from '@metamask/snaps-sdk';
-import { confirmSend, receiveConfirmation, receiveFunds, receivePage, refreshHomepage, selectAccount, selectRpc, sendPage, showKeys, showKeysConfirmation } from './lib/handlers';
+import { Snap, MetamaskXNORpcRequest, RpcEndpoint } from './lib/interfaces';
+import { SnapError, RequestErrors } from './errors';
+import { sendConfirmation, receiveConfirmation, receiveFunds, receivePage, refreshHomepage, selectAccount, selectRpc, sendFunds, sendPage, showKeys, showKeysConfirmation } from './lib/handlers';
 import { AccountManager } from './lib/account-manager';
 import { StateManager, STORE_KEYS } from './lib/state-manager';
 import { RpcEndpoints } from './lib/constants';
@@ -20,13 +20,17 @@ export type RpcRequest = {
 
 export const onRpcRequest = async ({ origin, request }: RpcRequest) => {
   await AccountManager.initialize();
-
   switch (request.method) {
     case 'xno_getCurrentAddress':
       const address = (await AccountManager.getActiveAccount())?.address;
       return { address };
     case 'xno_makeTransaction':
-      return { result: (await confirmSend({ ...request.params, origin })) };
+      const { confirmed, from, to, value } = await sendConfirmation({ ...request.params, origin });
+      if (confirmed) {
+        const hash = await sendFunds({ from, to, value, origin });
+        return { result: hash };
+      }
+      return { result: null };
     default:
       throw SnapError.of(RequestErrors.MethodNotSupport);
   }
@@ -92,7 +96,7 @@ export const onUserInput: OnUserInputHandler = async ({ event, id, context }) =>
             ui: <ConfirmDialog question='Do you want to receive the funds?' event='receive-funds' loading={true} />,
           },
         });
-        
+
         try {
           // Wait for receiveFunds to complete
           await receiveFunds();
@@ -121,8 +125,21 @@ export const onUserInput: OnUserInputHandler = async ({ event, id, context }) =>
   if (event.type === UserInputEventType.FormSubmitEvent) {
     switch (event.name) {
       case 'send-xno-form':
-        const { value, to, selectedAddress } = event.value as { value: string, to: string, selectedAddress: string };
-        await confirmSend({ value, to, from: selectedAddress, origin: null });
+        const formValue = event.value as { value: string, to: string, selectedAddress: string };
+        const { confirmed, from, to, value } = await sendConfirmation({
+          value: formValue.value,
+          to: formValue.to,
+          from: formValue.selectedAddress,
+          origin: null
+        });
+
+        if (confirmed) {
+          try {
+            await sendFunds({ from, to, value, origin: null });
+          } catch (error) {
+            console.error('Error sending transaction:', error);
+          }
+        }
         break;
       case 'switch-account-form':
         const account = (await AccountManager.getAccounts()).find(acc => acc.address === event.value.selectedAddress);

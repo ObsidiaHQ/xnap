@@ -22,6 +22,7 @@ type RpcAccountInfo = {
     confirmed_representative: string,
     confirmed_balance: string,
     modified_timestamp: string,
+    error?: string,
 }
 
 class RequestError extends Error {

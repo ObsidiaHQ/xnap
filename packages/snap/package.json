@@ -11,7 +11,7 @@
   "main": "./dist/bundle.js",
   "files": [
     "dist/",
-    "images/icon.svg",
+    "images/xno.svg",
     "snap.manifest.json"
   ],
   "scripts": {
