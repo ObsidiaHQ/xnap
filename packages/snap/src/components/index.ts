@@ -4,7 +4,7 @@ export * from "./Insight";
 export * from "./ReceivePage";
 export * from "./SendPage";
 export * from "./ShowKeys";
-export * from "./ShowKeysConfirmation";
+export * from "./ConfirmDialog";
 export * from "./Transactions";
 export * from "./Address";
 export * from "./AccountSelector";

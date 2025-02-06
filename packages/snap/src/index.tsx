@@ -5,10 +5,11 @@ import {
   type OnHomePageHandler,
   type OnUserInputHandler,
 } from '@metamask/snaps-sdk';
-import { confirmReceive, confirmSend, receivePage, refreshHomepage, selectAccount, selectRpc, sendPage, showKeys, showKeysConfirmation } from './lib/handlers';
+import { confirmSend, receiveConfirmation, receiveFunds, receivePage, refreshHomepage, selectAccount, selectRpc, sendPage, showKeys, showKeysConfirmation } from './lib/handlers';
 import { AccountManager } from './lib/account-manager';
 import { StateManager, STORE_KEYS } from './lib/state-manager';
 import { RpcEndpoints } from './lib/constants';
+import { ConfirmDialog } from './components';
 
 declare let snap: Snap;
 
@@ -79,8 +80,41 @@ export const onUserInput: OnUserInputHandler = async ({ event, id, context }) =>
       case 'switch-rpc':
         await selectRpc(id);
         break;
+      case 'receive-funds-confirm':
+        await receiveConfirmation(id);
+        break;
       case 'receive-funds':
-        await confirmReceive();
+        // First show loading dialog
+        await snap.request({
+          method: 'snap_updateInterface',
+          params: {
+            id,
+            ui: <ConfirmDialog question='Do you want to receive the funds?' event='receive-funds' loading={true} />,
+          },
+        });
+        
+        try {
+          // Wait for receiveFunds to complete
+          await receiveFunds();
+          // Then refresh the homepage
+          await snap.request({
+            method: 'snap_updateInterface',
+            params: {
+              id,
+              ui: await refreshHomepage(),
+            },
+          });
+        } catch (error) {
+          // Optionally handle errors by showing an error dialog
+          console.error('Error receiving funds:', error);
+          await snap.request({
+            method: 'snap_updateInterface',
+            params: {
+              id,
+              ui: await refreshHomepage(),
+            },
+          });
+        }
         break;
     }
   }

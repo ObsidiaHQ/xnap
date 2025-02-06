@@ -2,7 +2,6 @@ import { ALPHABET, RepAccounts, RpcEndpoints } from "./constants";
 const MersenneTwister = require('mersenne-twister');
 
 export function isValidAddress(address: string): boolean {
-    
     const pattern = new RegExp(`^(nano_|xrb_)[13]{1}[${ALPHABET}]{59}$`);
     return !!address && pattern.test(address);
 }
@@ -79,7 +78,7 @@ export function createJazzicon(seed: string, size = 30): string {
         '#F19E02', // gold
     ];
     let shapeCount = 4;
-    
+
     const hash = Math.abs(Array.from(seed).reduce((hash, char) => {
         return ((hash << 5) - hash) + char.charCodeAt(0) | 0;
     }, 0));
@@ -101,7 +100,7 @@ export function createJazzicon(seed: string, size = 30): string {
             h = 0,
             s = 0,
             l = 0;
-    
+
         if (delta == 0)
             h = 0;
         else if (cmax == r)
@@ -110,32 +109,32 @@ export function createJazzicon(seed: string, size = 30): string {
             h = (b - r) / delta + 2;
         else
             h = (r - g) / delta + 4;
-    
+
         h = Math.round(h * 60);
-    
+
         if (h < 0)
             h += 360;
-    
+
         l = (cmax + cmin) / 2;
         s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
         s = +(s * 100).toFixed(1);
         l = +(l * 100).toFixed(1);
-    
+
         return { h, s, l }
     }
-    
+
     function HSLToHex(hsl: { h: number, s: number, l: number }) {
         var { h, s, l } = hsl
         s /= 100;
         l /= 100;
-    
+
         let c = (1 - Math.abs(2 * l - 1)) * s,
             x = c * (1 - Math.abs((h / 60) % 2 - 1)),
             m = l - c / 2,
             r = 0,
             g = 0,
             b = 0;
-    
+
         if (0 <= h && h < 60) {
             r = c; g = x; b = 0;
         } else if (60 <= h && h < 120) {
@@ -153,7 +152,7 @@ export function createJazzicon(seed: string, size = 30): string {
         r = Math.round((r + m) * 255).toString(16);
         g = Math.round((g + m) * 255).toString(16);
         b = Math.round((b + m) * 255).toString(16);
-    
+
         // Prepend 0s, if necessary
         if (r.length == 1)
             r = "0" + r;
@@ -161,7 +160,7 @@ export function createJazzicon(seed: string, size = 30): string {
             g = "0" + g;
         if (b.length == 1)
             b = "0" + b;
-    
+
         return "#" + r + g + b;
     }
 
@@ -189,7 +188,7 @@ export function createJazzicon(seed: string, size = 30): string {
 
     function genShape(remainingColors: string[], diameter: number, i: number, total: number) {
         var center = diameter / 2;
-    
+
         // Create virtual rectangle element
         var shape = {
             type: 'rect',
@@ -202,31 +201,31 @@ export function createJazzicon(seed: string, size = 30): string {
                 fill: ''
             }
         };
-    
+
         var firstRot = generator.random();
         var angle = Math.PI * 2 * firstRot;
         var velocity = diameter / total * generator.random() + (i * diameter / total);
-    
+
         var tx = (Math.cos(angle) * velocity);
         var ty = (Math.sin(angle) * velocity);
-    
+
         var translate = 'translate(' + tx + ' ' + ty + ')';
-    
+
         var secondRot = generator.random();
         var rot = (firstRot * 360) + secondRot * 180;
         var rotate = 'rotate(' + rot.toFixed(1) + ' ' + center + ' ' + center + ')';
         var transform = translate + ' ' + rotate;
-    
+
         shape.attributes.transform = transform;
-        shape.attributes.fill = genColor(remainingColors);
-    
+        shape.attributes.fill = genColor(remainingColors)!;
+
         return shape;
     }
-    
+
     var remainingColors = hueShift(colors.slice());
 
     // Create virtual SVG element
-    const svg = {
+    const svg: Record<string, any> = {
         type: 'svg',
         attributes: {
             x: '0',
@@ -247,7 +246,7 @@ export function createJazzicon(seed: string, size = 30): string {
         .join(' ');
 
     let children = svg.children
-        .map(child => {
+        .map((child: any) => {
             let childAttributes = Object.entries(child.attributes)
                 .map(([key, value]) => `${key}="${value}"`)
                 .join(' ');
@@ -259,7 +258,7 @@ export function createJazzicon(seed: string, size = 30): string {
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
         <defs>
             <clipPath id="circleClip">
-                <circle cx="${size/2}" cy="${size/2}" r="${size/2}" />
+                <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" />
             </clipPath>
         </defs>
         <g clip-path="url(#circleClip)">
@@ -281,4 +280,60 @@ export function getRandomRepresentative() {
 
 export function getRandomRPC() {
     return RpcEndpoints[Math.floor(Math.random() * RpcEndpoints.length)]!;
+}
+
+export function nanoAddressToHex(nanoAddress: string) {
+    if (!isValidAddress(nanoAddress)) {
+        throw new Error("Invalid Nano address");
+    }
+
+    let parts = nanoAddress.split("_");
+    let accountPart: string | undefined = parts[1];
+
+    // A valid Nano account part is 60 characters long:
+    // 52 characters for the public key + 8 for the checksum.
+    if (accountPart?.length !== 60) {
+        throw new Error("Invalid Nano account length.");
+    }
+
+    // The first 52 characters are the public key
+    let pubKeyEncoded = accountPart.substring(0, 52);
+
+    // Build a mapping from character to value.
+    let charMap: any = {};
+    for (let i = 0; i < ALPHABET.length; i++) {
+        charMap[ALPHABET[i]!] = i;
+    }
+
+    // Each character encodes 5 bits.
+    let bitString = "";
+    for (let char of pubKeyEncoded) {
+        if (charMap[char] === undefined) {
+            throw new Error("Invalid character in Nano address: " + char);
+        }
+        // Convert value to a 5-bit binary string
+        let bits = charMap[char].toString(2);
+        // Pad with leading zeros to ensure it has 5 bits.
+        bits = bits.padStart(5, "0");
+        bitString += bits;
+    }
+    // Now, bitString has 52 * 5 = 260 bits. The first 4 bits are padding.
+    let publicKeyBits = bitString.substring(4); // remove the extra four bits at the start
+
+    // Convert the 256-bit string into hex (32 bytes) 
+    let hex = "";
+    for (let i = 0; i < publicKeyBits.length; i += 8) {
+        let byte = publicKeyBits.substring(i, 8);
+        // Parse as integer then convert to hex
+        let hexByte = parseInt(byte, 2).toString(16).padStart(2, "0");
+        hex += hexByte;
+    }
+
+    return hex;
+}
+
+export function uint8ArrayToHex(arr: Uint8Array): string {
+    return Array.from(arr)
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
 }

@@ -23,7 +23,7 @@ export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, defaultR
 
         <Box direction='horizontal'>
           <Heading size='lg'>{rawToNano(active.balance)} XNO</Heading>
-          {hasReceiveable(active.receivable) ? (<Button name="receive-funds"><Image src={receiveIcon}></Image> {active.receivable!}</Button>) : null}
+          {hasReceiveable(active.receivable) ? (<Button name="receive-funds-confirm"><Image src={receiveIcon}></Image> {rawToNano(active.receivable!)}</Button>) : null}
         </Box>
 
         <Box direction='horizontal' alignment='space-around'>

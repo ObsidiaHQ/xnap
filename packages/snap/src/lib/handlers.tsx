@@ -1,9 +1,9 @@
 import { Snap, InsightProps } from './interfaces';
-import { SendPage, ShowKeysConfirmation, ShowKeys, ReceivePage, Insight, AccountSelector, RpcSelector, Address, Homepage } from '../components';
+import { SendPage, ShowKeys, ReceivePage, Insight, AccountSelector, RpcSelector, Homepage, ConfirmDialog } from '../components';
 import { renderSVG } from 'uqr';
 import { DialogType, NotificationType } from '@metamask/snaps-sdk';
 import { AccountManager } from './account-manager';
-import { Box, Button, Container, Divider, Form, Heading, Row, Text } from '@metamask/snaps-sdk/jsx';
+import { Box, Button, Container, Divider, Form, Heading, Text } from '@metamask/snaps-sdk/jsx';
 import { RpcEndpoints } from './constants';
 import { StateManager, STORE_KEYS } from './state-manager';
 import { accountBalance, accountHistory, accountInfo, generateReceive, generateSend } from './rpc';
@@ -36,10 +36,10 @@ export async function showKeysConfirmation(id: string) {
     method: 'snap_updateInterface',
     params: {
       id,
-      ui: <ShowKeysConfirmation />,
+      ui: <ConfirmDialog question='Are you sure you want to reveal your account credentials?' event='show-keys' />,
     },
   });
-}
+  }
 
 export async function showKeys(id: string) {
   const account = await AccountManager.getActiveAccount();
@@ -89,39 +89,28 @@ export async function confirmSend(tx: InsightProps) {
   if (confirmed) {
     const hash = await generateSend(from!, props.to, props.value);
     if (hash) {
-      await notifyUser(hash, props.value, props.to);
+      await notifyUser(`Successfully sent ${props.value} XNO.`);
     }
   }
 
   return confirmed;
 }
 
-export async function confirmReceive() {
-  // const from = await AccountManager.getActiveAccount();
-
-  // const props = {
-  //   ...tx,
-  //   from: tx.from || from?.address!,
-  //   balance: await accountBalance(tx.from || from?.address)
-  // }
-
-  // TODO: make interface
-  const confirmed: boolean = await snap.request({
-    method: 'snap_dialog',
+export async function receiveConfirmation(id: string) {
+  await snap.request({
+    method: 'snap_updateInterface',
     params: {
-      type: DialogType.Confirmation,
-      content: <Text>Do you want to receive the funds?</Text>,
+      id,
+      ui: <ConfirmDialog question='Do you want to receive the funds?' event='receive-funds' />,
     },
   });
+}
 
-  // if (confirmed) {
-  //   const hash = await generateReceive();
-  //   if (hash) {
-  //     await notifyUser(hash, props.value, props.to);
-  //   }
-  // }
-
-  return confirmed;
+export async function receiveFunds() {
+  const processed = await generateReceive();
+    if (processed) {
+      await notifyUser(`Successfully received ${processed} transaction(s).`);
+    }
 }
 
 export async function receivePage(id: string) {
@@ -175,12 +164,13 @@ export async function selectRpc(id: string) {
   });
 }
 
-export async function notifyUser(hash: string, amount: string, to: string) {
+export async function notifyUser(message: string) {
+  const account = await AccountManager.getActiveAccount();
   await snap.request({
     method: 'snap_notify',
     params: {
       type: NotificationType.Native,
-      message: `Successfully sent ${amount}.`,
+      message,
     },
   });
 
@@ -188,20 +178,14 @@ export async function notifyUser(hash: string, amount: string, to: string) {
     method: 'snap_notify',
     params: {
       type: NotificationType.InApp,
-      message: `Successfully sent ${amount}.`,
-      title: 'Hello World!',
+      message,
+      title: 'Confirmation',
       content: (
         <Box>
-          <Row
-            label="From"
-            variant="warning"
-            tooltip="This address has been deemed dangerous."
-          >
-            <Address address={to} />
-          </Row>
+          <Text color='success'>{message}</Text>
         </Box>
       ),
-      footerLink: { text: 'View on explorer', href: `https://blocklattice.io/block/${hash}` },
+      footerLink: { text: 'View on explorer', href: `https://blocklattice.io/account/${account?.address}` },
     },
   });
 }

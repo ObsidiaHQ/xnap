@@ -1,8 +1,7 @@
-import { ReceiveBlock, Rpc, SendBlock, Tools } from "libnemo";
+import { ReceiveBlock, SendBlock, Tools } from "libnemo";
 import { AccountManager } from "./account-manager";
 import { Account, Transaction, TxType } from "./interfaces";
-import { StateManager, STORE_KEYS } from "./state-manager";
-import { formatRelativeDate, getRandomRepresentative } from "./utils";
+import { formatRelativeDate, getRandomRepresentative, uint8ArrayToHex } from "./utils";
 import { request } from "./request";
 import { RpcAction } from "./constants";
 
@@ -23,7 +22,7 @@ export async function accountHistory(account?: string, count = 5, raw = false, o
 
 export async function accountBalance(account?: string) {
     if (!account) return '0';
-    return await request(RpcAction.ACCOUNT_INFO, { account, receivable: true, include_confirmed: true }).then(res => res?.confirmed_balance);
+    return await request(RpcAction.ACCOUNT_INFO, { account, receivable: true, include_confirmed: true }).then(res => res?.confirmed_balance || '0');
 }
 
 export async function blocksInfo(blocks: string[]) {
@@ -31,62 +30,54 @@ export async function blocksInfo(blocks: string[]) {
 }
 
 export async function receivables(account: string) {
-    return await request(RpcAction.RECEIVABLE, { account, source: true, include_only_confirmed: true, sorting: true });
+    if (!account) return {};
+    return request(RpcAction.RECEIVABLE, { account, source: true, include_only_confirmed: true, sorting: true }).then((res) => res?.blocks || {});
 }
 
 export async function process(block: any, subtype: TxType) {
-    return await request(RpcAction.PROCESS, { block, watch_work: 'false', subtype });
+    return await request(RpcAction.PROCESS, { block, watch_work: 'false', subtype, json_block: 'true' });
 }
 
-export async function generateSend(walletAccount: Account, toAddress: string, nanoAmount: string): Promise<string> {
+export async function generateSend(walletAccount: Account, toAddress: string, nanoAmount: string): Promise<string | undefined> {
     const fromAccount = await accountInfo(walletAccount.address);
     if (!fromAccount) throw new Error(`Unable to get account information for ${walletAccount.address}`);
 
-    //await validateAccount(fromAccount, walletAccount.publicKey);
-
     const representative = fromAccount.confirmed_representative || getRandomRepresentative();
 
-    const rpc = new Rpc((await StateManager.getState(STORE_KEYS.DEFAULT_RPC))?.api!);
     const work = (await generateWork(fromAccount.confirmed_frontier!))?.work;
     const send = new SendBlock(walletAccount.address, fromAccount.confirmed_balance, toAddress, await Tools.convert(nanoAmount, 'nano', 'raw'), representative, fromAccount.confirmed_frontier!, work)
     await send.sign(walletAccount.privateKey!);
 
-    // if (!workPool.workExists(fromAccount.confirmed_frontier)) {
-    //     notifications.sendInfo(`Generating Proof of Work...`, { identifier: 'pow', length: 0 });
-    // }
-
-    //this.workPool.addWorkToCache(processResponse.hash, 1); // Add new hash into the work pool, high PoW threshold for send block
-    //this.workPool.removeFromCache(fromAccount.confirmed_frontier);
-
-    return send.process(rpc);
+    return process(send.json(), 'send').then(res => res?.hash);
 }
 
-export async function generateReceive(fromAddress: string, nanoAmount: string): Promise<void> {
+export async function generateReceive(): Promise<number> {
     const activeAccount = (await AccountManager.getActiveAccount())!;
     const account = await accountInfo(activeAccount.address);
-    const readyBlocks = (await receivables(activeAccount.address))?.blocks!;
+    const readyBlocks = (await receivables(activeAccount.address));
     if (!account) throw new Error(`Unable to get account information for ${activeAccount.address}`);
 
-    //await validateAccount(fromAccount, walletAccount.publicKey);
-
     const representative = account.confirmed_representative || getRandomRepresentative();
-    //rewrite: needs to be one by one - awaited
-    const rpc = new Rpc((await StateManager.getState(STORE_KEYS.DEFAULT_RPC))?.api!);
-    const pows = Object.keys(readyBlocks).map(hash => generateWork(hash));
-    const powResults = await Promise.all(pows);
-    const receivableBlocks = Object.keys(readyBlocks).map(async (hash) => new ReceiveBlock(
-        activeAccount.address, 
-        account.confirmed_balance, 
-        readyBlocks[hash]?.source!, 
-        await Tools.convert(nanoAmount, 'nano', 'raw'), 
-        representative, 
-        account.confirmed_frontier, 
-        powResults.find(pow => pow?.hash === hash)?.hash)
-    );
 
-    //await receive.sign(activeAccount.privateKey!);
+    const receivablesRes = [];
+    for (const hash of Object.keys(readyBlocks)) {
+        const block = new ReceiveBlock(
+            activeAccount.address,
+            account.confirmed_balance,
+            hash,
+            readyBlocks[hash]?.amount!,
+            representative,
+            account.confirmed_frontier,
+        );
+        block.work = (await generateWork(account.confirmed_frontier))?.work!;
+        await block.sign(activeAccount.privateKey!);
+        const processedHash = await process(block.json(), 'receive');
+        if (processedHash?.hash) receivablesRes.push(processedHash);
+        account.confirmed_frontier = uint8ArrayToHex(await block.hash());
+        account.confirmed_balance = block.balance.toString();
+    }
 
-    //return receive.process(rpc);
+    return receivablesRes.length;
 }
 
 export async function generateWork(hash: string, workServer = '') {
@@ -120,5 +111,5 @@ export async function generateWork(hash: string, workServer = '') {
         };
     };
 
-    return await request(RpcAction.WORK_GENERATE, { hash });
+    return await request(RpcAction.WORK_GENERATE, { hash }, { timeout: 30000 });
 }

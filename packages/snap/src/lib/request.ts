@@ -52,7 +52,7 @@ export async function request<T extends RpcAction>(
 ): Promise<RpcResponseTypeMap[T] | null> {
     const {
         maxRetries = 3,
-        timeout = 10000,
+        timeout = 20000,
         skipError = false
     } = options;
 
@@ -76,7 +76,6 @@ export async function request<T extends RpcAction>(
                 return result;
             } catch (error: any) {
                 lastError = error;
-
                 // If it's a validation failure, don't retry
                 if (error.isValidationFailure) {
                     break;
