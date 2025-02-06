@@ -54,3 +54,22 @@ export const RepAccounts = [
   'nano_14j1gqkn8pekpsapqd8c3kciapphaysf6mgw1spsojzzr6qrtskd9dxtopo7', // Nano-GPT
   'nano_3ktybzzy14zxgb6osbhcc155pwk7osbmf5gbh5fo73bsfu9wuiz54t1uozi1', // Kappture
 ] as const;
+
+export const BlockExplorers = [
+  {
+    name: 'Blocklattice.io',
+    endpoint: 'https://blocklattice.io/account/',
+  },
+  {
+    name: 'NanoBrowse',
+    endpoint: 'https://nanobrowse.com/account/',
+  },
+  {
+    name: 'Nanexplorer',
+    endpoint: 'https://nanexplorer.com/nano/account/',
+  },
+  {
+    name: 'nano.community',
+    endpoint: 'https://nano.community/',
+  }
+] as const;

@@ -4,17 +4,19 @@ import { renderSVG } from 'uqr';
 import { Snap, InsightProps, TxConfirmation } from './interfaces';
 import { SendPage, ShowKeys, ReceivePage, Insight, AccountSelector, RpcSelector, Homepage, ConfirmDialog } from '../components';
 import { AccountManager } from './account-manager';
-import { RpcEndpoints } from './constants';
+import { BlockExplorers, RpcEndpoints } from './constants';
 import { StateManager, STORE_KEYS } from './state-manager';
 import { accountBalance, accountHistory, accountInfo, generateReceiveBlock, generateSendBlock, receivables } from './rpc';
+import { BlockExplorerSelector } from '../components/BlockExplorerSelector';
 
 declare let snap: Snap;
 
 export async function refreshHomepage() {
-  const [accounts, active, defaultRpc] = await Promise.all([
+  const [accounts, active, defaultRpc, blockExplorer] = await Promise.all([
     AccountManager.getAccounts(),
     AccountManager.getActiveAccount(),
-    StateManager.getState(STORE_KEYS.DEFAULT_RPC)
+    StateManager.getState(STORE_KEYS.DEFAULT_RPC),
+    StateManager.getState(STORE_KEYS.DEFAULT_BLOCK_EXPLORER)
   ]);
   const [activeInfo, txs, receivableBlocks] = await Promise.all([
     accountInfo(active?.address!),
@@ -29,6 +31,7 @@ export async function refreshHomepage() {
     txs={txs}
     accounts={accounts}
     defaultRpc={defaultRpc?.name!}
+    blockExplorer={blockExplorer!}
   />;
 }
 
@@ -176,8 +179,21 @@ export async function selectRpc(id: string) {
   });
 }
 
+export async function selectBlockExplorer(id: string) {
+  await snap.request({
+    method: "snap_updateInterface",
+    params: {
+      id,
+      ui: (
+        <BlockExplorerSelector explorers={BlockExplorers} active={(await StateManager.getState(STORE_KEYS.DEFAULT_BLOCK_EXPLORER))!} />
+      ),
+    },
+  });
+}
+
 export async function notifyUser(message: string) {
   const account = await AccountManager.getActiveAccount();
+  const blockExplorer = await StateManager.getState(STORE_KEYS.DEFAULT_BLOCK_EXPLORER) || BlockExplorers[0];
   await snap.request({
     method: 'snap_notify',
     params: {
@@ -197,7 +213,7 @@ export async function notifyUser(message: string) {
           <Text color='success'>{message}</Text>
         </Box>
       ),
-      footerLink: { text: 'View on explorer', href: `https://blocklattice.io/account/${account?.address}` },
+      footerLink: { text: 'View on explorer', href: `${blockExplorer.endpoint}${account?.address}` },
     },
   });
 }

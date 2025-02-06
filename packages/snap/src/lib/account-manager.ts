@@ -4,7 +4,7 @@ import { remove0x } from "@metamask/utils";
 import { Account } from "./interfaces";
 import { Account as NanoAccount } from "libnemo";
 import { accountInfo } from "./rpc";
-import { getRandomRPC, isValidAddress } from "./utils";
+import { getRandomBlockExplorer, getRandomRPC, isValidAddress } from "./utils";
 
 export class AccountManager {
 
@@ -12,16 +12,21 @@ export class AccountManager {
      * Initializes the account manager with an HD Node
      */
     public static async initialize(): Promise<void> {
-        const [nanoNode, accounts, rpc] = await Promise.all([
+        const [nanoNode, accounts, rpc, blockExplorer] = await Promise.all([
             StateManager.getState(STORE_KEYS.HD_NODE),
             StateManager.getState(STORE_KEYS.ACCOUNTS),
-            StateManager.getState(STORE_KEYS.DEFAULT_RPC)
+            StateManager.getState(STORE_KEYS.DEFAULT_RPC),
+            StateManager.getState(STORE_KEYS.DEFAULT_BLOCK_EXPLORER)
         ]);
 
         let updatedNode = nanoNode;
 
         if (!rpc) {
             await StateManager.setState(STORE_KEYS.DEFAULT_RPC, getRandomRPC());
+        }
+
+        if (!blockExplorer) {
+            await StateManager.setState(STORE_KEYS.DEFAULT_BLOCK_EXPLORER, getRandomBlockExplorer());
         }
 
         if (!updatedNode) {

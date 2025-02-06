@@ -1,4 +1,4 @@
-import { ALPHABET, RepAccounts, RpcEndpoints } from "./constants";
+import { ALPHABET, BlockExplorers, RepAccounts, RpcEndpoints } from "./constants";
 const MersenneTwister = require('mersenne-twister');
 
 export function isValidAddress(address: string | undefined): boolean {
@@ -280,6 +280,10 @@ export function getRandomRepresentative() {
 
 export function getRandomRPC() {
     return RpcEndpoints[Math.floor(Math.random() * RpcEndpoints.length)]!;
+}
+
+export function getRandomBlockExplorer() {
+    return BlockExplorers[Math.floor(Math.random() * BlockExplorers.length)]!;
 }
 
 export function nanoAddressToHex(nanoAddress: string) {

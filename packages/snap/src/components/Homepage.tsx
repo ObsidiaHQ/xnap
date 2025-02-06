@@ -8,11 +8,12 @@ type HomepageProps = {
   accounts: Account[];
   txs: Transaction[];
   defaultRpc: string;
+  blockExplorer: { name: string, endpoint: string };
 }
 
 const hasReceiveable = (rec: string | undefined) => rec && rec !== '0';
 
-export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, defaultRpc }) => {
+export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, defaultRpc, blockExplorer }) => {
   const active = accounts.find(acc => acc.active)!;
   return (
     <Container>
@@ -52,6 +53,12 @@ export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, defaultR
           <Heading>Default RPC</Heading>
           <Button name="switch-rpc">{defaultRpc ? defaultRpc : 'Not set'}</Button>
         </Box>
+
+        <Box direction='horizontal' alignment='space-between'>
+          <Heading>Default Block Explorer</Heading>
+          <Button name="switch-block-explorer">{blockExplorer.name ? blockExplorer.name : 'Not set'}</Button>
+        </Box>
+
         <Box direction='horizontal' alignment='space-between'>
           <Heading>Backup</Heading>
           <Button name="show-keys-warning">Show key pair</Button>
@@ -59,7 +66,7 @@ export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, defaultR
 
         <Divider />
 
-        <Text alignment="center"><Link href={'https://blocklattice.io/account/' + active.address}>View on block explorer</Link></Text>
+        <Text alignment="center"><Link href={blockExplorer.endpoint + active.address}>View on block explorer</Link></Text>
       </Box>
     </Container>
   )

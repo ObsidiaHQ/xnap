@@ -4,13 +4,15 @@ import { RpcEndpoint, Account } from "./interfaces";
 export const STORE_KEYS = {
   ACCOUNTS: 'accounts',
   HD_NODE: 'nanoNode',
-  DEFAULT_RPC: 'defaultRpc'
+  DEFAULT_RPC: 'defaultRpc',
+  DEFAULT_BLOCK_EXPLORER: 'blockExplorer'
 } as const;
 
 interface State extends JSON {
   [STORE_KEYS.ACCOUNTS]: Account[];
   [STORE_KEYS.HD_NODE]: BIP44Node | null;
   [STORE_KEYS.DEFAULT_RPC]: RpcEndpoint | null;
+  [STORE_KEYS.DEFAULT_BLOCK_EXPLORER]: { name: string, endpoint: string } | null;
 }
 
 type StateKey = keyof State;

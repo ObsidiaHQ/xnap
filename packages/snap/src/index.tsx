@@ -5,10 +5,10 @@ import {
 } from '@metamask/snaps-sdk';
 import { Snap, MetamaskXNORpcRequest, RpcEndpoint } from './lib/interfaces';
 import { SnapError, RequestErrors } from './errors';
-import { sendConfirmation, receiveConfirmation, receiveFunds, receivePage, refreshHomepage, selectAccount, selectRpc, sendFunds, sendPage, showKeys, showKeysConfirmation } from './lib/handlers';
+import { sendConfirmation, receiveConfirmation, receiveFunds, receivePage, refreshHomepage, selectAccount, selectRpc, sendFunds, sendPage, showKeys, showKeysConfirmation, selectBlockExplorer } from './lib/handlers';
 import { AccountManager } from './lib/account-manager';
 import { StateManager, STORE_KEYS } from './lib/state-manager';
-import { RpcEndpoints } from './lib/constants';
+import { BlockExplorers, RpcEndpoints } from './lib/constants';
 import { ConfirmDialog } from './components';
 
 declare let snap: Snap;
@@ -83,6 +83,9 @@ export const onUserInput: OnUserInputHandler = async ({ event, id, context }) =>
         break;
       case 'switch-rpc':
         await selectRpc(id);
+        break;
+      case 'switch-block-explorer':
+        await selectBlockExplorer(id);
         break;
       case 'receive-funds-confirm':
         await receiveConfirmation(id);
@@ -172,7 +175,18 @@ export const onUserInput: OnUserInputHandler = async ({ event, id, context }) =>
           },
         });
         break;
+      case 'switch-explorer-form':
+        const { selectedExplorer } = event.value as { selectedExplorer: string };
+        const explorer = BlockExplorers.find(opt => opt.name === selectedExplorer) || {} as typeof BlockExplorers[number];
+        await StateManager.setState(STORE_KEYS.DEFAULT_BLOCK_EXPLORER, explorer);
+        await snap.request({
+          method: 'snap_updateInterface',
+          params: {
+            id,
+            ui: await refreshHomepage(),
+          },
+        });
+        break;
     }
-
   }
 };
