@@ -9,3 +9,5 @@ export * from "./Transactions";
 export * from "./Address";
 export * from "./AccountSelector";
 export * from "./RpcSelector";
+export * from "./SettingsPage";
+export * from "./BlockExplorerSelector";

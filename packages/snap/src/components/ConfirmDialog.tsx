@@ -12,7 +12,7 @@ export const ConfirmDialog = ({question, event, loading}: {question: string, eve
   return (
     <Container>
       <Box>
-        <Heading>Approve action</Heading>
+        <Heading size='md'>Approve action</Heading>
         <Text>{question}</Text>
         {loading ? <Spinner /> : null}
       </Box>

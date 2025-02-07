@@ -48,20 +48,9 @@ export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, defaultR
         <Accounts accounts={accounts}></Accounts>
 
         <Divider />
-
-        <Box direction='horizontal' alignment='space-between'>
-          <Heading>Default RPC</Heading>
-          <Button name="switch-rpc">{defaultRpc ? defaultRpc : 'Not set'}</Button>
-        </Box>
-
-        <Box direction='horizontal' alignment='space-between'>
-          <Heading>Default Block Explorer</Heading>
-          <Button name="switch-block-explorer">{blockExplorer.name ? blockExplorer.name : 'Not set'}</Button>
-        </Box>
-
-        <Box direction='horizontal' alignment='space-between'>
-          <Heading>Backup</Heading>
-          <Button name="show-keys-warning">Show key pair</Button>
+        
+        <Box direction='horizontal' alignment='center'>
+          <Button name="settings-page">Settings & Backup</Button>
         </Box>
 
         <Divider />

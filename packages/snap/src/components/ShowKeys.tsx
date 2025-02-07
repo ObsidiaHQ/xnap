@@ -23,12 +23,12 @@ export const ShowKeys: SnapComponent<CredentialsProps> = ({
   return (
     <Container>
       <Box>
-        <Heading>Account Credentials</Heading>
+        <Heading size='md'>Account Credentials</Heading>
         <Text>Nano address:</Text>
         <Copyable value={address} />
-        <Text>Public Key:</Text>
+        <Text>Public key:</Text>
         <Copyable value={publicKey} />
-        <Text>Private Key:</Text>
+        <Text>Private key:</Text>
         <Copyable value={secretKey} sensitive />
       </Box>
       <Footer>

@@ -5,7 +5,7 @@ import {
 } from '@metamask/snaps-sdk';
 import { Snap, MetamaskXNORpcRequest, RpcEndpoint } from './lib/interfaces';
 import { SnapError, RequestErrors } from './errors';
-import { sendConfirmation, receiveConfirmation, receiveFunds, receivePage, refreshHomepage, selectAccount, selectRpc, sendFunds, sendPage, showKeys, showKeysConfirmation, selectBlockExplorer } from './lib/handlers';
+import { sendConfirmation, receiveConfirmation, receiveFunds, receivePage, refreshHomepage, selectAccount, selectRpc, sendFunds, sendPage, showKeys, showKeysConfirmation, selectBlockExplorer, settingsPage } from './lib/handlers';
 import { AccountManager } from './lib/account-manager';
 import { StateManager, STORE_KEYS } from './lib/state-manager';
 import { BlockExplorers, RpcEndpoints } from './lib/constants';
@@ -77,6 +77,9 @@ export const onUserInput: OnUserInputHandler = async ({ event, id, context }) =>
         break;
       case 'receive-page':
         await receivePage(id);
+        break;
+      case 'settings-page':
+        await settingsPage(id);
         break;
       case 'switch-account':
         await selectAccount(id);

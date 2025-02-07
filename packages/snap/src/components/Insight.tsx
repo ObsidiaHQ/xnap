@@ -8,12 +8,12 @@ export const Insight: SnapComponent<InsightProps> = ({ from, to, value, origin, 
   return (
     <Box>
       {origin ? <Box><Text color='muted'>Origin: {origin}</Text><Divider /></Box> : null}
-      <Heading>Sending {value} XNO</Heading>
+      <Heading size='md'>Sending {value} XNO</Heading>
       <Section>
         <Address address={from} prefix='From: ' balance={rawToNano(balance)} compact={false}></Address>
       </Section>
       {/* TODO: move to address when <Text> is supported in description */}
-      {value > rawToNano(balance) ? <Text color='warning' alignment='end'><Italic>Insufficient funds</Italic></Text> : null}
+      {Number(value) > Number(rawToNano(balance)) ? <Text color='warning' alignment='end'><Italic>Insufficient funds</Italic></Text> : null}
       <Section>
         <Address address={to} prefix='To: '></Address>
       </Section>

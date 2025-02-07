@@ -14,7 +14,7 @@ export const ReceivePage: SnapComponent<{ qr: string, address: string }> = ({ qr
   return (
     <Container>
       <Box>
-        <Heading>Receive</Heading>
+        <Heading size='md'>Receive</Heading>
         <Image src={qr} />
         <Text>Address:</Text>
         <Copyable value={address} />

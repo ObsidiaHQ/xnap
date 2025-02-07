@@ -16,7 +16,7 @@ export const SendPage: SnapComponent<{ accounts: Account[], active: string }> = 
   return (
     <Container>
       <Box>
-        <Heading>Send nano</Heading>
+        <Heading size='md'>Send nano</Heading>
         <Form name="send-xno-form">
           <Field label="Account">
             <AccountSelector accounts={accounts} />

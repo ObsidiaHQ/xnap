@@ -2,12 +2,11 @@ import { DialogType, NotificationType } from '@metamask/snaps-sdk';
 import { Box, Button, Container, Divider, Form, Heading, Text } from '@metamask/snaps-sdk/jsx';
 import { renderSVG } from 'uqr';
 import { Snap, InsightProps, TxConfirmation } from './interfaces';
-import { SendPage, ShowKeys, ReceivePage, Insight, AccountSelector, RpcSelector, Homepage, ConfirmDialog } from '../components';
+import { SendPage, ShowKeys, ReceivePage, Insight, AccountSelector, RpcSelector, Homepage, ConfirmDialog, BlockExplorerSelector, SettingsPage } from '../components';
 import { AccountManager } from './account-manager';
 import { BlockExplorers, RpcEndpoints } from './constants';
 import { StateManager, STORE_KEYS } from './state-manager';
 import { accountBalance, accountHistory, accountInfo, generateReceiveBlock, generateSendBlock, receivables } from './rpc';
-import { BlockExplorerSelector } from '../components/BlockExplorerSelector';
 
 declare let snap: Snap;
 
@@ -117,6 +116,21 @@ export async function receivePage(id: string) {
     params: {
       id,
       ui: <ReceivePage qr={qr} address={account!.address!} />,
+    },
+  });
+}
+
+export async function settingsPage(id: string) {
+  const [defaultRpc, blockExplorer] = await Promise.all([
+    StateManager.getState(STORE_KEYS.DEFAULT_RPC),
+    StateManager.getState(STORE_KEYS.DEFAULT_BLOCK_EXPLORER)
+  ]);
+
+  await snap.request({
+    method: 'snap_updateInterface',
+    params: { 
+      id, 
+      ui: <SettingsPage defaultRpc={defaultRpc?.name!} blockExplorer={blockExplorer!} /> 
     },
   });
 }
