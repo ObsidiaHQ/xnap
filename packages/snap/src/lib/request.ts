@@ -57,35 +57,22 @@ export async function request<T extends RpcAction>(
         skipError = false
     } = options;
 
-    const defaultRpc = await StateManager.getState(STORE_KEYS.DEFAULT_RPC);
-    const endpoints = defaultRpc?.api
-        ? [
-            defaultRpc,
-            ...RpcEndpoints.filter(rpc => rpc.api !== defaultRpc.api)
-        ]
-        : RpcEndpoints;
+    let lastError: Error | null = null;    
 
-    let lastError: Error | null = null;
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+            const result = await executeRequest(action, data, timeout);
+            return result;
+        } catch (error: any) {
+            lastError = error;
+            // If it's a validation failure, don't retry
+            if (error.isValidationFailure) {
+                break;
+            }
 
-    // Try each endpoint with retries
-    for (const endpoint of endpoints) {
-        if (!endpoint.api) continue;
-
-        for (let attempt = 0; attempt < maxRetries; attempt++) {
-            try {
-                const result = await executeRequest(endpoint, action, data, timeout);
-                return result;
-            } catch (error: any) {
-                lastError = error;
-                // If it's a validation failure, don't retry
-                if (error.isValidationFailure) {
-                    break;
-                }
-
-                // Wait before retry with exponential backoff
-                if (attempt < maxRetries - 1) {
-                    await delay(Math.min(1000 * Math.pow(2, attempt), 10000));
-                }
+            // Wait before retry with exponential backoff
+            if (attempt < maxRetries - 1) {
+                await delay(Math.min(1000 * Math.pow(2, attempt), 10000));
             }
         }
     }
@@ -113,7 +100,6 @@ export async function request<T extends RpcAction>(
 }
 
 async function executeRequest(
-    endpoint: RpcEndpoint,
     action: string,
     data: any,
     timeout: number
@@ -121,18 +107,21 @@ async function executeRequest(
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
+    const defaultRpc = await StateManager.getState(STORE_KEYS.DEFAULT_RPC);
+    if (!defaultRpc) return null;
+
     try {
         const options: RequestInit = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                ...(endpoint.auth && { Authorization: endpoint.auth })
+                ...(defaultRpc.auth && { Authorization: defaultRpc.auth })
             },
             body: JSON.stringify({ ...data, action }),
             signal: controller.signal
         };
 
-        const response = await fetch(endpoint.api, options);
+        const response = await fetch(defaultRpc.api, options);
 
         if (!response.ok) {
             throw new RequestError(

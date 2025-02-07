@@ -105,7 +105,7 @@ export async function generateReceiveBlock(): Promise<number> {
     }
 }
 
-export async function generateWork(hash: string, workServer = '') {
+export async function generateWork(hash: string) {
     const validateResponse = (res: any) => {
         if (res.work == null) {
             return {

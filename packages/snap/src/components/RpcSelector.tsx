@@ -47,7 +47,7 @@ export const RpcSelector: SnapComponent<Options> = ({ options, active }) => {
           </Selector>
           <Divider />
           <Text color='alternative'>Custom configuration:</Text>
-          <Field label='API Server'>
+          <Field label='Server'>
             <Input name="api" value={active?.api || ''} />
           </Field>
           <Text color='muted'>
