@@ -4,7 +4,7 @@ import { Address } from './';
 import { InsightProps } from '../lib/interfaces';
 import { rawToNano } from '../lib/utils';
 
-export const Insight: SnapComponent<InsightProps> = ({ from, to, value, origin, balance }) => {
+export const Insight: SnapComponent<InsightProps> = ({ from, to, value, origin, balance, alias }) => {
   return (
     <Box>
       {origin ? <Box><Text color='muted'>Origin: {origin}</Text><Divider /></Box> : null}
@@ -15,7 +15,7 @@ export const Insight: SnapComponent<InsightProps> = ({ from, to, value, origin, 
       {/* TODO: move to address when <Text> is supported in description */}
       {Number(value) > Number(rawToNano(balance)) ? <Text color='warning' alignment='end'><Italic>Insufficient funds</Italic></Text> : null}
       <Section>
-        <Address address={to} prefix='To: '></Address>
+        <Address address={to} prefix='To: ' alias={alias!}></Address>
       </Section>
       <Divider />
       <Text>Do you want to approve this transaction?</Text>

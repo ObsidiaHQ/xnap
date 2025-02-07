@@ -1,9 +1,17 @@
 import { Card, Image, Row, SnapComponent } from "@metamask/snaps-sdk/jsx";
 import { createJazzicon, truncateAddress } from "../lib/utils";
 
-export const Address: SnapComponent<{ address: string, prefix?: string, balance?: string, compact?: boolean }> = ({ address, prefix, balance, compact = true }) => {
+type AddressProps = {
+  address: string;
+  alias?: string;
+  prefix?: string;
+  balance?: string;
+  compact?: boolean;
+};
+
+export const Address: SnapComponent<AddressProps> = ({ address, alias, prefix, balance, compact = true }) => {
   return compact ? (
-    <Row label={(prefix || '') + truncateAddress(address)}>
+    <Row label={(prefix || '') + truncateAddress(address)} tooltip={alias || ''}>
       <Image src={createJazzicon(address, 24)} />
     </Row>
   ) : (

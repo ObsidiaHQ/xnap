@@ -6,7 +6,7 @@ import { SendPage, ShowKeys, ReceivePage, Insight, AccountSelector, RpcSelector,
 import { AccountManager } from './account-manager';
 import { BlockExplorers, RpcEndpoints } from './constants';
 import { StateManager, STORE_KEYS } from './state-manager';
-import { accountBalance, accountHistory, accountInfo, generateReceiveBlock, generateSendBlock, receivables } from './rpc';
+import { accountBalance, accountHistory, accountInfo, generateReceiveBlock, generateSendBlock, receivables, resolveNanoIdentifier } from './rpc';
 
 declare let snap: Snap;
 
@@ -74,6 +74,12 @@ export async function sendPage(id: string) {
 
 export async function sendConfirmation(tx: InsightProps): Promise<TxConfirmation> {
   const from = await AccountManager.getActiveAccount();
+
+  const { alias, address } = await resolveNanoIdentifier(tx.to);
+  if (address) {
+    tx.to = address;
+    tx.alias = alias;
+  }
 
   const props = {
     ...tx,

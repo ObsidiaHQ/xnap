@@ -190,6 +190,17 @@ export const onUserInput: OnUserInputHandler = async ({ event, id, context }) =>
           },
         });
         break;
+      case 'settings-form':
+        const { aliasSupport } = event.value as { aliasSupport: "true" | "false" };
+        await StateManager.setState(STORE_KEYS.ALIAS_SUPPORT, JSON.parse(aliasSupport));
+        await snap.request({
+          method: 'snap_updateInterface',
+          params: {
+            id,
+            ui: await refreshHomepage(),
+          },
+        });
+        break;
     }
   }
 };

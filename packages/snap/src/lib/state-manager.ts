@@ -5,7 +5,8 @@ export const STORE_KEYS = {
   ACCOUNTS: 'accounts',
   HD_NODE: 'nanoNode',
   DEFAULT_RPC: 'defaultRpc',
-  DEFAULT_BLOCK_EXPLORER: 'blockExplorer'
+  DEFAULT_BLOCK_EXPLORER: 'blockExplorer',
+  ALIAS_SUPPORT: 'aliasSupport',
 } as const;
 
 interface State extends JSON {
@@ -13,6 +14,7 @@ interface State extends JSON {
   [STORE_KEYS.HD_NODE]: BIP44Node | null;
   [STORE_KEYS.DEFAULT_RPC]: RpcEndpoint | null;
   [STORE_KEYS.DEFAULT_BLOCK_EXPLORER]: { name: string, endpoint: string } | null;
+  [STORE_KEYS.ALIAS_SUPPORT]: boolean;
 }
 
 type StateKey = keyof State;

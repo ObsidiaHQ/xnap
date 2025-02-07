@@ -4,6 +4,7 @@ import { Account, Transaction, TxType } from "./interfaces";
 import { formatRelativeDate, getRandomRepresentative, isValidAddress, nanoAddressToHex, uint8ArrayToHex } from "./utils";
 import { request } from "./request";
 import { RpcAction, ZERO_HASH } from "./constants";
+import { StateManager, STORE_KEYS } from "./state-manager";
 
 export async function accountInfo(account: string) {
     return await request(RpcAction.ACCOUNT_INFO, { account, receivable: true, include_confirmed: true });
@@ -137,4 +138,40 @@ export async function generateWork(hash: string) {
     };
 
     return await request(RpcAction.WORK_GENERATE, { hash }, { timeout: 40000 });
+}
+
+export async function resolveNanoIdentifier(identifier: string): Promise<{ address: string, alias: string }> {
+    try {
+        const res: { address: string, alias: string } = { address: '', alias: identifier };
+        const aliasSupport = await StateManager.getState(STORE_KEYS.ALIAS_SUPPORT);
+
+        if (!aliasSupport) {
+            res.address = 'Alias support is disabled';
+            return res;
+        }
+
+        const [_, localPart, domain] = identifier.split('@');
+        if (!localPart || !domain) {
+            res.address = 'Invalid alias';
+            return res;
+        }
+
+        const wellKnownUrl = `https://${domain}/.well-known/nano-currency.json?names=${localPart}`;
+        const response = await fetch(wellKnownUrl);
+
+        if (response.ok) {
+            const data = await response.json();
+            const name = data.names?.find((n: any) => n.name === localPart);
+            if (name?.address && isValidAddress(name.address)) {
+                res.address = name.address;
+                return res;
+            }
+        }
+
+        res.address = 'Error resolving alias';
+        return res;
+
+    } catch (error) {
+        return { address: 'Error resolving alias', alias: identifier };
+    }
 }

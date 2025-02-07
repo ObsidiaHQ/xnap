@@ -24,6 +24,7 @@ export type InsightProps = {
   value: string;
   origin: string | null;
   balance?: string;
+  alias?: string;
 };
 
 export type TxConfirmation = {
