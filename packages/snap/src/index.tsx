@@ -5,7 +5,9 @@ import {
 } from '@metamask/snaps-sdk';
 import { Snap, MetamaskXNORpcRequest, RpcEndpoint } from './lib/interfaces';
 import { SnapError, RequestErrors } from './errors';
-import { sendConfirmation, receiveConfirmation, receiveFunds, receivePage, refreshHomepage, selectAccount, selectRpc, sendFunds, sendPage, showKeys, showKeysConfirmation, selectBlockExplorer, settingsPage } from './lib/handlers';
+import { signMessage, sendConfirmation, receiveConfirmation, receiveFunds, receivePage, refreshHomepage, selectAccount, 
+  selectRpc, sendFunds, sendPage, showKeys, showKeysConfirmation, selectBlockExplorer, settingsPage 
+} from './lib/handlers';
 import { AccountManager } from './lib/account-manager';
 import { StateManager, STORE_KEYS } from './lib/state-manager';
 import { BlockExplorers, RpcEndpoints } from './lib/constants';
@@ -23,14 +25,18 @@ export const onRpcRequest = async ({ origin, request }: RpcRequest) => {
   switch (request.method) {
     case 'xno_getCurrentAddress':
       const address = (await AccountManager.getActiveAccount())?.address;
-      return { address };
+      return { result: address }; // string | undefined
     case 'xno_makeTransaction':
       const { confirmed, from, to, value } = await sendConfirmation({ ...request.params, origin });
-      if (confirmed) {
-        const hash = await sendFunds({ from, to, value, origin });
-        return { result: hash };
+      if (!confirmed) {
+        return { result: null };
       }
-      return { result: null };
+      const hash = await sendFunds({ from, to, value, origin });
+      return { result: hash }; // string | undefined
+    case 'xno_signMessage':
+      const { message } = request.params;
+      const signature = await signMessage(message, origin);
+      return { result: signature }; // string | undefined
     default:
       throw SnapError.of(RequestErrors.MethodNotSupport);
   }

@@ -44,9 +44,15 @@ export interface MakeTransaction {
   params: Record<keyof Pick<InsightProps, 'from' | 'to' | 'value'>, never>;
 }
 
+export interface SignMessage {
+  method: 'xno_signMessage';
+  params: { message: string };
+}
+
 export type MetamaskXNORpcRequest =
   | MakeTransaction
-  | GetCurrentAddress;
+  | GetCurrentAddress
+  | SignMessage;
 
 export type XNOMethodCallback = (
   originString: string,

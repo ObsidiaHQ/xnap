@@ -1,8 +1,9 @@
 import { DialogType, NotificationType } from '@metamask/snaps-sdk';
-import { Box, Button, Container, Divider, Form, Heading, Text } from '@metamask/snaps-sdk/jsx';
+import { Box, Button, Container, Copyable, Divider, Form, Heading, Section, Text } from '@metamask/snaps-sdk/jsx';
 import { renderSVG } from 'uqr';
+import { Tools } from 'libnemo';
 import { Snap, InsightProps, TxConfirmation } from './interfaces';
-import { SendPage, ShowKeys, ReceivePage, Insight, AccountSelector, RpcSelector, Homepage, ConfirmDialog, BlockExplorerSelector, SettingsPage } from '../components';
+import { SendPage, ShowKeys, ReceivePage, Insight, AccountSelector, RpcSelector, Homepage, ConfirmDialog, BlockExplorerSelector, SettingsPage, Address } from '../components';
 import { AccountManager } from './account-manager';
 import { BlockExplorers, RpcEndpoints } from './constants';
 import { StateManager, STORE_KEYS } from './state-manager';
@@ -134,9 +135,9 @@ export async function settingsPage(id: string) {
 
   await snap.request({
     method: 'snap_updateInterface',
-    params: { 
-      id, 
-      ui: <SettingsPage defaultRpc={defaultRpc?.name!} blockExplorer={blockExplorer!} /> 
+    params: {
+      id,
+      ui: <SettingsPage defaultRpc={defaultRpc?.name!} blockExplorer={blockExplorer!} />
     },
   });
 }
@@ -209,6 +210,48 @@ export async function selectBlockExplorer(id: string) {
       ),
     },
   });
+}
+
+export async function signMessage(message: any, origin: string) {
+  let signature: string | undefined = undefined;
+
+  if (typeof message !== 'string')
+    return signature;
+
+  const active = await AccountManager.getActiveAccount();
+
+  if (!active || !active.privateKey || !active.address)
+    return signature;
+
+  const confirmed: boolean = await snap.request({
+    method: 'snap_dialog',
+    params: {
+      type: DialogType.Confirmation,
+      content: (
+        <Box>
+          {origin ? <Box><Text color='muted'>Origin: {origin}</Text><Divider /></Box> : null}
+
+          <Heading size='md'>Signature request</Heading>
+
+          <Section>
+            <Address address={active!.address} prefix="Signing account: "></Address>
+          </Section>
+
+          <Divider />
+
+          <Text color='warning'>Only sign this message if you fully understand the content of it and trust the requesting site.</Text>
+          <Text>Message:</Text>
+          <Copyable value={message} />
+        </Box>
+      ),
+    },
+  });
+
+  if (!confirmed)
+    return signature;
+
+  signature = await Tools.sign(active.privateKey, message);
+  return signature;
 }
 
 export async function notifyUser(message: string) {
