@@ -87,9 +87,9 @@ export function createJazzicon(seed: string, size = 30): string {
 
     function hexToHSL(hex: string) {
         // Convert hex to RGB first
-        var r = "0x" + hex[1] + hex[2];
-        var g = "0x" + hex[3] + hex[4];
-        var b = "0x" + hex[5] + hex[6];
+        var r: any = "0x" + hex[1] + hex[2];
+        var g: any = "0x" + hex[3] + hex[4];
+        var b: any = "0x" + hex[5] + hex[6];
         // Then to HSL
         r /= 255;
         g /= 255;
@@ -131,9 +131,9 @@ export function createJazzicon(seed: string, size = 30): string {
         let c = (1 - Math.abs(2 * l - 1)) * s,
             x = c * (1 - Math.abs((h / 60) % 2 - 1)),
             m = l - c / 2,
-            r = 0,
-            g = 0,
-            b = 0;
+            r: any = 0,
+            g: any = 0,
+            b: any = 0;
 
         if (0 <= h && h < 60) {
             r = c; g = x; b = 0;
@@ -340,4 +340,8 @@ export function uint8ArrayToHex(arr: Uint8Array): string {
     return Array.from(arr)
         .map(b => b.toString(16).padStart(2, '0'))
         .join('');
+}
+
+export function delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
