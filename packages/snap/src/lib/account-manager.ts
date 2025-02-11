@@ -1,11 +1,11 @@
 import { BIP44Node, SLIP10Node } from "@metamask/key-tree";
-import { StateManager, STORE_KEYS } from "./state-manager";
-import { remove0x } from "@metamask/utils";
-import { Account } from "./interfaces";
 import { Account as NanoAccount } from "libnemo";
+import { remove0x } from "@metamask/utils";
+import { StateManager } from "./state-manager";
+import { Account } from "./types";
 import { accountInfo } from "./rpc";
 import { getRandomBlockExplorer, getRandomRPC, isValidAddress } from "./utils";
-
+import { StoreKeys } from "./constants";
 export class AccountManager {
 
     /**
@@ -13,20 +13,20 @@ export class AccountManager {
      */
     public static async initialize(): Promise<void> {
         const [nanoNode, accounts, rpc, blockExplorer] = await Promise.all([
-            StateManager.getState(STORE_KEYS.HD_NODE),
-            StateManager.getState(STORE_KEYS.ACCOUNTS),
-            StateManager.getState(STORE_KEYS.DEFAULT_RPC),
-            StateManager.getState(STORE_KEYS.DEFAULT_BLOCK_EXPLORER)
+            StateManager.getState(StoreKeys.HD_NODE),
+            StateManager.getState(StoreKeys.ACCOUNTS),
+            StateManager.getState(StoreKeys.DEFAULT_RPC),
+            StateManager.getState(StoreKeys.DEFAULT_BLOCK_EXPLORER)
         ]);
 
         let updatedNode = nanoNode;
 
         if (!rpc) {
-            await StateManager.setState(STORE_KEYS.DEFAULT_RPC, getRandomRPC());
+            await StateManager.setState(StoreKeys.DEFAULT_RPC, getRandomRPC());
         }
 
         if (!blockExplorer) {
-            await StateManager.setState(STORE_KEYS.DEFAULT_BLOCK_EXPLORER, getRandomBlockExplorer());
+            await StateManager.setState(StoreKeys.DEFAULT_BLOCK_EXPLORER, getRandomBlockExplorer());
         }
 
         if (!updatedNode) {
@@ -37,11 +37,11 @@ export class AccountManager {
                     curve: "ed25519",
                 },
             })) as BIP44Node;
-            await StateManager.setState(STORE_KEYS.HD_NODE, updatedNode);
+            await StateManager.setState(StoreKeys.HD_NODE, updatedNode);
         }
 
         if (!accounts?.length || accounts.some(a => !this.isValidAccount(a))) {
-            await StateManager.setState(STORE_KEYS.ACCOUNTS, []);
+            await StateManager.setState(StoreKeys.ACCOUNTS, []);
             await this.addAccount();
         }
     }
@@ -71,7 +71,7 @@ export class AccountManager {
             newAccount.active = true;
         }
 
-        await StateManager.setState(STORE_KEYS.ACCOUNTS, [...accounts, newAccount]);
+        await StateManager.setState(StoreKeys.ACCOUNTS, [...accounts, newAccount]);
 
         return newAccount;
     }
@@ -104,7 +104,7 @@ export class AccountManager {
             return ({ ...account, active: true })
         });
 
-        await StateManager.setState(STORE_KEYS.ACCOUNTS, accounts);
+        await StateManager.setState(StoreKeys.ACCOUNTS, accounts);
 
         return accounts.find(acc => acc.active)!;
     }
@@ -114,11 +114,11 @@ export class AccountManager {
      * @returns Array of accounts
      */
     public static async getAccounts(): Promise<Account[]> {
-        let accounts = await StateManager.getState(STORE_KEYS.ACCOUNTS);
+        let accounts = await StateManager.getState(StoreKeys.ACCOUNTS);
 
         if (!accounts?.length) {
             accounts = [];
-            await StateManager.setState(STORE_KEYS.ACCOUNTS, accounts);
+            await StateManager.setState(StoreKeys.ACCOUNTS, accounts);
         }
 
         return accounts;
@@ -130,7 +130,7 @@ export class AccountManager {
      * @returns The account or null if not found
      */
     public static async getAccountByAddress(address: string): Promise<Account | null> {
-        let accounts = await StateManager.getState(STORE_KEYS.ACCOUNTS) || [];
+        let accounts = await StateManager.getState(StoreKeys.ACCOUNTS) || [];
         const account = accounts.find(acc => acc.address === address);
 
         if (!account) {
@@ -141,11 +141,11 @@ export class AccountManager {
     }
 
     private static async getHDNode(): Promise<BIP44Node> {
-        const hdNode = await StateManager.getState(STORE_KEYS.HD_NODE);
+        const hdNode = await StateManager.getState(StoreKeys.HD_NODE);
 
         if (!hdNode) {
             await this.initialize();
-            return (await StateManager.getState(STORE_KEYS.HD_NODE))!;
+            return (await StateManager.getState(StoreKeys.HD_NODE))!;
         }
 
         return hdNode;

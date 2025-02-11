@@ -4,7 +4,7 @@ import {
   type OnUserInputHandler,
 } from '@metamask/snaps-sdk';
 import { SnapError, RequestErrors } from './errors';
-import { RpcRequest } from './lib/interfaces';
+import { RpcRequest } from './lib/types';
 import { AccountManager } from './lib/account-manager';
 import { XnapButtonEventName, XnapButtonEvents, XnapFormEventName, XnapFormEvents } from './lib/constants';
 import {

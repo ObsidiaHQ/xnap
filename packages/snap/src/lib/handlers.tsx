@@ -2,11 +2,11 @@ import { DialogType, NotificationType } from '@metamask/snaps-sdk';
 import { Box, Button, Container, Copyable, Divider, Form, Heading, Section, Text } from '@metamask/snaps-sdk/jsx';
 import { renderSVG } from 'uqr';
 import { Tools } from 'libnemo';
-import { Snap, InsightProps, TxConfirmation, RpcEndpoint } from './interfaces';
+import { Snap, InsightProps, TxConfirmation, RpcEndpoint } from './types';
 import { SendPage, ShowKeys, ReceivePage, Insight, AccountSelector, RpcSelector, Homepage, ConfirmDialog, BlockExplorerSelector, SettingsPage, Address } from '../components';
 import { AccountManager } from './account-manager';
-import { BlockExplorers, RpcEndpoints } from './constants';
-import { StateManager, STORE_KEYS } from './state-manager';
+import { BlockExplorers, RpcEndpoints, StoreKeys } from './constants';
+import { StateManager } from './state-manager';
 import { accountBalance, accountHistory, accountInfo, generateReceiveBlock, generateSendBlock, receivables, resolveNanoIdentifier } from './rpc';
 
 declare let snap: Snap;
@@ -15,8 +15,8 @@ export async function updatedHomepage() {
   const [accounts, active, defaultRpc, blockExplorer] = await Promise.all([
     AccountManager.getAccounts(),
     AccountManager.getActiveAccount(),
-    StateManager.getState(STORE_KEYS.DEFAULT_RPC),
-    StateManager.getState(STORE_KEYS.DEFAULT_BLOCK_EXPLORER)
+    StateManager.getState(StoreKeys.DEFAULT_RPC),
+    StateManager.getState(StoreKeys.DEFAULT_BLOCK_EXPLORER)
   ]);
   const [activeInfo, txs, receivableBlocks] = await Promise.all([
     accountInfo(active?.address!),
@@ -156,8 +156,8 @@ export async function receivePage(id: string) {
 
 export async function settingsPage(id: string) {
   const [defaultRpc, blockExplorer] = await Promise.all([
-    StateManager.getState(STORE_KEYS.DEFAULT_RPC),
-    StateManager.getState(STORE_KEYS.DEFAULT_BLOCK_EXPLORER)
+    StateManager.getState(StoreKeys.DEFAULT_RPC),
+    StateManager.getState(StoreKeys.DEFAULT_BLOCK_EXPLORER)
   ]);
 
   await snap.request({
@@ -221,7 +221,7 @@ export async function selectRpc(id: string) {
     params: {
       id,
       ui: (
-        <RpcSelector options={RpcEndpoints} active={(await StateManager.getState(STORE_KEYS.DEFAULT_RPC))} />
+        <RpcSelector options={RpcEndpoints} active={(await StateManager.getState(StoreKeys.DEFAULT_RPC))} />
       ),
     },
   });
@@ -233,7 +233,7 @@ export async function selectBlockExplorer(id: string) {
     params: {
       id,
       ui: (
-        <BlockExplorerSelector explorers={BlockExplorers} active={(await StateManager.getState(STORE_KEYS.DEFAULT_BLOCK_EXPLORER))!} />
+        <BlockExplorerSelector explorers={BlockExplorers} active={(await StateManager.getState(StoreKeys.DEFAULT_BLOCK_EXPLORER))!} />
       ),
     },
   });
@@ -325,24 +325,24 @@ export const handleSwitchRpcForm = async (value: { api?: string, auth?: string, 
     selected.auth = auth!;
   }
 
-  await StateManager.setState(STORE_KEYS.DEFAULT_RPC, selected);
+  await StateManager.setState(StoreKeys.DEFAULT_RPC, selected);
   await refreshHomepage(id);
 };
 
 export const handleSwitchExplorerForm = async (value: { selectedExplorer: string }, id: string) => {
   const explorer = BlockExplorers.find(opt => opt.name === value.selectedExplorer) as typeof BlockExplorers[number];
-  await StateManager.setState(STORE_KEYS.DEFAULT_BLOCK_EXPLORER, explorer);
+  await StateManager.setState(StoreKeys.DEFAULT_BLOCK_EXPLORER, explorer);
   await refreshHomepage(id);
 };
 
 export const handleSettingsForm = async (value: { aliasSupport: "true" | "false" }, id: string) => {
-  await StateManager.setState(STORE_KEYS.ALIAS_SUPPORT, JSON.parse(value.aliasSupport));
+  await StateManager.setState(StoreKeys.ALIAS_SUPPORT, JSON.parse(value.aliasSupport));
   await refreshHomepage(id);
 };
 
 export async function notifyUser(message: string) {
   const account = await AccountManager.getActiveAccount();
-  const blockExplorer = await StateManager.getState(STORE_KEYS.DEFAULT_BLOCK_EXPLORER) || BlockExplorers[0];
+  const blockExplorer = await StateManager.getState(StoreKeys.DEFAULT_BLOCK_EXPLORER) || BlockExplorers[0];
   await snap.request({
     method: 'snap_notify',
     params: {

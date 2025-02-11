@@ -34,17 +34,17 @@ export type TxConfirmation = {
   confirmed: boolean;
 }
 
-export interface GetCurrentAddress {
+export type GetCurrentAddress = {
   method: 'xno_getCurrentAddress';
   params: {};
 }
 
-export interface MakeTransaction {
+export type MakeTransaction = {
   method: 'xno_makeTransaction';
   params: Record<keyof Pick<InsightProps, 'from' | 'to' | 'value'>, never>;
 }
 
-export interface SignMessage {
+export type SignMessage = {
   method: 'xno_signMessage';
   params: { message: string };
 }
@@ -64,7 +64,7 @@ export type XNOMethodCallback = (
   requestObject: MetamaskXNORpcRequest,
 ) => Promise<unknown>;
 
-export interface Snap {
+export type Snap = {
   registerRpcMessageHandler: (fn: XNOMethodCallback) => unknown;
   request<T>(options: {
     method: string;
@@ -72,7 +72,7 @@ export interface Snap {
   }): Promise<T>;
 }
 
-export interface SLIP10Node {
+export type SLIP10Node = {
   /**
    * The 0-indexed path depth of this node.
    */

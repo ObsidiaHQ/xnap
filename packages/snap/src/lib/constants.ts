@@ -1,17 +1,17 @@
-import { RpcEndpoint } from "./interfaces";
+import { RpcEndpoint } from "./types";
 
 export const ALPHABET = '13456789abcdefghijkmnopqrstuwxyz';
 
 export const ZERO_HASH = '0000000000000000000000000000000000000000000000000000000000000000';
 
-export const RpcAction = {
-  ACCOUNT_INFO: 'account_info',
-  ACCOUNT_HISTORY: 'account_history',
-  BLOCKS_INFO: 'blocks_info',
-  RECEIVABLE: 'receivable',
-  PROCESS: 'process',
-  WORK_GENERATE: 'work_generate'
-} as const;
+export enum RpcAction {
+  ACCOUNT_INFO = 'account_info',
+  ACCOUNT_HISTORY = 'account_history',
+  BLOCKS_INFO = 'blocks_info',
+  RECEIVABLE = 'receivable',
+  PROCESS = 'process',
+  WORK_GENERATE = 'work_generate'
+};
 
 export const XnapButtonEvents = {
   ADD_ACCOUNT: 'add-account',
@@ -35,6 +35,14 @@ export const XnapFormEvents = {
   SWITCH_RPC_FORM: 'switch-rpc-form',
   SWITCH_EXPLORER_FORM: 'switch-explorer-form',
   SETTINGS_FORM: 'settings-form',
+} as const;
+
+export const StoreKeys = {
+  ACCOUNTS: 'accounts',
+  HD_NODE: 'nanoNode',
+  DEFAULT_RPC: 'defaultRpc',
+  DEFAULT_BLOCK_EXPLORER: 'blockExplorer',
+  ALIAS_SUPPORT: 'aliasSupport',
 } as const;
 
 export type XnapButtonEventName = typeof XnapButtonEvents[keyof typeof XnapButtonEvents];

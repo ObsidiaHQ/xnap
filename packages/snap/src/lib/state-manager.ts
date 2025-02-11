@@ -1,20 +1,13 @@
-import { BIP44Node } from "@metamask/key-tree";
-import { RpcEndpoint, Account } from "./interfaces";
-
-export const STORE_KEYS = {
-  ACCOUNTS: 'accounts',
-  HD_NODE: 'nanoNode',
-  DEFAULT_RPC: 'defaultRpc',
-  DEFAULT_BLOCK_EXPLORER: 'blockExplorer',
-  ALIAS_SUPPORT: 'aliasSupport',
-} as const;
+import type { BIP44Node } from "@metamask/key-tree";
+import { RpcEndpoint, Account } from "./types";
+import { StoreKeys } from "./constants";
 
 interface State extends JSON {
-  [STORE_KEYS.ACCOUNTS]: Account[];
-  [STORE_KEYS.HD_NODE]: BIP44Node | null;
-  [STORE_KEYS.DEFAULT_RPC]: RpcEndpoint | null;
-  [STORE_KEYS.DEFAULT_BLOCK_EXPLORER]: { name: string, endpoint: string } | null;
-  [STORE_KEYS.ALIAS_SUPPORT]: boolean;
+  [StoreKeys.ACCOUNTS]: Account[];
+  [StoreKeys.HD_NODE]: BIP44Node | null;
+  [StoreKeys.DEFAULT_RPC]: RpcEndpoint | null;
+  [StoreKeys.DEFAULT_BLOCK_EXPLORER]: { name: string, endpoint: string } | null;
+  [StoreKeys.ALIAS_SUPPORT]: boolean;
 }
 
 type StateKey = keyof State;

@@ -1,7 +1,7 @@
 import { Box, Button, Container, Divider, Heading, Image, Link, SnapComponent, Text } from "@metamask/snaps-sdk/jsx"
 import { Accounts, Transactions, Address } from "./";
 import { SendIcon, QRCodeIcon, ReceiveIcon } from "../../images/icons";
-import { Account, Transaction } from "../lib/interfaces";
+import { Account, Transaction } from "../lib/types";
 import { rawToNano } from "../lib/utils";
 
 type HomepageProps = {

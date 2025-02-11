@@ -1,10 +1,10 @@
 import { ReceiveBlock, SendBlock, Tools } from "libnemo";
 import { AccountManager } from "./account-manager";
-import { Account, Transaction, TxType } from "./interfaces";
+import { Account, Transaction, TxType } from "./types";
 import { formatRelativeDate, getRandomRepresentative, isValidAddress, nanoAddressToHex, uint8ArrayToHex } from "./utils";
 import { request } from "./request";
-import { RpcAction, ZERO_HASH } from "./constants";
-import { StateManager, STORE_KEYS } from "./state-manager";
+import { RpcAction, ZERO_HASH, StoreKeys } from "./constants";
+import { StateManager } from "./state-manager";
 
 export async function accountInfo(account: string) {
     return await request(RpcAction.ACCOUNT_INFO, { account, receivable: true, include_confirmed: true });
@@ -143,7 +143,7 @@ export async function generateWork(hash: string) {
 export async function resolveNanoIdentifier(identifier: string): Promise<{ address: string, alias: string }> {
     try {
         const res: { address: string, alias: string } = { address: '', alias: identifier };
-        const aliasSupport = await StateManager.getState(STORE_KEYS.ALIAS_SUPPORT);
+        const aliasSupport = await StateManager.getState(StoreKeys.ALIAS_SUPPORT);
 
         if (!aliasSupport) {
             res.address = 'Alias support is disabled';

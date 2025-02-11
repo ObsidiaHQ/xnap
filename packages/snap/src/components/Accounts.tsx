@@ -1,6 +1,6 @@
 import { Box, Button, Heading, Image, SnapComponent } from "@metamask/snaps-sdk/jsx";
 import { Address } from "./";
-import { Account } from "../lib/interfaces";
+import { Account } from "../lib/types";
 import { AddIcon } from "../../images/icons";
 
 export const Accounts: SnapComponent<{ accounts: Account[] }> = ({ accounts }) => {

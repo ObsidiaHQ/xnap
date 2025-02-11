@@ -10,7 +10,7 @@ import {
   Divider,
 } from '@metamask/snaps-sdk/jsx';
 import { AccountSelector } from './';
-import { Account } from '../lib/interfaces';
+import { Account } from '../lib/types';
 
 export const SendPage: SnapComponent<{ accounts: Account[], active: string }> = ({ accounts, active }) => {
   return (

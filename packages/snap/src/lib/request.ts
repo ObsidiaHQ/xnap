@@ -1,6 +1,6 @@
-import { RpcAction, RpcEndpoints } from "./constants";
-import { RpcEndpoint, TxType } from "./interfaces";
-import { StateManager, STORE_KEYS } from "./state-manager";
+import { RpcAction, StoreKeys } from "./constants";
+import { TxType } from "./types";
+import { StateManager } from "./state-manager";
 
 interface RequestOptions {
     maxRetries?: number;
@@ -107,7 +107,7 @@ async function executeRequest(
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-    const defaultRpc = await StateManager.getState(STORE_KEYS.DEFAULT_RPC);
+    const defaultRpc = await StateManager.getState(StoreKeys.DEFAULT_RPC);
     if (!defaultRpc) return null;
 
     try {

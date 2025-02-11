@@ -1,7 +1,7 @@
 import { Box, Button, Card, Heading, Image, Section, SnapComponent, Text } from "@metamask/snaps-sdk/jsx";
 import { createJazzicon, rawToNano, truncateAddress } from "../lib/utils";
 import { RefreshIcon } from "../../images/icons";
-import { Transaction } from "../lib/interfaces";
+import { Transaction } from "../lib/types";
 
 export const Transactions: SnapComponent<{ txs: Transaction[] }> = ({ txs }) => {
   return (

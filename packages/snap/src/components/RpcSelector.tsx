@@ -14,7 +14,7 @@ import {
   Text,
   Link,
 } from '@metamask/snaps-sdk/jsx';
-import { RpcEndpoint } from '../lib/interfaces';
+import { RpcEndpoint } from '../lib/types';
 
 type Options = {
   options: RpcEndpoint[],

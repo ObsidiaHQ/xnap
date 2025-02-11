@@ -5,7 +5,7 @@ import {
   Card,
 } from '@metamask/snaps-sdk/jsx';
 import { createJazzicon, rawToNano, truncateAddress } from '../lib/utils';
-import { Account } from '../lib/interfaces';
+import { Account } from '../lib/types';
 
 export const AccountSelector: SnapComponent<{ accounts: Account[] }> = ({ accounts }) => {
   return (

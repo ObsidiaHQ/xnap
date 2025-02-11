@@ -1,7 +1,7 @@
 import type { SnapComponent } from '@metamask/snaps-sdk/jsx';
 import { Box, Divider, Heading, Italic, Section, Text } from '@metamask/snaps-sdk/jsx';
 import { Address } from './';
-import { InsightProps } from '../lib/interfaces';
+import { InsightProps } from '../lib/types';
 import { rawToNano } from '../lib/utils';
 
 export const Insight: SnapComponent<InsightProps> = ({ from, to, value, origin, balance, alias }) => {
