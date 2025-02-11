@@ -2,7 +2,7 @@ export type Account = {
   address: string;
   publicKey: string;
   privateKey: string | null;
-  balance: any; // TODO
+  balance: any;
   frontier?: string;
   receivable?: string;
   active?: boolean;
@@ -53,6 +53,11 @@ export type MetamaskXNORpcRequest =
   | MakeTransaction
   | GetCurrentAddress
   | SignMessage;
+
+export type RpcRequest = {
+  origin: string;
+  request: MetamaskXNORpcRequest;
+};
 
 export type XNOMethodCallback = (
   originString: string,

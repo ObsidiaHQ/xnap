@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xnap | MetaMask Snap for Nano (XNO)</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/svg+xml" href="xno.svg">
+    <script preconnect data-domain="xnap.xyz" src="https://net.obsidia.io/js/script.js"></script>
+</head>
+<body>
+    <div class="gradient-bg"></div>
+    
+    <header>
+        <nav>
+            <div class="logo">Xnap</div>
+            <div class="nav-links">
+                <a href="https://github.com/ObsidiaHQ/xnap" target="_blank">GitHub</a>
+                <a href="https://docs.metamask.io/snaps/" target="_blank">About Snaps</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Nano meets <span class="highlight">MetaMask</span></h1>
+            <p class="subtitle">Xnap is a MetaMask wallet/SDK that allows you to manage your Nano (XNO) directly from MetaMask</p>
+            <div class="hero-buttons">
+                <button class="primary-btn" disabled>Coming Soon</button>
+                <a href="https://github.com/ObsidiaHQ/xnap" class="secondary-btn">View Source</a>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="feature-card">
+                <div class="feature-icon">💳</div>
+                <h3>Easy Integration</h3>
+                <p>Seamlessly manage Nano alongside your other crypto assets</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Secure</h3>
+                <p>Built on MetaMask's secure Snaps infrastructure</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Fast & Feeless</h3>
+                <p>Experience instant, zero-fee Nano transactions</p>
+            </div>
+        </section>
+
+        <section class="audit-status">
+            <h3>Security Audit Status</h3>
+            <p style="margin-top: 12px;">Xnap is required to be audited by a 3rd party security firm before it can be listed in the MetaMask Snap Directory for public use.</p>
+            <p style="margin-top: 8px;">Security audit costs typically range from $3,000 to $15,000 USD for snaps. We will update the funding target as soon as we receive an official quote.</p>
+            
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" id="auditProgress"></div>
+                </div>
+                <div class="progress-stats">
+                    <span id="progressAmount">0.00 XNO</span>
+                    <span>/ 3,000 XNO</span>
+                </div>
+            </div>
+
+            <div class="donation-info">
+                <h2>Support the Audit</h2>
+                <p style="margin-top: 10px;">Help bring Nano to MetaMask by contributing to the audit fund</p>
+                <div class="donation-address">
+                    <code style="color: #4e6285; font-size: 1rem;"><span style="color: #6FCF97;">nano_3xnapsm</span>113djnwnu6nd97hckkitzcu<wbr>6b1gizhdxxhpqwzknj3tm1a<span style="color: #6FCF97;">b1meum9</span></code>
+                    <button onclick="copyAddress()" class="copy-btn">Copy</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="current-features">
+            <h2>Current Features</h2>
+            <div class="feature-grid">
+                <div class="current-feature-card">
+                    <h4>💸 Send & Receive</h4>
+                    <p>Send and receive Nano transactions with ease directly from your MetaMask wallet</p>
+                </div>
+                <div class="current-feature-card">
+                    <h4>🔑 Account Management</h4>
+                    <p>Create new accounts and switch between multiple addresses seamlessly</p>
+                </div>
+                <div class="current-feature-card">
+                    <h4>💾 Backup & Recovery</h4>
+                    <p>Private keys backup functionality to protect your Nano</p>
+                </div>
+                <div class="current-feature-card">
+                    <h4>✍️ Message Signing</h4>
+                    <p>Sign and verify messages to prove ownership (SDK)</p>
+                </div>
+                <div class="current-feature-card">
+                    <h4>🆔 Nano Internet IDs</h4>
+                    <p>Support for human-readable Nano Internet IDs (aka aliases) for easier transactions</p>
+                </div>
+                <div class="current-feature-card">
+                    <h4>🌐 Custom RPC</h4>
+                    <p>Connect to your preferred Nano node by configuring custom RPC endpoints</p>
+                </div>
+                <div class="current-feature-card">
+                    <h4>🔍 Block Explorers</h4>
+                    <p>Choose your preferred Nano block explorer</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="gallery">
+            <h2>Preview</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="screenshots/home.png" alt="Xnap home screen" loading="lazy">
+                    <p>Home Screen</p>
+                </div>
+                <div class="gallery-item">
+                    <img src="screenshots/send.png" alt="Send transaction screen" loading="lazy">
+                    <p>Send XNO</p>
+                </div>
+                <div class="gallery-item">
+                    <img src="screenshots/receive.png" alt="Receive screen" loading="lazy">
+                    <p>Receive XNO</p>
+                </div>
+                <div class="gallery-item">
+                    <img src="screenshots/settings.png" alt="Settings screen" loading="lazy">
+                    <p>Settings</p>
+                </div>
+                <div class="gallery-item">
+                    <img src="screenshots/sign.png" alt="Signing screen" loading="lazy">
+                    <p>Sign messages</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="social-links">
+            <a href="https://github.com/ObsidiaHQ/xnap" target="_blank">GitHub</a>
+            <a href="https://x.com/geommr" target="_blank">X (Twitter)</a>
+            <p style="opacity: 0.65; margin-top: 16px;">Not affiliated with MetaMask</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

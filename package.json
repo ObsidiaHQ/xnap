@@ -14,7 +14,8 @@
   "license": "(MIT-0 OR Apache-2.0)",
   "author": "",
   "workspaces": [
-    "packages/*"
+    "packages/snap",
+    "packages/site"
   ],
   "scripts": {
     "build": "yarn workspaces foreach --parallel --topological --verbose run build",

@@ -2,7 +2,7 @@ import { DialogType, NotificationType } from '@metamask/snaps-sdk';
 import { Box, Button, Container, Copyable, Divider, Form, Heading, Section, Text } from '@metamask/snaps-sdk/jsx';
 import { renderSVG } from 'uqr';
 import { Tools } from 'libnemo';
-import { Snap, InsightProps, TxConfirmation } from './interfaces';
+import { Snap, InsightProps, TxConfirmation, RpcEndpoint } from './interfaces';
 import { SendPage, ShowKeys, ReceivePage, Insight, AccountSelector, RpcSelector, Homepage, ConfirmDialog, BlockExplorerSelector, SettingsPage, Address } from '../components';
 import { AccountManager } from './account-manager';
 import { BlockExplorers, RpcEndpoints } from './constants';
@@ -11,7 +11,7 @@ import { accountBalance, accountHistory, accountInfo, generateReceiveBlock, gene
 
 declare let snap: Snap;
 
-export async function refreshHomepage() {
+export async function updatedHomepage() {
   const [accounts, active, defaultRpc, blockExplorer] = await Promise.all([
     AccountManager.getAccounts(),
     AccountManager.getActiveAccount(),
@@ -33,6 +33,16 @@ export async function refreshHomepage() {
     defaultRpc={defaultRpc?.name!}
     blockExplorer={blockExplorer!}
   />;
+}
+
+export async function refreshHomepage(id: string) {
+  return snap.request({
+    method: 'snap_updateInterface',
+    params: {
+      id,
+      ui: await updatedHomepage(),
+    },
+  });
 }
 
 export async function showKeysConfirmation(id: string) {
@@ -114,6 +124,23 @@ export async function sendFunds(tx: InsightProps) {
   return hash;
 }
 
+export const handleSendXnoForm = async (formValue: { value: string, to: string, selectedAddress: string }) => {
+  const { confirmed, from, to, value } = await sendConfirmation({
+    value: formValue.value,
+    to: formValue.to,
+    from: formValue.selectedAddress,
+    origin: null
+  });
+
+  if (confirmed) {
+    try {
+      await sendFunds({ from, to, value, origin: null });
+    } catch (error) {
+      console.error('Error sending transaction:', error);
+    }
+  }
+};
+
 export async function receivePage(id: string) {
   const account = await AccountManager.getActiveAccount();
   const qr = renderSVG(account!.address!);
@@ -142,7 +169,7 @@ export async function settingsPage(id: string) {
   });
 }
 
-export async function receiveConfirmation(id: string) {
+export async function receiveFundsConfirmation(id: string) {
   await snap.request({
     method: 'snap_updateInterface',
     params: {
@@ -253,6 +280,65 @@ export async function signMessage(message: any, origin: string) {
   signature = await Tools.sign(active.privateKey, message);
   return signature;
 }
+
+export const handleReceiveFunds = async (id: string) => {
+  await snap.request({
+    method: 'snap_updateInterface',
+    params: {
+      id,
+      ui: <ConfirmDialog question='Do you want to receive the funds?' event='receive-funds' loading={true} />,
+    },
+  });
+
+  try {
+    await receiveFunds();
+    await refreshHomepage(id);
+  } catch (error) {
+    console.error('Error receiving funds:', error);
+    await refreshHomepage(id);
+  }
+};
+
+export const handleSwitchAccountForm = async (value: any, id: string) => {
+  const account = (await AccountManager.getAccounts()).find(acc => acc.address === value.selectedAddress);
+  if (!account) {
+    throw new Error('Selected account not found');
+  }
+  await AccountManager.setActiveAccount(account);
+  await snap.request({
+    method: 'snap_updateInterface',
+    params: {
+      id,
+      ui: await updatedHomepage(),
+    },
+  });
+};
+
+export const handleSwitchRpcForm = async (value: { api?: string, auth?: string, selectedRpc: string }, id: string) => {
+  const { api, auth, selectedRpc } = value;
+  const selected = RpcEndpoints.find(opt => opt.value === selectedRpc) || {} as RpcEndpoint;
+
+  if (selectedRpc === 'custom') {
+    selected.name = 'Custom';
+    selected.value = selectedRpc;
+    selected.api = api || 'Not set';
+    selected.auth = auth!;
+  }
+
+  await StateManager.setState(STORE_KEYS.DEFAULT_RPC, selected);
+  await refreshHomepage(id);
+};
+
+export const handleSwitchExplorerForm = async (value: { selectedExplorer: string }, id: string) => {
+  const explorer = BlockExplorers.find(opt => opt.name === value.selectedExplorer) as typeof BlockExplorers[number];
+  await StateManager.setState(STORE_KEYS.DEFAULT_BLOCK_EXPLORER, explorer);
+  await refreshHomepage(id);
+};
+
+export const handleSettingsForm = async (value: { aliasSupport: "true" | "false" }, id: string) => {
+  await StateManager.setState(STORE_KEYS.ALIAS_SUPPORT, JSON.parse(value.aliasSupport));
+  await refreshHomepage(id);
+};
 
 export async function notifyUser(message: string) {
   const account = await AccountManager.getActiveAccount();

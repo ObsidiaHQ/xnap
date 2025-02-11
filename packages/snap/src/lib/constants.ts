@@ -4,14 +4,41 @@ export const ALPHABET = '13456789abcdefghijkmnopqrstuwxyz';
 
 export const ZERO_HASH = '0000000000000000000000000000000000000000000000000000000000000000';
 
-export enum RpcAction {
-  ACCOUNT_INFO = 'account_info',
-  ACCOUNT_HISTORY = 'account_history',
-  BLOCKS_INFO = 'blocks_info',
-  RECEIVABLE = 'receivable',
-  PROCESS = 'process',
-  WORK_GENERATE = 'work_generate'
-}
+export const RpcAction = {
+  ACCOUNT_INFO: 'account_info',
+  ACCOUNT_HISTORY: 'account_history',
+  BLOCKS_INFO: 'blocks_info',
+  RECEIVABLE: 'receivable',
+  PROCESS: 'process',
+  WORK_GENERATE: 'work_generate'
+} as const;
+
+export const XnapButtonEvents = {
+  ADD_ACCOUNT: 'add-account',
+  BACK: 'back',
+  REFRESH_TXS: 'refresh-txs',
+  SHOW_KEYS_CONFIRM: 'show-keys-confirm',
+  SHOW_KEYS: 'show-keys',
+  SEND_PAGE: 'send-page',
+  RECEIVE_PAGE: 'receive-page',
+  SETTINGS_PAGE: 'settings-page',
+  SWITCH_ACCOUNT: 'switch-account',
+  SWITCH_RPC: 'switch-rpc',
+  SWITCH_BLOCK_EXPLORER: 'switch-block-explorer',
+  RECEIVE_FUNDS_CONFIRM: 'receive-funds-confirm',
+  RECEIVE_FUNDS: 'receive-funds',
+} as const;
+
+export const XnapFormEvents = {
+  SEND_XNO_FORM: 'send-xno-form',
+  SWITCH_ACCOUNT_FORM: 'switch-account-form',
+  SWITCH_RPC_FORM: 'switch-rpc-form',
+  SWITCH_EXPLORER_FORM: 'switch-explorer-form',
+  SETTINGS_FORM: 'settings-form',
+} as const;
+
+export type XnapButtonEventName = typeof XnapButtonEvents[keyof typeof XnapButtonEvents];
+export type XnapFormEventName = typeof XnapFormEvents[keyof typeof XnapFormEvents];
 
 export const RpcEndpoints: RpcEndpoint[] = [
     {

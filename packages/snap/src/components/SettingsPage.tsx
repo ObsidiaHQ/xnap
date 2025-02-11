@@ -59,7 +59,7 @@ export const SettingsPage: SnapComponent<{ defaultRpc: string, blockExplorer: { 
             <Image src={BackupIcon} alt='Explorer' />
             <Heading>Backup</Heading>
           </Box>
-          <Button name="show-keys-warning">Show key pair</Button>
+          <Button name="show-keys-confirm">Show key pair</Button>
         </Box>
       </Box>
       <Footer>
