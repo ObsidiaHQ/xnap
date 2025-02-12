@@ -139,7 +139,7 @@ h1 {
 /* Features Section */
 .features {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 2rem;
     padding: 4rem 0;
 }
@@ -161,11 +161,6 @@ h1 {
     margin-bottom: 1rem;
 }
 
-.current-features {
-    padding: 4rem 2rem;
-    text-align: center;
-}
-
 .current-features h2 {
     margin-bottom: 2rem;
     color: #fff;
@@ -173,7 +168,7 @@ h1 {
 
 .feature-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 1.5rem;
     max-width: 1200px;
     margin: 0 auto;
@@ -257,8 +252,8 @@ h1 {
     cursor: pointer;
 }
 
-.gallery {
-    padding: 4rem 2rem;
+.gallery, .current-features {
+    padding: 4rem 0;
     text-align: center;
 }
 
@@ -304,6 +299,9 @@ h1 {
     .gallery-grid {
         grid-template-columns: 1fr;
         max-width: 400px;
+    }
+    .donation-address {
+        flex-direction: column;
     }
 }
 
