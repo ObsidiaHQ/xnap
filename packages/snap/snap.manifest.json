@@ -7,7 +7,7 @@
     "url": "https://github.com/ObsidiaHQ/xnap.git"
   },
   "source": {
-    "shasum": "ft8jojNlaAEK4u19QTeoh+ADuS8/jdfE0dnkiGyQl/A=",
+    "shasum": "JZZtyArMu8fCqzZ5nm+r8izP6PPPflQOieazjmrJNDs=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
@@ -34,6 +34,6 @@
       "snaps": false
     }
   },
-  "platformVersion": "6.14.0",
+  "platformVersion": "6.17.1",
   "manifestVersion": "0.1"
 }
