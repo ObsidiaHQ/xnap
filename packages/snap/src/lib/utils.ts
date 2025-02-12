@@ -287,18 +287,16 @@ export function getRandomBlockExplorer() {
 }
 
 export function nanoAddressToHex(nanoAddress: string) {
-    if (!isValidAddress(nanoAddress)) {
+    if (!isValidAddress(nanoAddress))
         throw new Error("Invalid Nano address");
-    }
 
     let parts = nanoAddress.split("_");
     let accountPart: string | undefined = parts[1];
 
     // A valid Nano account part is 60 characters long:
     // 52 characters for the public key + 8 for the checksum.
-    if (accountPart?.length !== 60) {
+    if (accountPart?.length !== 60)
         throw new Error("Invalid Nano account length.");
-    }
 
     // The first 52 characters are the public key
     let pubKeyEncoded = accountPart.substring(0, 52);

@@ -7,7 +7,7 @@ import { SendPage, ShowKeys, ReceivePage, Insight, AccountSelector, RpcSelector,
 import { AccountManager } from './account-manager';
 import { BlockExplorers, RpcEndpoints, StoreKeys } from './constants';
 import { StateManager } from './state-manager';
-import { accountBalance, accountHistory, accountInfo, generateReceiveBlock, generateSendBlock, receivables, resolveNanoIdentifier } from './rpc';
+import { accountBalance, accountHistory, generateReceiveBlock, generateSendBlock, resolveNanoIdentifier } from './rpc';
 
 declare let snap: Snap;
 
@@ -18,14 +18,13 @@ export async function updatedHomepage() {
     StateManager.getState(StoreKeys.DEFAULT_RPC),
     StateManager.getState(StoreKeys.DEFAULT_BLOCK_EXPLORER)
   ]);
-  const [activeInfo, txs, receivableBlocks] = await Promise.all([
-    accountInfo(active?.address!),
+  const [activeBalance, txs] = await Promise.all([
+    accountBalance(active?.address!),
     accountHistory(active?.address),
-    receivables(active?.address)
   ]);
 
-  active!.balance = activeInfo?.confirmed_balance!;
-  active!.receivable = Object.values(receivableBlocks).reduce((acc, block) => acc + BigInt(block.amount), BigInt(0)).toString();
+  active!.balance = activeBalance?.balance;
+  active!.receivable = activeBalance?.receivable;
 
   return <Homepage
     txs={txs}
@@ -86,16 +85,16 @@ export async function sendPage(id: string) {
 export async function sendConfirmation(tx: InsightProps): Promise<TxConfirmation> {
   const from = await AccountManager.getActiveAccount();
 
-  const { alias, address } = await resolveNanoIdentifier(tx.to);
-  if (address) {
-    tx.to = address;
+  const { alias, resolved } = await resolveNanoIdentifier(tx.to);
+  if (resolved) {
+    tx.to = resolved;
     tx.alias = alias;
   }
 
   const props = {
     ...tx,
     from: tx.from || from?.address!,
-    balance: (await accountBalance(tx.from || from?.address))!
+    balance: (await accountBalance(tx.from || from?.address))!.balance
   }
 
   const confirmed: boolean = await snap.request({

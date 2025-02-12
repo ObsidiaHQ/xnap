@@ -1,84 +1,42 @@
 import { ReceiveBlock, SendBlock, Tools } from "libnemo";
 import { AccountManager } from "./account-manager";
-import { Account, Transaction, TxType } from "./types";
+import { Account, RequestOptions, RpcAccountHistory, RpcAccountInfo, RpcResponseTypeMap, TxType } from "./types";
 import { delay, formatRelativeDate, getRandomRepresentative, isValidAddress, nanoAddressToHex, uint8ArrayToHex } from "./utils";
 import { RpcAction, ZERO_HASH, StoreKeys } from "./constants";
 import { StateManager } from "./state-manager";
+import { RequestError } from "../errors/";
 
-type RequestOptions = {
-    maxRetries?: number;
-    timeout?: number;
-    skipError?: boolean;
-}
-
-type RpcAccountHistory = {
-    account: string;
-    amount: string;
-    local_timestamp: string;
-    type: TxType;
-    hash: string;
-}
-
-type RpcAccountInfo = {
-    confirmed_frontier: string,
-    confirmed_receivable: string,
-    confirmed_representative: string,
-    confirmed_balance: string,
-    modified_timestamp: string,
-    error?: string,
-}
-
-type RpcResponseTypeMap = {
-    [RpcAction.ACCOUNT_INFO]: RpcAccountInfo;
-    [RpcAction.ACCOUNT_HISTORY]: { history: RpcAccountHistory[] };
-    [RpcAction.BLOCKS_INFO]: { blocks: any, error?: string };
-    [RpcAction.RECEIVABLE]: { blocks: Record<string, { amount: string, source: string }> };
-    [RpcAction.PROCESS]: { hash: string, error?: string };
-    [RpcAction.WORK_GENERATE]: { work: string, hash: string };
-}
-
-class RequestError extends Error {
-    constructor(
-        message: string,
-        public status?: number,
-        public isValidationFailure?: boolean,
-        public reason?: string
-    ) {
-        super(message);
-        this.name = 'RequestError';
-    }
-}
-
-export async function accountInfo(account: string) {
+export async function accountInfo(account: string): Promise<RpcAccountInfo | null> {
     return await request(RpcAction.ACCOUNT_INFO, { account, receivable: true, include_confirmed: true });
 }
 
-export async function accountHistory(account?: string, count = 5, raw = false, offset = 0, reverse = false): Promise<Transaction[]> {
-    if (!isValidAddress(account)) {
+export async function accountHistory(account?: string, count = 5, raw = false, offset = 0, reverse = false): Promise<RpcAccountHistory[]> {
+    if (!isValidAddress(account))
         account = (await AccountManager.getActiveAccount())?.address;
-    };
 
     return await request(RpcAction.ACCOUNT_HISTORY, { account, count, raw, offset, reverse }).then(res => (res?.history || []).map((tx) => ({
         ...tx,
-        time: formatRelativeDate(tx.local_timestamp),
+        local_timestamp: formatRelativeDate(tx.local_timestamp),
     })));
 }
 
-export async function accountBalance(account?: string) {
-    if (!isValidAddress(account)) return '0';
-    return await request(RpcAction.ACCOUNT_INFO, { account, receivable: true, include_confirmed: true }).then(res => res?.confirmed_balance || '0');
+export async function accountBalance(account?: string): Promise<{ balance: string, receivable: string }> {
+    if (!isValidAddress(account))
+        return { balance: '0', receivable: '0' };
+    return await request(RpcAction.ACCOUNT_BALANCE, { account }).then(res => ({ balance: res?.balance || '0', receivable: res?.receivable || '0' }));
 }
 
-export async function blocksInfo(blocks: string[]) {
+export async function blocksInfo(blocks: string[]): Promise<{ blocks: any, error?: string } | null> {
     return await request(RpcAction.BLOCKS_INFO, { hashes: blocks, pending: true, source: true });
 }
 
-export async function receivables(account?: string) {
-    if (!isValidAddress(account)) return {};
+export async function receivables(account?: string): Promise<Record<string, { amount: string, source: string }>> {
+    if (!isValidAddress(account))
+        return {};
     return request(RpcAction.RECEIVABLE, { account, source: true, include_only_confirmed: true, sorting: true }).then((res) => res?.blocks || {});
 }
 
-export async function process(block: any, subtype: TxType) {
+export async function process(block: any, subtype: TxType): Promise<{ hash: string, error?: string } | null> {
     return await request(RpcAction.PROCESS, { block, watch_work: 'false', subtype, json_block: 'true' });
 }
 
@@ -149,73 +107,45 @@ export async function generateReceiveBlock(): Promise<number> {
     }
 }
 
-export async function generateWork(hash: string) {
-    const validateResponse = (res: any) => {
-        if (res.work == null) {
-            return {
-                err: `Missing field "work".`,
-            };
-        };
-
-        if (typeof res.work !== 'string') {
-            return {
-                err: `Invalid type of field "work", expected "string", got "${typeof res.work}".`,
-            };
-        };
-
-        if (res.work.length !== 16) {
-            return {
-                err: `Invalid length of field "work", expected 16, got ${res.work.length}.`,
-            };
-        };
-
-        if (/^[0-9A-F]+$/i.test(res.work) === false) {
-            return {
-                err: `Invalid contents of field "work", expected hex characters.`,
-            };
-        };
-
-        return {
-            err: null,
-        };
-    };
-
-    return await request(RpcAction.WORK_GENERATE, { hash }, { timeout: 40000 });
+export async function generateWork(hash: string): Promise<{ work: string, hash: string } | null> {
+    return await request(RpcAction.WORK_GENERATE, { hash }, { timeout: 45000 }).then(res => {
+        return (typeof res?.work === 'string' && res?.work.length === 16 && /^[0-9A-F]+$/i.test(res.work)) ? res : null;
+    }).catch(() => {
+        return null;
+    });
 }
 
-export async function resolveNanoIdentifier(identifier: string): Promise<{ address: string, alias: string }> {
-    try {
-        const res: { address: string, alias: string } = { address: '', alias: identifier };
-        const aliasSupport = await StateManager.getState(StoreKeys.ALIAS_SUPPORT);
+export async function resolveNanoIdentifier(identifier: string): Promise<{ resolved: string; alias: string }> {
+    const defaultResponse = { resolved: 'Error resolving alias', alias: identifier };
 
+    try {
+        const aliasSupport = await StateManager.getState(StoreKeys.ALIAS_SUPPORT);
         if (!aliasSupport) {
-            res.address = 'Alias support is disabled';
-            return res;
+            return { ...defaultResponse, resolved: 'Alias support is disabled' };
         }
 
         const [_, localPart, domain] = identifier.split('@');
         if (!localPart || !domain) {
-            res.address = 'Invalid alias';
-            return res;
+            return { ...defaultResponse, resolved: 'Invalid alias' };
         }
 
-        const wellKnownUrl = `https://${domain}/.well-known/nano-currency.json?names=${localPart}`;
-        const response = await fetch(wellKnownUrl);
+        const response = await fetch(
+            `https://${domain}/.well-known/nano-currency.json?names=${localPart}`
+        );
 
-        if (response.ok) {
-            const data = await response.json();
-            const name = data.names?.find((n: any) => n.name === localPart);
-            if (name?.address && isValidAddress(name.address)) {
-                res.address = name.address;
-                return res;
-            }
-        }
+        if (!response.ok) return defaultResponse;
 
-        res.address = 'Error resolving alias';
-        return res;
+        const data = await response.json();
+        const name = data.names?.find((n: any) => n.name === localPart);
 
+        return {
+            alias: identifier,
+            resolved: name?.address && isValidAddress(name.address)
+                ? name.address
+                : 'Invalid address in response'
+        };
     } catch (error) {
-        return { address: 'Error resolving alias', alias: identifier };
+        return defaultResponse;
     }
 }
 
@@ -230,43 +160,24 @@ async function request<T extends RpcAction>(
         skipError = false
     } = options;
 
-    let lastError: Error | null = null;    
-
     for (let attempt = 0; attempt < maxRetries; attempt++) {
         try {
-            const result = await executeRequest(action, data, timeout);
-            return result;
+            return await executeRequest(action, data, timeout);
         } catch (error: any) {
-            lastError = error;
-            // If it's a validation failure, don't retry
-            if (error.isValidationFailure) {
-                break;
+            const isLastAttempt = attempt === maxRetries - 1;
+
+            if (error instanceof RequestError && error.isValidationFailure) {
+                if (!skipError) throw error;
+                return null;
             }
 
-            // Wait before retry with exponential backoff
-            if (attempt < maxRetries - 1) {
-                await delay(Math.min(1000 * Math.pow(2, attempt), 10000));
+            if (isLastAttempt) {
+                if (!skipError) throw error;
+                return null;
             }
+
+            await delay(Math.min(1000 * Math.pow(2, attempt), 10000));
         }
-    }
-
-    // If we reach here, all endpoints failed
-    if (!skipError) {
-        if (lastError instanceof RequestError) {
-            if (lastError.isValidationFailure) {
-                console.error(
-                    'Node response failed validation.',
-                    lastError.reason,
-                    lastError.status
-                );
-            } else {
-                console.error('Node responded with error', lastError.status);
-            }
-        } else {
-            console.error('Request failed:', lastError?.message);
-        }
-
-        throw lastError;
     }
 
     return null;

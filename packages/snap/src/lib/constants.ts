@@ -7,6 +7,7 @@ export const ZERO_HASH = '000000000000000000000000000000000000000000000000000000
 export enum RpcAction {
   ACCOUNT_INFO = 'account_info',
   ACCOUNT_HISTORY = 'account_history',
+  ACCOUNT_BALANCE = 'account_balance',
   BLOCKS_INFO = 'blocks_info',
   RECEIVABLE = 'receivable',
   PROCESS = 'process',

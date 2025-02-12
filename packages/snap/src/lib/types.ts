@@ -1,3 +1,38 @@
+import { RpcAction } from "./constants";
+
+export type RequestOptions = {
+  maxRetries?: number;
+  timeout?: number;
+  skipError?: boolean;
+}
+
+export type RpcAccountHistory = {
+  account: string;
+  amount: string;
+  local_timestamp: string;
+  type: TxType;
+  hash: string;
+}
+
+export type RpcAccountInfo = {
+  confirmed_frontier: string,
+  confirmed_receivable: string,
+  confirmed_representative: string,
+  confirmed_balance: string,
+  modified_timestamp: string,
+  error?: string,
+}
+
+export type RpcResponseTypeMap = {
+  [RpcAction.ACCOUNT_INFO]: RpcAccountInfo;
+  [RpcAction.ACCOUNT_HISTORY]: { history: RpcAccountHistory[] };
+  [RpcAction.ACCOUNT_BALANCE]: { balance: string, receivable: string };
+  [RpcAction.BLOCKS_INFO]: { blocks: any, error?: string };
+  [RpcAction.RECEIVABLE]: { blocks: Record<string, { amount: string, source: string }> };
+  [RpcAction.PROCESS]: { hash: string, error?: string };
+  [RpcAction.WORK_GENERATE]: { work: string, hash: string };
+}
+
 export type Account = {
   address: string;
   publicKey: string;
@@ -7,14 +42,6 @@ export type Account = {
   receivable?: string;
   active?: boolean;
 };
-
-export type Transaction = {
-  account: string;
-  amount: string;
-  time: string;
-  type: TxType;
-  hash: string;
-}
 
 export type TxType = 'receive' | 'send' | 'open' | 'change';
 
