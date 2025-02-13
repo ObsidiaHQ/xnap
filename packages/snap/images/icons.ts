@@ -33,31 +33,74 @@ export const ReceiveIcon = `
 </svg>`;
 
 export const ExplorerIcon = `
-<svg  xmlns="http://www.w3.org/2000/svg"  width="20"  height="20"  viewBox="0 0 24 24"  fill="none"  stroke="#eee"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round">
-    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-    <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
-    <path d="M12 18c-.328 0 -.652 -.017 -.97 -.05c-3.172 -.332 -5.85 -2.315 -8.03 -5.95c2.4 -4 5.4 -6 9 -6c3.465 0 6.374 1.853 8.727 5.558" />
-    <path d="M18 18m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
-    <path d="M20.2 20.2l1.8 1.8" />
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 146 24" width="146" height="24">
+	<style>
+		tspan { white-space:pre } 
+		.s0 { fill: none } 
+		.t1 { font-size: 16px;fill: #f2f2f2;font-weight: 600;font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; } 
+		.s2 { fill: none;stroke: #eeeeee;stroke-linecap: round;stroke-linejoin: round;stroke-width: 2 } 
+	</style>
+	<path class="s0" d="m0 0h24v24h-24z"/>
+	<text id="Block Explorer" style="transform: matrix(1,0,0,1,29.715,17.613)" >
+		<tspan x="0" y="0" class="t1">B</tspan><tspan  y="0" class="t1">l</tspan><tspan  y="0" class="t1">o</tspan><tspan  y="0" class="t1">c</tspan><tspan  y="0" class="t1">k</tspan><tspan  y="0" class="t1"> </tspan><tspan  y="0" class="t1">E</tspan><tspan  y="0" class="t1">x</tspan><tspan  y="0" class="t1">p</tspan><tspan  y="0" class="t1">l</tspan><tspan  y="0" class="t1">o</tspan><tspan  y="0" class="t1">r</tspan><tspan  y="0" class="t1">e</tspan><tspan  y="0" class="t1">r
+</tspan>
+	</text>
+	<path class="s2" d="m10 12c0 0.5 0.2 1 0.6 1.4 0.4 0.4 0.9 0.6 1.4 0.6 0.5 0 1-0.2 1.4-0.6 0.4-0.4 0.6-0.9 0.6-1.4 0-0.5-0.2-1-0.6-1.4-0.4-0.4-0.9-0.6-1.4-0.6-0.5 0-1 0.2-1.4 0.6-0.4 0.4-0.6 0.9-0.6 1.4z"/>
+	<path class="s2" d="m12 18q-0.5 0-1-0.1-4.7-0.4-8-5.9 3.6-6 9-6 5.2 0 8.7 5.6"/>
+	<path class="s2" d="m15 18c0 0.8 0.3 1.6 0.9 2.1 0.5 0.6 1.3 0.9 2.1 0.9 0.8 0 1.6-0.3 2.1-0.9 0.6-0.5 0.9-1.3 0.9-2.1 0-0.8-0.3-1.6-0.9-2.1-0.5-0.6-1.3-0.9-2.1-0.9-0.8 0-1.6 0.3-2.1 0.9-0.6 0.5-0.9 1.3-0.9 2.1z"/>
+	<path class="s2" d="m20.2 20.2l1.8 1.8"/>
 </svg>`;
 
 export const BackupIcon = `
-<svg  xmlns="http://www.w3.org/2000/svg"  width="20"  height="20"  viewBox="0 0 24 24"  fill="none"  stroke="#eee"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round">
-    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-    <path d="M16.555 3.843l3.602 3.602a2.877 2.877 0 0 1 0 4.069l-2.643 2.643a2.877 2.877 0 0 1 -4.069 0l-.301 -.301l-6.558 6.558a2 2 0 0 1 -1.239 .578l-.175 .008h-1.172a1 1 0 0 1 -.993 -.883l-.007 -.117v-1.172a2 2 0 0 1 .467 -1.284l.119 -.13l.414 -.414h2v-2h2v-2l2.144 -2.144l-.301 -.301a2.877 2.877 0 0 1 0 -4.069l2.643 -2.643a2.877 2.877 0 0 1 4.069 0z" />
-    <path d="M15 9h.01" />
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 24" width="90" height="24">
+	<style>
+		tspan { white-space:pre } 
+		.t0 { font-size: 16px;fill: #f2f2f2;font-weight: 600;font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; } 
+		.s1 { fill: none } 
+		.s2 { fill: none;stroke: #eeeeee;stroke-linecap: round;stroke-linejoin: round;stroke-width: 2 } 
+	</style>
+	<text id="Backup" style="transform: matrix(1,0,0,1,29.715,17.613)" >
+		<tspan x="0" y="0" class="t0">B</tspan><tspan  y="0" class="t0">a</tspan><tspan  y="0" class="t0">c</tspan><tspan  y="0" class="t0">k</tspan><tspan  y="0" class="t0">u</tspan><tspan  y="0" class="t0">p
+</tspan>
+	</text>
+	<path class="s1" d="m0 0h24v24h-24z"/>
+	<path class="s2" d="m16.6 3.8l3.6 3.6q0.4 0.5 0.6 1 0.2 0.5 0.2 1.1 0 0.6-0.2 1.1-0.2 0.5-0.6 0.9l-2.7 2.7q-0.4 0.4-0.9 0.6-0.5 0.2-1.1 0.2-0.6 0-1.1-0.2-0.5-0.2-1-0.6l-0.3-0.3-6.5 6.5q-0.1 0.1-0.3 0.2-0.1 0.1-0.3 0.2-0.1 0.1-0.3 0.1-0.2 0.1-0.4 0.1h-0.1-1.2q-0.2 0-0.4-0.1-0.1 0-0.3-0.2-0.1-0.1-0.2-0.2-0.1-0.2-0.1-0.4v-0.1-1.2q0-0.1 0-0.3 0.1-0.2 0.1-0.4 0.1-0.1 0.2-0.3 0.1-0.1 0.2-0.3l0.1-0.1 0.4-0.4h2v-2h2v-2l2.1-2.1-0.3-0.3q-0.4-0.5-0.6-1-0.2-0.5-0.2-1.1 0-0.6 0.2-1.1 0.2-0.5 0.6-0.9l2.7-2.7q0.4-0.4 0.9-0.6 0.5-0.2 1.1-0.2 0.6 0 1.1 0.2 0.5 0.2 1 0.6z"/>
+	<path class="s2" d="m15 9"/>
 </svg>`;
 
 export const RpcIcon = `
-<svg  xmlns="http://www.w3.org/2000/svg"  width="20"  height="20"  viewBox="0 0 24 24"  fill="none"  stroke="#eee"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round">
-    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-    <path d="M6.657 16c-2.572 0 -4.657 -2.007 -4.657 -4.483c0 -2.475 2.085 -4.482 4.657 -4.482c.393 -1.762 1.794 -3.2 3.675 -3.773c1.88 -.572 3.956 -.193 5.444 1c1.488 1.19 2.162 3.007 1.77 4.769h.99c1.913 0 3.464 1.56 3.464 3.486c0 1.927 -1.551 3.487 -3.465 3.487h-11.878" />
-    <path d="M12 16v5" />
-    <path d="M16 16v4a1 1 0 0 0 1 1h4" /><path d="M8 16v4a1 1 0 0 1 -1 1h-4" />
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 24" width="70" height="24">
+	<style>
+		tspan { white-space:pre } 
+		.s0 { fill: none;stroke: #eeeeee;stroke-linecap: round;stroke-linejoin: round;stroke-width: 2 } 
+		.t1 { font-size: 16px;fill: #f2f2f2;font-weight: 600;font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; } 
+	</style>
+	<path class="s0" d="m6.7 16c-2.6 0-4.7-2-4.7-4.5 0-2.5 2.1-4.5 4.7-4.5 0.3-1.7 1.8-3.2 3.6-3.7 1.9-0.6 4-0.2 5.5 1 1.5 1.2 2.1 3 1.7 4.7h1c1.9 0 3.5 1.6 3.5 3.5 0 1.9-1.6 3.5-3.5 3.5 0 0-11.8 0-11.8 0z"/>
+	<path class="s0" d="m12 16v5"/>
+	<path class="s0" d="m16 16v4q0 0.2 0.1 0.4 0.1 0.2 0.2 0.3 0.1 0.1 0.3 0.2 0.2 0.1 0.4 0.1h4"/>
+	<path class="s0" d="m8 16v4q0 0.2-0.1 0.4-0.1 0.2-0.2 0.3-0.1 0.1-0.3 0.2-0.2 0.1-0.4 0.1h-4"/>
+	<text id="RPC" style="transform: matrix(1,0,0,1,29.715,17.613)" >
+		<tspan x="0" y="0" class="t1">R</tspan><tspan  y="0" class="t1">P</tspan><tspan  y="0" class="t1">C
+</tspan>
+	</text>
 </svg>`;
 
 export const IdIcon = `
-<svg  xmlns="http://www.w3.org/2000/svg"  width="20"  height="20"  viewBox="0 0 24 24"  fill="none"  stroke="#eee"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round">
-<path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 4m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v10a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z" />
-<path d="M9 10m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M15 8l2 0" />
-<path d="M15 12l2 0" /><path d="M7 16l10 0" /></svg>`;
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 24" width="140" height="24">
+	<style>
+		tspan { white-space:pre } 
+		.s0 { fill: none } 
+		.s1 { fill: none;stroke: #eeeeee;stroke-linecap: round;stroke-linejoin: round;stroke-width: 2 } 
+		.t2 { font-size: 16px;fill: #f2f2f2;font-weight: 600;font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; } 
+	</style>
+	<path class="s0" d="m0 0h24v24h-24z"/>
+	<path class="s1" d="m3 7q0-0.6 0.2-1.1 0.3-0.6 0.7-1 0.4-0.4 1-0.7 0.5-0.2 1.1-0.2h12q0.6 0 1.1 0.2 0.6 0.3 1 0.7 0.4 0.4 0.7 1 0.2 0.5 0.2 1.1v10q0 0.6-0.2 1.1-0.3 0.6-0.7 1-0.4 0.4-1 0.7-0.5 0.2-1.1 0.2h-12q-0.6 0-1.1-0.2-0.6-0.3-1-0.7-0.4-0.4-0.7-1-0.2-0.5-0.2-1.1z"/>
+	<path class="s1" d="m7 10c0 0.5 0.2 1 0.6 1.4 0.4 0.4 0.9 0.6 1.4 0.6 0.5 0 1-0.2 1.4-0.6 0.4-0.4 0.6-0.9 0.6-1.4 0-0.5-0.2-1-0.6-1.4-0.4-0.4-0.9-0.6-1.4-0.6-0.5 0-1 0.2-1.4 0.6-0.4 0.4-0.6 0.9-0.6 1.4z"/>
+	<path class="s1" d="m15 8h2"/>
+	<path class="s1" d="m15 12h2"/>
+	<path class="s1" d="m7 16h10"/>
+	<text id="Alias support" style="transform: matrix(1,0,0,1,29.715,17.613)" >
+		<tspan x="0" y="0" class="t2">A</tspan><tspan  y="0" class="t2">l</tspan><tspan  y="0" class="t2">i</tspan><tspan  y="0" class="t2">a</tspan><tspan  y="0" class="t2">s</tspan><tspan  y="0" class="t2"> </tspan><tspan  y="0" class="t2">s</tspan><tspan  y="0" class="t2">u</tspan><tspan  y="0" class="t2">p</tspan><tspan  y="0" class="t2">p</tspan><tspan  y="0" class="t2">o</tspan><tspan  y="0" class="t2">r</tspan><tspan  y="0" class="t2">t
+</tspan>
+	</text>
+</svg>`;

@@ -154,16 +154,17 @@ export async function receivePage(id: string) {
 }
 
 export async function settingsPage(id: string) {
-  const [defaultRpc, blockExplorer] = await Promise.all([
+  const [defaultRpc, blockExplorer, aliasSupport] = await Promise.all([
     StateManager.getState(StoreKeys.DEFAULT_RPC),
-    StateManager.getState(StoreKeys.DEFAULT_BLOCK_EXPLORER)
+    StateManager.getState(StoreKeys.DEFAULT_BLOCK_EXPLORER),
+    StateManager.getState(StoreKeys.ALIAS_SUPPORT)
   ]);
 
   await snap.request({
     method: 'snap_updateInterface',
     params: {
       id,
-      ui: <SettingsPage defaultRpc={defaultRpc?.name!} blockExplorer={blockExplorer!} />
+      ui: <SettingsPage defaultRpc={defaultRpc?.name!} blockExplorer={blockExplorer!} aliasSupport={!!aliasSupport} />
     },
   });
 }
@@ -334,8 +335,8 @@ export const handleSwitchExplorerForm = async (value: { selectedExplorer: string
   await refreshHomepage(id);
 };
 
-export const handleSettingsForm = async (value: { aliasSupport: "true" | "false" }, id: string) => {
-  await StateManager.setState(StoreKeys.ALIAS_SUPPORT, JSON.parse(value.aliasSupport));
+export const handleSettingsForm = async (value: { aliasSupport: boolean }, id: string) => {
+  await StateManager.setState(StoreKeys.ALIAS_SUPPORT, value.aliasSupport);
   await refreshHomepage(id);
 };
 
