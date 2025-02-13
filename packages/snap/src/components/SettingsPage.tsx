@@ -13,6 +13,7 @@ import {
   Checkbox,
 } from '@metamask/snaps-sdk/jsx';
 import { BackupIcon, ExplorerIcon, RpcIcon, IdIcon } from '../../images/icons';
+import { XnapButtonEvents, XnapFormEvents } from '../lib/constants';
 
 export const SettingsPage: SnapComponent<{ defaultRpc: string, blockExplorer: { name: string, endpoint: string }, aliasSupport: boolean }> = ({ defaultRpc, blockExplorer, aliasSupport }) => {
   return (
@@ -21,15 +22,15 @@ export const SettingsPage: SnapComponent<{ defaultRpc: string, blockExplorer: { 
         <Heading size='md'>Settings</Heading>
         <Box direction='horizontal' alignment='space-between'>
           <Image src={RpcIcon} alt='RPC' />
-          <Button name="switch-rpc">{defaultRpc ? defaultRpc : 'Not set'}</Button>
+          <Button name={XnapButtonEvents.SWITCH_RPC}>{defaultRpc ? defaultRpc : 'Not set'}</Button>
         </Box>
 
         <Box direction='horizontal' alignment='space-between'>
           <Image src={ExplorerIcon} alt='Block explorer' />
-          <Button name="switch-block-explorer">{blockExplorer.name ? blockExplorer.name : 'Not set'}</Button>
+          <Button name={XnapButtonEvents.SWITCH_BLOCK_EXPLORER}>{blockExplorer.name ? blockExplorer.name : 'Not set'}</Button>
         </Box>
 
-        <Form name="settings-form">
+        <Form name={XnapFormEvents.SETTINGS_FORM}>
           <Box direction='horizontal' alignment='space-between'>
             <Image src={IdIcon} alt='Alias support' />
             <Checkbox name="aliasSupport" variant="toggle" checked={aliasSupport} />
@@ -45,11 +46,11 @@ export const SettingsPage: SnapComponent<{ defaultRpc: string, blockExplorer: { 
 
         <Box direction='horizontal' alignment='space-between'>
           <Image src={BackupIcon} alt='Explorer' />
-          <Button name="show-keys-confirm">Show key pair</Button>
+          <Button name={XnapButtonEvents.SHOW_KEYS_CONFIRM}>Show key pair</Button>
         </Box>
       </Box>
       <Footer>
-        <Button name="back">Close</Button>
+        <Button name={XnapButtonEvents.BACK}>Close</Button>
       </Footer>
     </Container>
   );

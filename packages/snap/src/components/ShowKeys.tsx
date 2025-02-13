@@ -8,6 +8,7 @@ import {
   Footer,
   Button,
 } from '@metamask/snaps-sdk/jsx';
+import { XnapButtonEvents } from '../lib/constants';
 
 type CredentialsProps = {
   address: string;
@@ -32,7 +33,7 @@ export const ShowKeys: SnapComponent<CredentialsProps> = ({
         <Copyable value={secretKey} sensitive />
       </Box>
       <Footer>
-        <Button name="back">Close</Button>
+        <Button name={XnapButtonEvents.BACK}>Close</Button>
       </Footer>
     </Container>
   );

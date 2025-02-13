@@ -3,6 +3,7 @@ import { Accounts, Transactions, Address } from "./";
 import { SendIcon, QRCodeIcon, ReceiveIcon } from "../../images/icons";
 import { Account, RpcAccountHistory } from "../lib/types";
 import { rawToNano } from "../lib/utils";
+import { XnapButtonEvents } from "../lib/constants";
 
 type HomepageProps = {
   accounts: Account[];
@@ -22,19 +23,19 @@ export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, defaultR
 
         <Box direction='horizontal'>
           <Heading size='lg'>{rawToNano(active.balance)} XNO</Heading>
-          {hasReceiveable(active.receivable) ? (<Button name="receive-funds-confirm"><Image src={ReceiveIcon}></Image> {rawToNano(active.receivable!)}</Button>) : null}
+          {hasReceiveable(active.receivable) ? (<Button name={XnapButtonEvents.RECEIVE_FUNDS_CONFIRM}><Image src={ReceiveIcon}></Image> {rawToNano(active.receivable!)}</Button>) : null}
         </Box>
 
         <Box direction='horizontal' alignment='space-around'>
           <Box alignment='center'>
-            <Button name='send-page'>
+            <Button name={XnapButtonEvents.SEND_PAGE}>
               <Image src={SendIcon} alt='Send nano' />
             </Button>
             <Text color='alternative'>Send</Text>
           </Box>
 
           <Box alignment='center'>
-            <Button name='receive-page'>
+            <Button name={XnapButtonEvents.RECEIVE_PAGE}>
               <Image src={QRCodeIcon} alt='Receive nano' />
             </Button>
             <Text color='alternative'>Receive</Text>
@@ -50,7 +51,7 @@ export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, defaultR
         <Divider />
         
         <Box direction='horizontal' alignment='center'>
-          <Button name="settings-page">Settings & Backup</Button>
+          <Button name={XnapButtonEvents.SETTINGS_PAGE}>Settings & Backup</Button>
         </Box>
 
         <Divider />

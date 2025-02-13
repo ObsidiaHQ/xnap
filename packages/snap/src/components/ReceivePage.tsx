@@ -9,6 +9,7 @@ import {
   Button,
   Footer,
 } from '@metamask/snaps-sdk/jsx';
+import { XnapButtonEvents } from '../lib/constants';
 
 export const ReceivePage: SnapComponent<{ qr: string, address: string }> = ({ qr, address }) => {
   return (
@@ -20,7 +21,7 @@ export const ReceivePage: SnapComponent<{ qr: string, address: string }> = ({ qr
         <Copyable value={address} />
       </Box>
       <Footer>
-        <Button name="back">Close</Button>
+        <Button name={XnapButtonEvents.BACK}>Close</Button>
       </Footer>
     </Container>
   );

@@ -10,15 +10,17 @@ import {
   Button,
   Divider,
 } from '@metamask/snaps-sdk/jsx';
+import { XnapButtonEvents, XnapFormEvents } from '../lib/constants';
+import { BlockExplorer } from '../lib/types';
 
-export const BlockExplorerSelector: SnapComponent<{ explorers: any, active: any }> = ({ explorers, active }) => {
+export const BlockExplorerSelector: SnapComponent<{ explorers: BlockExplorer[], active: BlockExplorer }> = ({ explorers, active }) => {
   return (
     <Container>
       <Box>
         <Heading>Select an explorer</Heading>
-        <Form name="switch-explorer-form">
+        <Form name={XnapFormEvents.SWITCH_EXPLORER_FORM}>
           <Selector name="selectedExplorer" title="Select an explorer">
-            {explorers.map((explorer: any) => (
+            {explorers.map((explorer) => (
               <SelectorOption value={explorer.name}>
                 <Card
                   title={(explorer.name === active.name ? '⭐ ' + explorer.name : explorer.name)}
@@ -30,10 +32,8 @@ export const BlockExplorerSelector: SnapComponent<{ explorers: any, active: any 
           </Selector>
           <Divider />
           <Box alignment="space-around" direction="horizontal">
-            <Button name="back">Back</Button>
-            <Button type="submit" name="submit">
-              Select
-            </Button>
+            <Button name={XnapButtonEvents.BACK}>Back</Button>
+            <Button type="submit">Select</Button>
           </Box>
         </Form>
       </Box>

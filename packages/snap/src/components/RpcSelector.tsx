@@ -15,6 +15,7 @@ import {
   Link,
 } from '@metamask/snaps-sdk/jsx';
 import { RpcEndpoint } from '../lib/types';
+import { XnapButtonEvents, XnapFormEvents } from '../lib/constants';
 
 type Options = {
   options: RpcEndpoint[],
@@ -26,7 +27,7 @@ export const RpcSelector: SnapComponent<Options> = ({ options, active }) => {
     <Container>
       <Box>
         <Heading>Select an RPC endpoint</Heading>
-        <Form name="switch-rpc-form">
+        <Form name={XnapFormEvents.SWITCH_RPC_FORM}>
           <Selector name="selectedRpc" title="Select an RPC endpoint">
             {options.map((option) => (
               <SelectorOption value={option.value}>
@@ -59,10 +60,8 @@ export const RpcSelector: SnapComponent<Options> = ({ options, active }) => {
           <Text color='muted'>Enter a valid Authorization header, for example: Basic xyz..</Text>
           <Divider />
           <Box alignment="space-around" direction="horizontal">
-            <Button name="back">Back</Button>
-            <Button type="submit" name="submit">
-              Save
-            </Button>
+            <Button name={XnapButtonEvents.BACK}>Back</Button>
+            <Button type="submit">Save</Button>
           </Box>
         </Form>
       </Box>

@@ -148,3 +148,8 @@ export type RpcEndpoint = {
   api: string;
   auth: string | null;
 }
+
+export type BlockExplorer = {
+  name: string;
+  endpoint: string;
+}

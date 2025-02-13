@@ -7,8 +7,9 @@ import {
   Text,
   Spinner,
 } from '@metamask/snaps-sdk/jsx';
+import { XnapButtonEventName, XnapButtonEvents } from '../lib/constants';
 
-export const ConfirmDialog = ({question, event, loading}: {question: string, event: string, loading?: boolean}) => {
+export const ConfirmDialog = ({question, event, loading}: {question: string, event: XnapButtonEventName, loading?: boolean}) => {
   return (
     <Container>
       <Box>
@@ -17,7 +18,7 @@ export const ConfirmDialog = ({question, event, loading}: {question: string, eve
         {loading ? <Spinner /> : null}
       </Box>
       <Footer>
-        <Button name="back">
+        <Button name={XnapButtonEvents.BACK}>
           Reject
         </Button>
         <Button name={event}>

@@ -1,4 +1,4 @@
-import { RpcEndpoint } from "./types";
+import { RpcEndpoint, BlockExplorer } from "./types";
 
 export const ALPHABET = '13456789abcdefghijkmnopqrstuwxyz';
 
@@ -91,7 +91,7 @@ export const RepAccounts = [
   'nano_3ktybzzy14zxgb6osbhcc155pwk7osbmf5gbh5fo73bsfu9wuiz54t1uozi1', // Kappture
 ] as const;
 
-export const BlockExplorers = [
+export const BlockExplorers: BlockExplorer[] = [
   {
     name: 'Blocklattice.io',
     endpoint: 'https://blocklattice.io/account/',

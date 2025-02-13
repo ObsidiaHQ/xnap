@@ -362,7 +362,7 @@ export async function notifyUser(message: string) {
           <Text color='success'>{message}</Text>
         </Box>
       ),
-      footerLink: { text: 'View on explorer', href: `${blockExplorer.endpoint}${account?.address}` },
+      footerLink: { text: 'View on explorer', href: `${blockExplorer?.endpoint}${account?.address}` },
     },
   });
 }

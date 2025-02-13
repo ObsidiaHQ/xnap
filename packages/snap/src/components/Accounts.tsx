@@ -2,6 +2,7 @@ import { Box, Button, Heading, Image, SnapComponent } from "@metamask/snaps-sdk/
 import { Address } from "./";
 import { Account } from "../lib/types";
 import { AddIcon } from "../../images/icons";
+import { XnapButtonEvents } from "../lib/constants";
 
 export const Accounts: SnapComponent<{ accounts: Account[] }> = ({ accounts }) => {
   return (
@@ -9,11 +10,11 @@ export const Accounts: SnapComponent<{ accounts: Account[] }> = ({ accounts }) =
       <Box direction="horizontal" alignment="space-between">
         <Box direction="horizontal">
           <Heading>Accounts</Heading>
-          <Button name="switch-account">
+          <Button name={XnapButtonEvents.SWITCH_ACCOUNT}>
             switch
           </Button>
         </Box>
-        <Button name="add-account">
+        <Button name={XnapButtonEvents.ADD_ACCOUNT}>
           <Image src={AddIcon} alt='Add account' />
         </Button>
       </Box>

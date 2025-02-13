@@ -2,13 +2,14 @@ import { Box, Button, Card, Heading, Image, Section, SnapComponent, Text } from 
 import { createJazzicon, rawToNano, truncateAddress } from "../lib/utils";
 import { RefreshIcon } from "../../images/icons";
 import { RpcAccountHistory } from "../lib/types";
+import { XnapButtonEvents } from "../lib/constants";
 
 export const Transactions: SnapComponent<{ txs: RpcAccountHistory[] }> = ({ txs }) => {
   return (
     <Box>
       <Box direction="horizontal" alignment="space-between">
         <Heading>Activity</Heading>
-        <Button name="refresh-txs">
+        <Button name={XnapButtonEvents.REFRESH_TXS}>
           <Image src={RefreshIcon} alt='refresh' />
         </Button>
       </Box>
