@@ -1,12 +1,10 @@
-import type { BIP44Node } from "@metamask/key-tree";
-import { RpcEndpoint, Account } from "./types";
+import { RpcEndpoint, Account, BlockExplorer } from "./types";
 import { StoreKeys } from "./constants";
 
 interface State extends JSON {
   [StoreKeys.ACCOUNTS]: Account[];
-  [StoreKeys.HD_NODE]: BIP44Node | null;
   [StoreKeys.DEFAULT_RPC]: RpcEndpoint | null;
-  [StoreKeys.DEFAULT_BLOCK_EXPLORER]: { name: string, endpoint: string } | null;
+  [StoreKeys.DEFAULT_BLOCK_EXPLORER]: BlockExplorer | null;
   [StoreKeys.ALIAS_SUPPORT]: boolean;
 }
 
@@ -38,10 +36,10 @@ export class StateManager {
   }
 
   /**
-   * @description Retrieve the state from the Snap
+   * Retrieve the state from the Snap
    * @returns State as a key-value pair
    */
-  static async #retrieveState(): Promise<any> {
+  static async #retrieveState(): Promise<State | null> {
     return snap.request({
       method: 'snap_manageState',
       params: { operation: 'get' },
@@ -49,7 +47,7 @@ export class StateManager {
   }
 
   /**
-   * @description Saves the current state in the Snap
+   * Saves the current state in the Snap
    */
   static async #persistState() {
     if (this.#state !== null) {

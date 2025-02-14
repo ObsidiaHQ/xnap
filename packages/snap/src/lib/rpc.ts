@@ -1,20 +1,20 @@
 import { ReceiveBlock, SendBlock, Tools } from "libnemo";
 import { AccountManager } from "./account-manager";
-import { Account, RequestOptions, RpcAccountHistory, RpcAccountInfo, RpcResponseTypeMap, TxType } from "./types";
-import { delay, formatRelativeDate, getRandomRepresentative, isValidAddress, nanoAddressToHex, uint8ArrayToHex } from "./utils";
+import { Account, NanoAlias, RequestOptions, RpcAccountHistory, RpcAccountInfo, RpcResponseTypeMap } from "./types";
+import { delay, formatRelativeDate, getRandomRepresentative, isNanoIdentifier, isValidAddress, nanoAddressToHex, uint8ArrayToHex } from "./utils";
 import { RpcAction, ZERO_HASH, StoreKeys } from "./constants";
 import { StateManager } from "./state-manager";
 import { RequestError } from "../errors/";
 
 export async function accountInfo(account: string): Promise<RpcAccountInfo | null> {
-    return await request(RpcAction.ACCOUNT_INFO, { account, receivable: true, include_confirmed: true });
+    return request(RpcAction.ACCOUNT_INFO, { account, receivable: true, include_confirmed: true });
 }
 
 export async function accountHistory(account?: string, count = 5, raw = false, offset = 0, reverse = false): Promise<RpcAccountHistory[]> {
     if (!isValidAddress(account))
         account = (await AccountManager.getActiveAccount())?.address;
 
-    return await request(RpcAction.ACCOUNT_HISTORY, { account, count, raw, offset, reverse }).then(res => (res?.history || []).map((tx) => ({
+    return request(RpcAction.ACCOUNT_HISTORY, { account, count, raw, offset, reverse }).then(res => (res?.history || []).map((tx) => ({
         ...tx,
         local_timestamp: formatRelativeDate(tx.local_timestamp),
     })));
@@ -23,11 +23,11 @@ export async function accountHistory(account?: string, count = 5, raw = false, o
 export async function accountBalance(account?: string): Promise<{ balance: string, receivable: string }> {
     if (!isValidAddress(account))
         return { balance: '0', receivable: '0' };
-    return await request(RpcAction.ACCOUNT_BALANCE, { account }).then(res => ({ balance: res?.balance || '0', receivable: res?.receivable || '0' }));
+    return request(RpcAction.ACCOUNT_BALANCE, { account }).then(res => ({ balance: res?.balance || '0', receivable: res?.receivable || '0' }));
 }
 
 export async function blocksInfo(blocks: string[]): Promise<{ blocks: any, error?: string } | null> {
-    return await request(RpcAction.BLOCKS_INFO, { hashes: blocks, pending: true, source: true });
+    return request(RpcAction.BLOCKS_INFO, { hashes: blocks, pending: true, source: true });
 }
 
 export async function receivables(account?: string): Promise<Record<string, { amount: string, source: string }>> {
@@ -36,17 +36,13 @@ export async function receivables(account?: string): Promise<Record<string, { am
     return request(RpcAction.RECEIVABLE, { account, source: true, include_only_confirmed: true, sorting: true }).then((res) => res?.blocks || {});
 }
 
-export async function process(block: any, subtype: TxType): Promise<{ hash: string, error?: string } | null> {
-    return await request(RpcAction.PROCESS, { block, watch_work: 'false', subtype, json_block: 'true' });
-}
-
-export async function generateSendBlock(walletAccount: Account | null, toAddress: string, nanoAmount: string): Promise<string | undefined> {
-    if (!walletAccount || !isValidAddress(walletAccount.address) || !isValidAddress(toAddress))
-        throw new Error(`Invalid wallet address`);
+export async function processSendBlock(walletAccount: Account | null, toAddress: string, nanoAmount: string): Promise<string | undefined> {
+    if (!walletAccount || !isValidAddress(walletAccount.address) || !isValidAddress(toAddress) || !walletAccount.privateKey)
+        throw new Error(`Invalid wallet address or key`);
 
     const fromAccount = await accountInfo(walletAccount.address);
     if (!fromAccount || fromAccount.error)
-        throw new Error(`Unable to get account information for ${walletAccount.address}`);
+        throw new Error(`Unable to get account information for ${walletAccount.address}.`);
 
     nanoAmount = await Tools.convert(nanoAmount, 'nano', 'raw');
 
@@ -55,31 +51,34 @@ export async function generateSendBlock(walletAccount: Account | null, toAddress
 
     const representative = fromAccount.confirmed_representative || getRandomRepresentative();
 
-    const work = (await generateWork(fromAccount.confirmed_frontier!))?.work;
-    const send = new SendBlock(walletAccount.address, fromAccount.confirmed_balance, toAddress, nanoAmount, representative, fromAccount.confirmed_frontier!, work)
-    await send.sign(walletAccount.privateKey!);
+    const work = (await generateWork(fromAccount.confirmed_frontier))?.work;
+    if (!work) throw new Error(`Unable to generate work`);
 
-    return process(send.json(), 'send').then(res => res?.hash);
+    const send = new SendBlock(walletAccount.address, fromAccount.confirmed_balance, toAddress, nanoAmount, representative, fromAccount.confirmed_frontier, work)
+    await send.sign(walletAccount.privateKey);
+
+    return request(RpcAction.PROCESS, { block: send.json(), watch_work: 'false', subtype: 'send', json_block: 'true' }).then(res => res?.hash);
 }
 
-export async function generateReceiveBlock(): Promise<number> {
-    const activeAccount = (await AccountManager.getActiveAccount())!;
+export async function processReceiveBlocks(): Promise<number> {
+    const activeAccount = await AccountManager.getActiveAccount();
     const activeAccountPubKey = nanoAddressToHex(activeAccount.address);
     const activeInfo = await accountInfo(activeAccount.address);
     const readyBlocks = await receivables(activeAccount.address);
 
     if (!activeInfo) throw new Error(`Unable to get account information for ${activeAccount.address}`);
+    if (!activeAccount.privateKey) throw new Error(`Unable to get private key for ${activeAccount.address}`);
     if (!Object.keys(readyBlocks).length) return 0;
 
     const representative = activeInfo.confirmed_representative || getRandomRepresentative();
 
     let currentFrontier = activeInfo.confirmed_frontier || ZERO_HASH;
     let currentBalance = BigInt(activeInfo.confirmed_balance || '0');
-    const processedHashes = [];
+    const processedHashes: string[] = [];
 
     try {
         for (const hash of Object.keys(readyBlocks)) {
-            const amount = BigInt(readyBlocks[hash]?.amount!);
+            const amount = BigInt(readyBlocks[hash]?.amount || '0');
             const block = new ReceiveBlock(
                 activeAccount.address,
                 currentBalance.toString(),
@@ -89,12 +88,14 @@ export async function generateReceiveBlock(): Promise<number> {
                 currentFrontier
             );
 
-            block.work = (await generateWork(currentFrontier === ZERO_HASH ? activeAccountPubKey : currentFrontier))?.work!;
-            await block.sign(activeAccount.privateKey!);
-            const processedHash = await process(block.json(), 'receive');
+            block.work = (await generateWork(currentFrontier === ZERO_HASH ? activeAccountPubKey : currentFrontier))?.work || '';
+            if (!block.work) throw new Error(`Unable to generate work`);
 
-            if (processedHash?.hash) {
-                processedHashes.push(processedHash);
+            await block.sign(activeAccount.privateKey);
+            const processedRes = await request(RpcAction.PROCESS, { block: block.json(), watch_work: 'false', subtype: 'receive', json_block: 'true' });
+
+            if (processedRes?.hash) {
+                processedHashes.push(processedRes.hash);
                 currentFrontier = uint8ArrayToHex(await block.hash());
                 currentBalance += amount;
             }
@@ -108,45 +109,37 @@ export async function generateReceiveBlock(): Promise<number> {
 }
 
 export async function generateWork(hash: string): Promise<{ work: string, hash: string } | null> {
-    return await request(RpcAction.WORK_GENERATE, { hash }, { timeout: 45000 }).then(res => {
+    return request(RpcAction.WORK_GENERATE, { hash }, { timeout: 45000 }).then(res => {
         return (typeof res?.work === 'string' && res?.work.length === 16 && /^[0-9A-F]+$/i.test(res.work)) ? res : null;
     }).catch(() => {
         return null;
     });
 }
 
-export async function resolveNanoIdentifier(identifier: string): Promise<{ resolved: string; alias: string }> {
-    const defaultResponse = { resolved: 'Error resolving alias', alias: identifier };
+export async function resolveNanoIdentifier(identifier: string): Promise<{ resolved: string; identifier: string }> {
+    const aliasSupport = await StateManager.getState(StoreKeys.ALIAS_SUPPORT);
+    if (!aliasSupport) {
+        return { identifier, resolved: 'Alias support is disabled' };
+    }
 
-    try {
-        const aliasSupport = await StateManager.getState(StoreKeys.ALIAS_SUPPORT);
-        if (!aliasSupport) {
-            return { ...defaultResponse, resolved: 'Alias support is disabled' };
-        }
+    if (!isNanoIdentifier(identifier)) {
+        return { identifier, resolved: 'Invalid alias' };
+    }
 
-        const [_, localPart, domain] = identifier.split('@');
-        if (!localPart || !domain) {
-            return { ...defaultResponse, resolved: 'Invalid alias' };
-        }
+    const [_, localPart, domain] = identifier.split('@');
 
-        const response = await fetch(
-            `https://${domain}/.well-known/nano-currency.json?names=${localPart}`
-        );
+    return request(RpcAction.RESOLVE_ALIAS, { aliasDomain: `https://${domain}/.well-known/nano-currency.json?names=${localPart}` }, { timeout: 5000, maxRetries: 1 }).then(res => {
+        if (!res) return { identifier, resolved: 'Error resolving alias' };
 
-        if (!response.ok) return defaultResponse;
-
-        const data = await response.json();
-        const name = data.names?.find((n: any) => n.name === localPart);
+        const name = res.names?.find((n: NanoAlias) => n.name === localPart);
 
         return {
-            alias: identifier,
+            identifier,
             resolved: name?.address && isValidAddress(name.address)
                 ? name.address
-                : 'Invalid address in response'
+                : 'Error resolving alias'
         };
-    } catch (error) {
-        return defaultResponse;
-    }
+    });
 }
 
 async function request<T extends RpcAction>(
@@ -184,18 +177,19 @@ async function request<T extends RpcAction>(
 }
 
 async function executeRequest(
-    action: string,
+    action: RpcAction,
     data: any,
-    timeout: number
+    timeout: number,
 ): Promise<any> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
+    const isAliasRequest = action === RpcAction.RESOLVE_ALIAS;
 
-    const defaultRpc = await StateManager.getState(StoreKeys.DEFAULT_RPC);
-    if (!defaultRpc) return null;
+    const defaultRpc = (await StateManager.getState(StoreKeys.DEFAULT_RPC))!;
+    if (!isAliasRequest && !defaultRpc) return null;
 
     try {
-        const options: RequestInit = {
+        const options: RequestInit = isAliasRequest ? {} : {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -205,7 +199,8 @@ async function executeRequest(
             signal: controller.signal
         };
 
-        const response = await fetch(defaultRpc.api, options);
+        const endpoint = isAliasRequest ? data.aliasDomain : defaultRpc.api;
+        const response = await fetch(endpoint, options);
 
         if (!response.ok) {
             throw new RequestError(

@@ -2,34 +2,33 @@ import { DialogType, NotificationType } from '@metamask/snaps-sdk';
 import { Box, Button, Container, Copyable, Divider, Form, Heading, Section, Text } from '@metamask/snaps-sdk/jsx';
 import { renderSVG } from 'uqr';
 import { Tools } from 'libnemo';
-import { Snap, InsightProps, TxConfirmation, RpcEndpoint } from './types';
+import { Snap, TxConfirmation, RpcEndpoint } from './types';
 import { SendPage, ShowKeys, ReceivePage, Insight, AccountSelector, RpcSelector, Homepage, ConfirmDialog, BlockExplorerSelector, SettingsPage, Address } from '../components';
 import { AccountManager } from './account-manager';
 import { BlockExplorers, RpcEndpoints, StoreKeys } from './constants';
 import { StateManager } from './state-manager';
-import { accountBalance, accountHistory, generateReceiveBlock, generateSendBlock, resolveNanoIdentifier } from './rpc';
+import { accountBalance, accountHistory, processReceiveBlocks, processSendBlock, resolveNanoIdentifier } from './rpc';
+import { isNanoIdentifier } from './utils';
 
 declare let snap: Snap;
 
 export async function updatedHomepage() {
-  const [accounts, active, defaultRpc, blockExplorer] = await Promise.all([
+  const [accounts, active, blockExplorer] = await Promise.all([
     AccountManager.getAccounts(),
     AccountManager.getActiveAccount(),
-    StateManager.getState(StoreKeys.DEFAULT_RPC),
     StateManager.getState(StoreKeys.DEFAULT_BLOCK_EXPLORER)
   ]);
   const [activeBalance, txs] = await Promise.all([
-    accountBalance(active?.address!),
-    accountHistory(active?.address),
+    accountBalance(active.address),
+    accountHistory(active.address),
   ]);
 
-  active!.balance = activeBalance?.balance;
-  active!.receivable = activeBalance?.receivable;
+  active.balance = activeBalance?.balance;
+  active.receivable = activeBalance?.receivable;
 
   return <Homepage
     txs={txs}
     accounts={accounts}
-    defaultRpc={defaultRpc?.name!}
     blockExplorer={blockExplorer!}
   />;
 }
@@ -63,9 +62,9 @@ export async function showKeys(id: string) {
       id,
       ui: (
         <ShowKeys
-          address={account!.address!.toString()}
-          publicKey={account!.publicKey!.toString()}
-          secretKey={account!.privateKey!.toString()}
+          address={account.address}
+          publicKey={account.publicKey}
+          secretKey={account.privateKey || 'No private key'}
         />
       ),
     },
@@ -77,49 +76,62 @@ export async function sendPage(id: string) {
     method: 'snap_updateInterface',
     params: {
       id,
-      ui: <SendPage accounts={await AccountManager.getAccounts() as any} active={(await AccountManager.getActiveAccount())!.address!} />,
+      ui: <SendPage accounts={await AccountManager.getAccounts()} />,
     },
   });
 }
 
-export async function sendConfirmation(tx: InsightProps): Promise<TxConfirmation> {
-  const from = await AccountManager.getActiveAccount();
+export async function sendConfirmation(tx: { 
+  to: string, 
+  value: string, 
+  from?: string, 
+  origin?: string 
+}): Promise<TxConfirmation> {
+  const senderAddress = tx.from || (await AccountManager.getActiveAccount()).address;
+  
+  const recepient = isNanoIdentifier(tx.to)
+    ? await resolveNanoIdentifier(tx.to)
+    : { resolved: tx.to, identifier: null };
 
-  const { alias, resolved } = await resolveNanoIdentifier(tx.to);
-  if (resolved) {
-    tx.to = resolved;
-    tx.alias = alias;
-  }
+  const { balance } = await accountBalance(senderAddress);
 
-  const props = {
-    ...tx,
-    from: tx.from || from?.address!,
-    balance: (await accountBalance(tx.from || from?.address))!.balance
-  }
+  const dialogProps = {
+    from: senderAddress,
+    to: recepient.resolved,
+    value: tx.value,
+    origin: tx.origin || null,
+    alias: recepient.identifier,
+    balance
+  };
 
   const confirmed: boolean = await snap.request({
     method: 'snap_dialog',
     params: {
       type: DialogType.Confirmation,
-      content: <Insight {...props} />,
+      content: <Insight {...dialogProps} />,
     },
   });
 
-  return { from: props.from, to: props.to, value: props.value, confirmed };
+  return {
+    from: senderAddress,
+    to: recepient.resolved,
+    value: tx.value,
+    confirmed
+  };
 }
 
 /**
  * ⚠️ This function must ONLY be called AFTER user confirmation! ⚠️
  */
-export async function sendFunds(tx: InsightProps) {
+export async function sendFunds(tx: { to: string, value: string, from: string }) {
   let from = await AccountManager.getAccountByAddress(tx.from);
-  if (!from) {
-    from = await AccountManager.getActiveAccount();
-  }
-  const hash = await generateSendBlock(from!, tx.to, tx.value);
-  if (hash) {
+  if (!from)
+    throw new Error('Account not found');
+
+  const hash = await processSendBlock(from, tx.to, tx.value);
+  if (hash)
     await notifyUser(`Successfully sent ${tx.value} XNO.`);
-  }
+
   return hash;
 }
 
@@ -127,13 +139,12 @@ export const handleSendXnoForm = async (formValue: { value: string, to: string, 
   const { confirmed, from, to, value } = await sendConfirmation({
     value: formValue.value,
     to: formValue.to,
-    from: formValue.selectedAddress,
-    origin: null
+    from: formValue.selectedAddress
   });
 
   if (confirmed) {
     try {
-      await sendFunds({ from, to, value, origin: null });
+      await sendFunds({ from, to, value });
     } catch (error) {
       console.error('Error sending transaction:', error);
     }
@@ -142,13 +153,13 @@ export const handleSendXnoForm = async (formValue: { value: string, to: string, 
 
 export async function receivePage(id: string) {
   const account = await AccountManager.getActiveAccount();
-  const qr = renderSVG(account!.address!);
+  const qr = renderSVG(account.address);
 
   await snap.request({
     method: 'snap_updateInterface',
     params: {
       id,
-      ui: <ReceivePage qr={qr} address={account!.address!} />,
+      ui: <ReceivePage qr={qr} address={account.address} />,
     },
   });
 }
@@ -183,7 +194,7 @@ export async function receiveFundsConfirmation(id: string) {
  * ⚠️ This function must ONLY be called AFTER user confirmation! ⚠️
  */
 export async function receiveFunds() {
-  const processed = await generateReceiveBlock();
+  const processed = await processReceiveBlocks();
   if (processed) {
     await notifyUser(`Successfully received ${processed} transaction(s).`);
   }
@@ -261,7 +272,7 @@ export async function signMessage(message: any, origin: string) {
           <Heading size='md'>Signature request</Heading>
 
           <Section>
-            <Address address={active!.address} prefix="Signing account: "></Address>
+            <Address address={active.address} prefix="Signing account: "></Address>
           </Section>
 
           <Divider />
@@ -322,7 +333,7 @@ export const handleSwitchRpcForm = async (value: { api?: string, auth?: string, 
     selected.name = 'Custom';
     selected.value = selectedRpc;
     selected.api = api || 'Not set';
-    selected.auth = auth!;
+    selected.auth = auth || null;
   }
 
   await StateManager.setState(StoreKeys.DEFAULT_RPC, selected);

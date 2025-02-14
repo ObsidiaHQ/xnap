@@ -1,4 +1,4 @@
-import { BIP44Node, SLIP10Node } from "@metamask/key-tree";
+import { type BIP44Node, SLIP10Node } from "@metamask/key-tree";
 import { Account as NanoAccount } from "libnemo";
 import { remove0x } from "@metamask/utils";
 import { StateManager } from "./state-manager";
@@ -9,17 +9,14 @@ import { StoreKeys } from "./constants";
 export class AccountManager {
 
     /**
-     * Initializes the account manager with an HD Node
+     * Initializes a nano account and the default settings for the snap
      */
     public static async initialize(): Promise<void> {
-        const [nanoNode, accounts, rpc, blockExplorer] = await Promise.all([
-            StateManager.getState(StoreKeys.HD_NODE),
+        const [accounts, rpc, blockExplorer] = await Promise.all([
             StateManager.getState(StoreKeys.ACCOUNTS),
             StateManager.getState(StoreKeys.DEFAULT_RPC),
             StateManager.getState(StoreKeys.DEFAULT_BLOCK_EXPLORER)
         ]);
-
-        let updatedNode = nanoNode;
 
         if (!rpc) {
             await StateManager.setState(StoreKeys.DEFAULT_RPC, getRandomRPC());
@@ -29,17 +26,6 @@ export class AccountManager {
             await StateManager.setState(StoreKeys.DEFAULT_BLOCK_EXPLORER, getRandomBlockExplorer());
         }
 
-        if (!updatedNode) {
-            updatedNode = (await snap.request({
-                method: 'snap_getBip32Entropy',
-                params: {
-                    path: ["m", "44'", "165'"],
-                    curve: "ed25519",
-                },
-            })) as BIP44Node;
-            await StateManager.setState(StoreKeys.HD_NODE, updatedNode);
-        }
-
         if (!accounts?.length || accounts.some(a => !this.isValidAccount(a))) {
             await StateManager.setState(StoreKeys.ACCOUNTS, []);
             await this.addAccount();
@@ -47,8 +33,8 @@ export class AccountManager {
     }
 
     /**
-     * Adds a new account derived from the HD Node
-     * @returns The newly created account
+     * Adds a new nano account derived from the master HD node. Automatically sets the account as active if it is the first account.
+     * @returns A promise that resolves to the newly created account.
      */
     public static async addAccount(): Promise<Account> {
         const hdNode = await this.getHDNode();
@@ -58,18 +44,26 @@ export class AccountManager {
         const nanoSlip10Node = await SLIP10Node.fromJSON(hdNode);
 
         const newAccountNode = await nanoSlip10Node.derive([`slip10:${newIndex}'`]);
-        const privKey = remove0x(newAccountNode.toJSON().privateKey!);
+        const privKey = remove0x(newAccountNode.toJSON().privateKey || '');
+
+        if (!privKey)
+            throw new Error("Failed to derive private key");
+
         const { address, privateKey, publicKey } = await NanoAccount.fromPrivateKey(privKey);
-        const { confirmed_balance, confirmed_frontier, confirmed_receivable } = (await accountInfo(address))!;
+        const accInfo = (await accountInfo(address));
 
         const newAccount: Account = {
-            address, privateKey, balance: confirmed_balance, frontier: confirmed_frontier, receivable: confirmed_receivable, publicKey
+            address, 
+            privateKey, 
+            publicKey,
+            balance: accInfo?.confirmed_balance || '0', 
+            frontier: accInfo?.confirmed_frontier || '', 
+            receivable: accInfo?.confirmed_receivable || '0'
         };
 
         // If this is the first account, set it as active
-        if (accounts.length === 0) {
+        if (accounts.length === 0)
             newAccount.active = true;
-        }
 
         await StateManager.setState(StoreKeys.ACCOUNTS, [...accounts, newAccount]);
 
@@ -78,45 +72,44 @@ export class AccountManager {
 
     /**
      * Gets the currently active account
-     * @returns The active account or null if none is set
+     * @returns A promise that resolves to the active account
      */
-    public static async getActiveAccount(): Promise<Account | null> {
+    public static async getActiveAccount(): Promise<Account> {
         const accounts = await this.getAccounts();
-        let activeAccount = accounts.find(acc => acc.active)!;
+        if (!accounts.length || !accounts[0])
+            throw new Error("No accounts found");
 
-        if (!activeAccount) {
-            activeAccount = await this.setActiveAccount(accounts[0]!);
-        };
+        let activeAccount = accounts.find(acc => acc.active);
+
+        if (!activeAccount)
+            activeAccount = await this.setActiveAccount(accounts[0]);
 
         return activeAccount;
     }
 
     /**
-     * Sets the active account by address
-     * @param address The address of the account to set as active
+     * Sets the provided account as the active account.
+     * @param account - The account to be set as active.
+     * @returns A promise that resolves to the account that has been set as active.
      */
     public static async setActiveAccount(account: Account): Promise<Account> {
         let accounts = await this.getAccounts();
-        accounts = accounts.map(acc => {
-            if (acc.address !== account.address) {
-                return ({ ...acc, active: false });
-            }
-            return ({ ...account, active: true })
-        });
+        if (!accounts.length || !accounts[0])
+            throw new Error("No accounts found");
 
+        accounts = accounts.map(acc => ({ ...acc, active: acc.address === account.address }));
         await StateManager.setState(StoreKeys.ACCOUNTS, accounts);
 
-        return accounts.find(acc => acc.active)!;
+        return accounts.find(acc => acc.active) as Account;
     }
 
     /**
-     * Gets all available accounts
-     * @returns Array of accounts
+     * @returns Array of all available accounts
      */
     public static async getAccounts(): Promise<Account[]> {
         let accounts = await StateManager.getState(StoreKeys.ACCOUNTS);
 
-        if (!accounts?.length) {
+        if (!Array.isArray(accounts)) {
             accounts = [];
             await StateManager.setState(StoreKeys.ACCOUNTS, accounts);
         }
@@ -133,24 +126,28 @@ export class AccountManager {
         let accounts = await StateManager.getState(StoreKeys.ACCOUNTS) || [];
         const account = accounts.find(acc => acc.address === address);
 
-        if (!account) {
-            return null;
-        }
-
-        return account;
+        return account || null;
     }
 
+    /**
+     * Retrieves the master Hierarchical Deterministic (HD) node on-demand, based on the BIP44 nano derivation path.
+     * @returns A promise that resolves to the master HD node.
+     */
     private static async getHDNode(): Promise<BIP44Node> {
-        const hdNode = await StateManager.getState(StoreKeys.HD_NODE);
-
-        if (!hdNode) {
-            await this.initialize();
-            return (await StateManager.getState(StoreKeys.HD_NODE))!;
-        }
+        const hdNode = (await snap.request({
+            method: 'snap_getBip32Entropy',
+            params: {
+                path: ["m", "44'", "165'"],
+                curve: "ed25519",
+            },
+        })) as BIP44Node;
 
         return hdNode;
     }
 
+    /**
+     * Basic validatation of an account object
+     */
     private static isValidAccount(account: any): boolean {
         return account
             && typeof account.address === 'string'

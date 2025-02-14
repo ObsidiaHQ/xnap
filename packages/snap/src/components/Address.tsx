@@ -3,15 +3,17 @@ import { createJazzicon, truncateAddress } from "../lib/utils";
 
 type AddressProps = {
   address: string;
-  alias?: string;
+  alias?: string | null;
   prefix?: string;
   balance?: string;
   compact?: boolean;
+  insufficient?: boolean;
 };
 
-export const Address: SnapComponent<AddressProps> = ({ address, alias, prefix, balance, compact = true }) => {
+export const Address: SnapComponent<AddressProps> = ({ address, alias, prefix, balance, compact = true, insufficient = false }) => {
+  const balanceText = (balance || '0') + ' XNO';
   return compact ? (
-    <Row label={(prefix || '') + truncateAddress(address)} tooltip={alias || ''}>
+    <Row label={(prefix || '') + truncateAddress(address)} tooltip={alias || undefined}>
       <Image src={createJazzicon(address, 24)} />
     </Row>
   ) : (
@@ -19,7 +21,7 @@ export const Address: SnapComponent<AddressProps> = ({ address, alias, prefix, b
       image={createJazzicon(address, 20)}
       title={prefix || ''}
       value={truncateAddress(address)}
-      extra={(balance || '0') + ' XNO'}
+      extra={(insufficient ? '⚠️ ' : '') + balanceText}
     />
   );
 };

@@ -29,7 +29,7 @@ import {
   handleSwitchExplorerForm,
   handleSettingsForm
 } from './lib/handlers';
-import { createJazzicon } from './lib/utils';
+import { createJazzicon, isNanoIdentifier, isValidAddress } from './lib/utils';
 
 export const onRpcRequest = async ({ origin, request }: RpcRequest) => {
   await AccountManager.initialize();
@@ -39,11 +39,16 @@ export const onRpcRequest = async ({ origin, request }: RpcRequest) => {
       const icon = address ? await createJazzicon(address, 64) : undefined;
       return { address, icon };
     case 'xno_makeTransaction':
-      const { confirmed, from, to, value } = await sendConfirmation({ ...request.params, origin });
-      if (!confirmed) {
-        return { result: null };
-      }
-      const hash = await sendFunds({ from, to, value, origin });
+      const { to, value } = request.params;
+      if (!isNanoIdentifier(to) && !isValidAddress(to))
+        return { result: undefined };
+      
+      const confirmRes = await sendConfirmation({ to, value, origin });
+
+      if (!confirmRes.confirmed)
+        return { result: undefined };
+
+      const hash = await sendFunds({ from: confirmRes.from, to: confirmRes.to, value: confirmRes.value });
       return { result: hash };
     case 'xno_signMessage':
       const { message } = request.params;

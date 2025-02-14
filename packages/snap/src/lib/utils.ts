@@ -343,3 +343,8 @@ export function uint8ArrayToHex(arr: Uint8Array): string {
 export function delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+export function isNanoIdentifier(identifier: string): boolean {
+    // @name@example.com
+    return /@[a-zA-Z0-9]+@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}/.test(identifier);
+}

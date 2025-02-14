@@ -11,11 +11,11 @@ export const AccountSelector: SnapComponent<{ accounts: Account[] }> = ({ accoun
   return (
     <Selector name="selectedAddress" title="Select an account">
       {accounts.map((account, index) => (
-        <SelectorOption value={account.address!}>
+        <SelectorOption value={account.address}>
           <Card
-            image={createJazzicon(account.address!, 20)}
+            image={createJazzicon(account.address, 20)}
             title={(index + 1) + "." + (account.active ? ' ⭐' : '')}
-            value={truncateAddress(account.address!)}
+            value={truncateAddress(account.address)}
             extra={rawToNano(account.balance) + ' XNO'}
           />
         </SelectorOption>

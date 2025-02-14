@@ -13,7 +13,7 @@ import { AccountSelector } from './';
 import { Account } from '../lib/types';
 import { XnapButtonEvents, XnapFormEvents } from '../lib/constants';
 
-export const SendPage: SnapComponent<{ accounts: Account[], active: string }> = ({ accounts, active }) => {
+export const SendPage: SnapComponent<{ accounts: Account[] }> = ({ accounts }) => {
   return (
     <Container>
       <Box>
@@ -26,7 +26,7 @@ export const SendPage: SnapComponent<{ accounts: Account[], active: string }> = 
             <Input name="value" placeholder="2.5" type='number' />
           </Field>
           <Field label="Recipient">
-            <Input name="to" placeholder="nano_123.." />
+            <Input name="to" placeholder="nano_1xyz.. or @alias@example.com" />
           </Field>
           <Divider />
           <Box alignment="space-around" direction="horizontal">

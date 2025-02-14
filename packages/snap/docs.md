@@ -1,6 +1,6 @@
 # Xnap RPC API Documentation
 
-Xnap provides several RPC methods that websites can use to interact with the Nano network through MetaMask. All methods are accessible through the `wallet_invokeSnap` MetaMask method.
+Xnap provides several RPC methods that websites can use to interact with the Nano network through MetaMask. All methods are accessible through the `wallet_invokeSnap` MetaMask method and return a JSON object.
 
 ## Methods
 
@@ -11,7 +11,8 @@ Returns the currently active Nano address.
 **Parameters:** None
 
 **Returns:**
-- `result`: `string | undefined` - The current Nano address or undefined if no address is selected
+- `address`: `string | undefined` - The current Nano address or undefined if no address is selected.
+- `icon`: `string | undefined` - unique Jazzicon for the address as SVG, or undefined if no address is selected.
 
 **Example:**
 ```javascript
@@ -24,6 +25,8 @@ const response = await window.ethereum.request({
     }
   }
 });
+
+// console.log(response.address); -> "nano_1xyz..."
 ```
 
 ### xno_makeTransaction
@@ -31,9 +34,8 @@ const response = await window.ethereum.request({
 Initiates a send transaction. This will prompt the user for confirmation before sending.
 
 **Parameters:**
-- `from`: `string` - The sender's Nano address
-- `to`: `string` - The recipient's Nano address or [Nano internet identifier](https://github.com/mistakia/nano-community/blob/cae1dd3938fa1ca3e51c8d672187294bf3bcc8da/docs/getting-started-devs/integrations.md#nano-internet-identifiers)
-- `value`: `string` - The amount to send (in nano)
+- `to`: `string` - The recipient's Nano address or a [Nano internet identifier](https://github.com/mistakia/nano-community/blob/cae1dd3938fa1ca3e51c8d672187294bf3bcc8da/docs/getting-started-devs/integrations.md#nano-internet-identifiers).
+- `value`: `string` - The amount to send (in nano), use decimal point for fractions.
 
 **Returns:**
 - `result`: `string | undefined` - The transaction hash if successful, undefined otherwise
@@ -47,7 +49,7 @@ const response = await window.ethereum.request({
     request: {
       method: 'xno_makeTransaction',
       params: {
-        to: 'nano_1xyz...',
+        to: 'nano_1xyz...', // or @username@domain.com
         value: '1.5'
       }
     }

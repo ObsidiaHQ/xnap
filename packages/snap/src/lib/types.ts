@@ -23,6 +23,11 @@ export type RpcAccountInfo = {
   error?: string,
 }
 
+export type NanoAlias = {
+  name: string, 
+  address: string
+}
+
 export type RpcResponseTypeMap = {
   [RpcAction.ACCOUNT_INFO]: RpcAccountInfo;
   [RpcAction.ACCOUNT_HISTORY]: { history: RpcAccountHistory[] };
@@ -31,6 +36,7 @@ export type RpcResponseTypeMap = {
   [RpcAction.RECEIVABLE]: { blocks: Record<string, { amount: string, source: string }> };
   [RpcAction.PROCESS]: { hash: string, error?: string };
   [RpcAction.WORK_GENERATE]: { work: string, hash: string };
+  [RpcAction.RESOLVE_ALIAS]: { names: NanoAlias[] };
 }
 
 export type Account = {
@@ -45,15 +51,6 @@ export type Account = {
 
 export type TxType = 'receive' | 'send' | 'open' | 'change';
 
-export type InsightProps = {
-  from: string;
-  to: string;
-  value: string;
-  origin: string | null;
-  balance?: string;
-  alias?: string;
-};
-
 export type TxConfirmation = {
   from: string;
   to: string;
@@ -63,12 +60,12 @@ export type TxConfirmation = {
 
 export type GetCurrentAddress = {
   method: 'xno_getCurrentAddress';
-  params: {};
+  params: never;
 }
 
 export type MakeTransaction = {
   method: 'xno_makeTransaction';
-  params: Record<keyof Pick<InsightProps, 'from' | 'to' | 'value'>, never>;
+  params: { to: string, value: string };
 }
 
 export type SignMessage = {

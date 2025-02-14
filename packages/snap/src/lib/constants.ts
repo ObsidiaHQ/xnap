@@ -11,7 +11,8 @@ export enum RpcAction {
   BLOCKS_INFO = 'blocks_info',
   RECEIVABLE = 'receivable',
   PROCESS = 'process',
-  WORK_GENERATE = 'work_generate'
+  WORK_GENERATE = 'work_generate',
+  RESOLVE_ALIAS = 'resolve_alias'
 };
 
 export const XnapButtonEvents = {
@@ -40,7 +41,6 @@ export const XnapFormEvents = {
 
 export const StoreKeys = {
   ACCOUNTS: 'accounts',
-  HD_NODE: 'nanoNode',
   DEFAULT_RPC: 'defaultRpc',
   DEFAULT_BLOCK_EXPLORER: 'blockExplorer',
   ALIAS_SUPPORT: 'aliasSupport',

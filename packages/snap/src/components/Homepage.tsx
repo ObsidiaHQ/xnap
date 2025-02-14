@@ -8,14 +8,13 @@ import { XnapButtonEvents } from "../lib/constants";
 type HomepageProps = {
   accounts: Account[];
   txs: RpcAccountHistory[];
-  defaultRpc: string;
   blockExplorer: { name: string, endpoint: string };
 }
 
 const hasReceiveable = (rec: string | undefined) => rec && rec !== '0';
 
-export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, defaultRpc, blockExplorer }) => {
-  const active = accounts.find(acc => acc.active)!;
+export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, blockExplorer }) => {
+  const active = accounts.find(acc => acc.active) as Account;
   return (
     <Container>
       <Box>
@@ -23,7 +22,7 @@ export const Homepage: SnapComponent<HomepageProps> = ({ txs, accounts, defaultR
 
         <Box direction='horizontal'>
           <Heading size='lg'>{rawToNano(active.balance)} XNO</Heading>
-          {hasReceiveable(active.receivable) ? (<Button name={XnapButtonEvents.RECEIVE_FUNDS_CONFIRM}><Image src={ReceiveIcon}></Image> {rawToNano(active.receivable!)}</Button>) : null}
+          {hasReceiveable(active.receivable) ? (<Button name={XnapButtonEvents.RECEIVE_FUNDS_CONFIRM}><Image src={ReceiveIcon}></Image> {rawToNano(active.receivable)}</Button>) : null}
         </Box>
 
         <Box direction='horizontal' alignment='space-around'>
