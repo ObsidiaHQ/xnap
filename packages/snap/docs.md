@@ -2,17 +2,31 @@
 
 Xnap provides several RPC methods that websites can use to interact with the Nano network through MetaMask. All methods are accessible through the `wallet_invokeSnap` MetaMask method and return a JSON object.
 
-## Methods
+## Connecting to Xnap
+
+```javascript
+const result: any = await window.ethereum.request({
+    method: 'wallet_requestSnaps',
+    params: {
+        'npm:@obsidia/xnap': {
+          // Version is optional, use it to specify the version range of the snap or leave as empty object
+          version: '1.0.0', 
+        },
+    },
+});
+```
+
+## JSON-RPC Methods
 
 ### xno_getCurrentAddress
 
-Returns the currently active Nano address.
+Returns the currently active Nano address and a unique Jazzicon representation.
 
 **Parameters:** None
 
 **Returns:**
 - `address`: `string | undefined` - The current Nano address or undefined if no address is selected.
-- `icon`: `string | undefined` - unique Jazzicon for the address as SVG, or undefined if no address is selected.
+- `icon`: `string | undefined` - unique Jazzicon for the address as an SVG element, or undefined if no address is selected.
 
 **Example:**
 ```javascript
@@ -59,7 +73,7 @@ const response = await window.ethereum.request({
 
 ### xno_signMessage
 
-Signs a message using the currently active Nano account.
+Requests signing a message using the currently active Nano account.
 
 **Parameters:**
 - `message`: `string` - The message to sign

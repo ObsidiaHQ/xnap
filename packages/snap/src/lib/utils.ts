@@ -286,6 +286,9 @@ export function getRandomBlockExplorer() {
     return BlockExplorers[Math.floor(Math.random() * BlockExplorers.length)]!;
 }
 
+/**
+ * @returns The hex string representation of a given Nano address.
+ */
 export function nanoAddressToHex(nanoAddress: string) {
     if (!isValidAddress(nanoAddress))
         throw new Error("Invalid Nano address");
@@ -344,7 +347,9 @@ export function delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+/**
+ * @returns `true` if the identifier is of the form `@name@example.com`, `false` otherwise.
+ */
 export function isNanoIdentifier(identifier: string): boolean {
-    // @name@example.com
     return /@[a-zA-Z0-9]+@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}/.test(identifier);
 }
