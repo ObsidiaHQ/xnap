@@ -8,7 +8,7 @@ of MetaMask. A _snap_ is a program that runs in an isolated environment that
 can customize the wallet experience.
 
 ## Integrating Xnap in your website
-Refer to Xnap's [documentation](packages/snap/docs.md).
+Refer to Xnap's [documentation](packages/snap/README.md).
 
 ## Project structure
     packages/
@@ -41,7 +41,7 @@ const result: any = await window.ethereum.request({
 });
 ```
 
-Refer to the [documentation](packages/snap/docs.md) or MetaMask's [guide](https://docs.metamask.io/snaps/how-to/connect-to-a-snap/) for more information.
+Refer to the [documentation](packages/snap/README.md) or MetaMask's [guide](https://docs.metamask.io/snaps/how-to/connect-to-a-snap/) for more information.
 
 #### Testing and Linting
 
