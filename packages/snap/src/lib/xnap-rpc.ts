@@ -51,7 +51,7 @@ export class XnapRPC {
       to: confirmRes.to,
       value: confirmRes.value,
     });
-    return { result: hash };
+    return { hash };
   }
 
   static async signMessage({ message }: { message: string }, origin: string) {
@@ -64,7 +64,7 @@ export class XnapRPC {
       throw SnapError.of(RequestErrors.UserRejectedRequest);
     }
 
-    return { result: await signMessage(message) };
+    return { signature: await signMessage(message) };
   }
 }
 
