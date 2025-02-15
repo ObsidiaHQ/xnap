@@ -1,10 +1,10 @@
-import { RpcAction } from "./constants";
+import type { RpcAction } from './constants';
 
 export type RequestOptions = {
   maxRetries?: number;
   timeout?: number;
   skipError?: boolean;
-}
+};
 
 export type RpcAccountHistory = {
   account: string;
@@ -12,32 +12,32 @@ export type RpcAccountHistory = {
   local_timestamp: string;
   type: TxType;
   hash: string;
-}
+};
 
 export type RpcAccountInfo = {
-  confirmed_frontier: string,
-  confirmed_receivable: string,
-  confirmed_representative: string,
-  confirmed_balance: string,
-  modified_timestamp: string,
-  error?: string,
-}
+  confirmed_frontier: string;
+  confirmed_receivable: string;
+  confirmed_representative: string;
+  confirmed_balance: string;
+  modified_timestamp: string;
+  error?: string;
+};
 
 export type NanoAlias = {
-  name: string, 
-  address: string
-}
+  name: string;
+  address: string;
+};
 
 export type RpcResponseTypeMap = {
   [RpcAction.ACCOUNT_INFO]: RpcAccountInfo;
   [RpcAction.ACCOUNT_HISTORY]: { history: RpcAccountHistory[] };
-  [RpcAction.ACCOUNT_BALANCE]: { balance: string, receivable: string };
-  [RpcAction.BLOCKS_INFO]: { blocks: any, error?: string };
-  [RpcAction.RECEIVABLE]: { blocks: Record<string, { amount: string, source: string }> };
-  [RpcAction.PROCESS]: { hash: string, error?: string };
-  [RpcAction.WORK_GENERATE]: { work: string, hash: string };
+  [RpcAction.ACCOUNT_BALANCE]: { balance: string; receivable: string };
+  [RpcAction.BLOCKS_INFO]: { blocks: any; error?: string };
+  [RpcAction.RECEIVABLE]: { blocks: Record<string, { amount: string; source: string }> };
+  [RpcAction.PROCESS]: { hash: string; error?: string };
+  [RpcAction.WORK_GENERATE]: { work: string; hash: string };
   [RpcAction.RESOLVE_ALIAS]: { names: NanoAlias[] };
-}
+};
 
 export type Account = {
   address: string;
@@ -56,45 +56,36 @@ export type TxConfirmation = {
   to: string;
   value: string;
   confirmed: boolean;
-}
+};
 
 export type GetCurrentAddress = {
   method: 'xno_getCurrentAddress';
   params: never;
-}
+};
 
 export type MakeTransaction = {
   method: 'xno_makeTransaction';
-  params: { to: string, value: string };
-}
+  params: { to: string; value: string };
+};
 
 export type SignMessage = {
   method: 'xno_signMessage';
   params: { message: string };
-}
+};
 
-export type MetamaskXNORpcRequest =
-  | MakeTransaction
-  | GetCurrentAddress
-  | SignMessage;
+export type MetamaskXNORpcRequest = MakeTransaction | GetCurrentAddress | SignMessage;
 
 export type RpcRequest = {
   origin: string;
   request: MetamaskXNORpcRequest;
 };
 
-export type XNOMethodCallback = (
-  originString: string,
-  requestObject: MetamaskXNORpcRequest,
-) => Promise<unknown>;
+export type XNOMethodCallback = (originString: string, requestObject: MetamaskXNORpcRequest) => Promise<unknown>;
 
 export type Snap = {
   registerRpcMessageHandler: (fn: XNOMethodCallback) => unknown;
-  request<T>(options: {
-    method: string;
-    params?: unknown[] | Record<string, any>;
-  }): Promise<T>;
-}
+  request<T>(options: { method: string; params?: unknown[] | Record<string, any> }): Promise<T>;
+};
 
 export type SLIP10Node = {
   /**
@@ -137,16 +128,16 @@ export type SLIP10Node = {
    * The name of the curve used by the node.
    */
   readonly curve: 'ed25519' | 'secp256k1';
-}
+};
 
 export type RpcEndpoint = {
   name: string;
   value: string;
   api: string;
   auth: string | null;
-}
+};
 
 export type BlockExplorer = {
   name: string;
   endpoint: string;
-}
+};

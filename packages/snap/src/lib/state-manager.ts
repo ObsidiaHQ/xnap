@@ -1,12 +1,12 @@
-import { RpcEndpoint, Account, BlockExplorer } from "./types";
-import { StoreKeys } from "./constants";
+import type { StoreKeys } from './constants';
+import type { RpcEndpoint, Account, BlockExplorer } from './types';
 
-interface State extends JSON {
+type State = {
   [StoreKeys.ACCOUNTS]: Account[];
   [StoreKeys.DEFAULT_RPC]: RpcEndpoint | null;
   [StoreKeys.DEFAULT_BLOCK_EXPLORER]: BlockExplorer | null;
   [StoreKeys.ALIAS_SUPPORT]: boolean;
-}
+} & JSON;
 
 type StateKey = keyof State;
 type StateValue<K extends StateKey> = State[K];

@@ -3619,6 +3619,7 @@ __metadata:
     "@metamask/snaps-jest": ^8.9.0
     "@metamask/snaps-sdk": 6.17.1
     "@metamask/snaps-ui": 3.1.0
+    "@types/mersenne-twister": ^1.1.7
     "@types/react": 18.2.4
     "@types/react-dom": 18.2.4
     "@typescript-eslint/eslint-plugin": ^5.42.1
@@ -5151,6 +5152,13 @@ __metadata:
   version: 4.17.15
   resolution: "@types/lodash@npm:4.17.15"
   checksum: 5037564154411f4ac0b187b914031c150520a7ca037dea007f774b7123c97c0da55b2e41ae81dc1bc80ff09e8d6a236455ea676d5062af12c592b8e81baec7bf
+  languageName: node
+  linkType: hard
+
+"@types/mersenne-twister@npm:^1.1.7":
+  version: 1.1.7
+  resolution: "@types/mersenne-twister@npm:1.1.7"
+  checksum: 2d97e98287573ef6bdf3684ac3ed80bc384e5f9e214d4fa20e0449642fe0bd77347a9c4f8ef5feedd137a22ae073f51e314d52fe3aa921c1ecb7b5cc0d5e3d93
   languageName: node
   linkType: hard
 

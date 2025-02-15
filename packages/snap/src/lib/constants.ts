@@ -1,4 +1,4 @@
-import { RpcEndpoint, BlockExplorer } from "./types";
+import type { RpcEndpoint, BlockExplorer } from './types';
 
 export const ALPHABET = '13456789abcdefghijkmnopqrstuwxyz';
 
@@ -12,8 +12,8 @@ export enum RpcAction {
   RECEIVABLE = 'receivable',
   PROCESS = 'process',
   WORK_GENERATE = 'work_generate',
-  RESOLVE_ALIAS = 'resolve_alias'
-};
+  RESOLVE_ALIAS = 'resolve_alias',
+}
 
 export const XnapButtonEvents = {
   ADD_ACCOUNT: 'add-account',
@@ -46,34 +46,34 @@ export const StoreKeys = {
   ALIAS_SUPPORT: 'aliasSupport',
 } as const;
 
-export type XnapButtonEventName = typeof XnapButtonEvents[keyof typeof XnapButtonEvents];
-export type XnapFormEventName = typeof XnapFormEvents[keyof typeof XnapFormEvents];
+export type XnapButtonEventName = (typeof XnapButtonEvents)[keyof typeof XnapButtonEvents];
+export type XnapFormEventName = (typeof XnapFormEvents)[keyof typeof XnapFormEvents];
 
 export const RpcEndpoints: RpcEndpoint[] = [
-    {
-      name: 'Rainstorm City',
-      value: 'rainstorm',
-      api: 'https://rainstorm.city/api',
-      auth: null,
-    },
-    {
-      name: 'NanOslo',
-      value: 'nanoslo',
-      api: 'https://nanoslo.0x.no/proxy',
-      auth: null,
-    },
-    {
-      name: 'SomeNano',
-      value: 'somenano',
-      api: 'https://node.somenano.com/proxy',
-      auth: null,
-    },
-    {
-      name: 'SpyNano',
-      value: 'spynano',
-      api: 'https://node.spynano.org/proxy',
-      auth: null,
-    }
+  {
+    name: 'Rainstorm City',
+    value: 'rainstorm',
+    api: 'https://rainstorm.city/api',
+    auth: null,
+  },
+  {
+    name: 'NanOslo',
+    value: 'nanoslo',
+    api: 'https://nanoslo.0x.no/proxy',
+    auth: null,
+  },
+  {
+    name: 'SomeNano',
+    value: 'somenano',
+    api: 'https://node.somenano.com/proxy',
+    auth: null,
+  },
+  {
+    name: 'SpyNano',
+    value: 'spynano',
+    api: 'https://node.spynano.org/proxy',
+    auth: null,
+  },
 ] as const;
 
 export const RepAccounts = [
@@ -107,5 +107,5 @@ export const BlockExplorers: BlockExplorer[] = [
   {
     name: 'nano.community',
     endpoint: 'https://nano.community/',
-  }
+  },
 ] as const;

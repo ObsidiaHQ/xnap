@@ -1,11 +1,7 @@
 import { RequestErrors, SnapError } from '../errors';
 import { AccountManager } from './account-manager';
-import {
-  createJazzicon,
-  isNanoIdentifier,
-  isValidAddress,
-  isValidAmount,
-} from './utils';
+import type { XnapButtonEventName, XnapFormEventName } from './constants';
+import { XnapButtonEvents, XnapFormEvents } from './constants';
 import {
   receivePage,
   refreshHomepage,
@@ -28,26 +24,27 @@ import {
   handleSwitchExplorerForm,
   handleSettingsForm,
 } from './handlers';
-import { XnapButtonEvents, XnapFormEvents } from './constants';
-import { XnapButtonEventName, XnapFormEventName } from './constants';
+import { createJazzicon, isNanoIdentifier, isValidAddress, isValidAmount } from './utils';
 
 export class XnapRPC {
-    
   static async getCurrentAddress() {
     const address = (await AccountManager.getActiveAccount())?.address;
-    if (!address) 
-        throw SnapError.of(RequestErrors.ResourceNotFound);
+    if (!address) {
+      throw SnapError.of(RequestErrors.ResourceNotFound);
+    }
     const icon = await createJazzicon(address, 64);
     return { address, icon };
   }
 
   static async makeTransaction({ to, value }: { to: string; value: string }, origin: string) {
-    if ((!isNanoIdentifier(to) && !isValidAddress(to)) || !isValidAmount(value))
+    if ((!isNanoIdentifier(to) && !isValidAddress(to)) || !isValidAmount(value)) {
       throw SnapError.of(RequestErrors.InvalidParams);
+    }
 
     const confirmRes = await sendConfirmation({ to, value, origin });
-    if (!confirmRes.confirmed)
+    if (!confirmRes.confirmed) {
       throw SnapError.of(RequestErrors.UserRejectedRequest);
+    }
 
     const hash = await sendFunds({
       from: confirmRes.from,
@@ -58,22 +55,24 @@ export class XnapRPC {
   }
 
   static async signMessage({ message }: { message: string }, origin: string) {
-    if (!message || typeof message !== 'string')
+    if (!message || typeof message !== 'string') {
       throw SnapError.of(RequestErrors.InvalidParams);
+    }
 
     const confirmed = await signConfirmation(message, origin);
-    if (!confirmed) throw SnapError.of(RequestErrors.UserRejectedRequest);
+    if (!confirmed) {
+      throw SnapError.of(RequestErrors.UserRejectedRequest);
+    }
 
     return { result: await signMessage(message) };
   }
 }
 
 // helper function for handling button events
-export const handleButtonEvent = async (
-  id: string,
-  name?: XnapButtonEventName,
-) => {
-  if (!name) return;
+export const handleButtonEvent = async (id: string, name?: XnapButtonEventName) => {
+  if (!name) {
+    return;
+  }
   switch (name) {
     case XnapButtonEvents.ADD_ACCOUNT:
       await AccountManager.addAccount();
@@ -116,11 +115,7 @@ export const handleButtonEvent = async (
 };
 
 // helper function for handling form events
-export const handleFormEvent = async (
-  id: string,
-  name: XnapFormEventName,
-  value: any,
-) => {
+export const handleFormEvent = async (id: string, name: XnapFormEventName, value: any) => {
   switch (name) {
     case XnapFormEvents.SEND_XNO_FORM:
       await handleSendXnoForm(value);
