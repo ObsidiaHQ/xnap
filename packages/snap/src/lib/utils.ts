@@ -353,3 +353,7 @@ export function delay(ms: number): Promise<void> {
 export function isNanoIdentifier(identifier: string): boolean {
     return /@[a-zA-Z0-9]+@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}/.test(identifier);
 }
+
+export function isValidAmount(amount: string): boolean {
+    return /^\d{1,9}(\.\d+)?$/.test(amount);
+}

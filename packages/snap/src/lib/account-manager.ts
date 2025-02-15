@@ -3,7 +3,7 @@ import { Account as NanoAccount } from "libnemo";
 import { remove0x } from "@metamask/utils";
 import { StateManager } from "./state-manager";
 import { Account } from "./types";
-import { accountInfo } from "./rpc";
+import { accountInfo } from "./nano-rpc";
 import { getRandomBlockExplorer, getRandomRPC, isValidAddress } from "./utils";
 import { StoreKeys } from "./constants";
 export class AccountManager {

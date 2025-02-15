@@ -1,50 +1,66 @@
 export const RequestErrors = {
-  NoPermission: {
-    code: 20000,
+  ChainDisconnected: {
+    code: 4901,
+    message: 'The provider is disconnected from the requested chain.'
+  },
+  Disconnected: {
+    code: 4900,
+    message: 'The provider is disconnected.'
+  },
+  Internal: {
+    code: -32603,
+    message: 'An internal error has occurred.'
+  },
+  InvalidInput: {
+    code: -32000,
+    message:'The input to the method is invalid.'
+  },
+  InvalidParams: {
+    code: -32602,
+    message: 'Method parameters are invalid.'
+  },
+  InvalidRequest: {
+    code: -32600,
+    message: 'Request is invalid.'
+  },
+  LimitExceeded: {
+    code: -32005,
+    message: 'Limit has been exceeded.'
+  },
+  MethodNotFound: {
+    code: -32601,
+    message: 'Method does not exist.'
+  },
+  MethodNotSupported: {
+    code: -32004,
+    message: 'Method is not supported.'
+  },
+  Parse: {
+    code: -32700,
+    message: 'Request is not valid JSON.'
+  },
+  ResourceNotFound: {
+    code: -32001,
+    message: 'Resource does not exist.'
+  },
+  ResourceUnavailable: {
+    code: -32002,
+    message: 'Resource is unavailable.'
+  },
+  TransactionRejected: {
+    code: -32003,
+    message: 'Transaction has been rejected.'
+  },
+  Unauthorized: {
+    code: 4100,
     message: 'Unauthorized to perform action.'
   },
-  RejectKey: {
-    code: 20001,
-    message: 'User reject to access the key'
+  UnsupportedMethod: {
+    code: 4200,
+    message: 'The requested method is not supported by the provider.'
   },
-  RejectSign: {
-    code: 20002,
-    message: 'User reject the sign request'
-  },
-  SignInvalidPath: {
-    code: 20003,
-    message:'invalid path'
-  },
-  SignFailed: {
-    code: 20004,
-    message: 'Sign transaction failed'
-  },
-  NetworkNotMatch: {
-    code: 20005,
-    message: 'Network not match'
-  },
-  ScriptTypeNotSupport: {
-    code: 20006,
-    message: 'ScriptType is not supported.'
-  },
-  MethodNotSupport: {
-    code: 20007,
-    message: 'Method not found.'
-  },
-  ActionNotSupport: {
-    code: 20008,
-    message: 'Action not supported'
-  },
-  UserReject: {
-    code: 20009,
-    message: 'User rejected the request.'
-  },
-  KeyNotSupported: {
-    code: 20010,
-    message: 'Key cannot be recognized'
-  },
-  DomainNotAllowed: {
-    code: 20011,
-    message: 'Domain not allowed'
+  UserRejectedRequest: {
+    code: 4001,
+    message: 'The user has rejected the request.'
   }
 }

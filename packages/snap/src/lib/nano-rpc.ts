@@ -4,7 +4,7 @@ import { Account, NanoAlias, RequestOptions, RpcAccountHistory, RpcAccountInfo, 
 import { delay, formatRelativeDate, getRandomRepresentative, isNanoIdentifier, isValidAddress, nanoAddressToHex, uint8ArrayToHex } from "./utils";
 import { RpcAction, ZERO_HASH, StoreKeys } from "./constants";
 import { StateManager } from "./state-manager";
-import { RequestError } from "../errors/";
+import { RequestError } from "../errors";
 
 export async function accountInfo(account: string): Promise<RpcAccountInfo | null> {
     return request(RpcAction.ACCOUNT_INFO, { account, receivable: true, include_confirmed: true });

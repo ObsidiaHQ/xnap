@@ -6,56 +6,21 @@ import {
 import { SnapError, RequestErrors } from './errors';
 import { RpcRequest } from './lib/types';
 import { AccountManager } from './lib/account-manager';
-import { XnapButtonEventName, XnapButtonEvents, XnapFormEventName, XnapFormEvents } from './lib/constants';
-import {
-  signMessage,
-  sendConfirmation,
-  receiveFundsConfirmation,
-  receivePage,
-  updatedHomepage,
-  selectAccount,
-  selectRpc,
-  sendFunds,
-  sendPage,
-  showKeys,
-  showKeysConfirmation,
-  selectBlockExplorer,
-  settingsPage,
-  refreshHomepage,
-  handleReceiveFunds,
-  handleSendXnoForm,
-  handleSwitchAccountForm,
-  handleSwitchRpcForm,
-  handleSwitchExplorerForm,
-  handleSettingsForm
-} from './lib/handlers';
-import { createJazzicon, isNanoIdentifier, isValidAddress } from './lib/utils';
+import { XnapButtonEventName, XnapFormEventName } from './lib/constants';
+import { handleButtonEvent, handleFormEvent, XnapRPC } from './lib/xnap-rpc';
+import { updatedHomepage } from './lib/handlers';
 
 export const onRpcRequest = async ({ origin, request }: RpcRequest) => {
   await AccountManager.initialize();
   switch (request.method) {
     case 'xno_getCurrentAddress':
-      const address = (await AccountManager.getActiveAccount())?.address || undefined;
-      const icon = address ? await createJazzicon(address, 64) : undefined;
-      return { address, icon };
+      return XnapRPC.getCurrentAddress();
     case 'xno_makeTransaction':
-      const { to, value } = request.params;
-      if (!isNanoIdentifier(to) && !isValidAddress(to))
-        return { result: undefined };
-      
-      const confirmRes = await sendConfirmation({ to, value, origin });
-
-      if (!confirmRes.confirmed)
-        return { result: undefined };
-
-      const hash = await sendFunds({ from: confirmRes.from, to: confirmRes.to, value: confirmRes.value });
-      return { result: hash };
+      return XnapRPC.makeTransaction(request.params, origin);
     case 'xno_signMessage':
-      const { message } = request.params;
-      const signature = await signMessage(message, origin);
-      return { result: signature };
+      return XnapRPC.signMessage(request.params, origin);
     default:
-      throw SnapError.of(RequestErrors.MethodNotSupport);
+      throw SnapError.of(RequestErrors.MethodNotFound);
   }
 };
 
@@ -69,68 +34,5 @@ export const onUserInput: OnUserInputHandler = async ({ event, id }) => {
     await handleButtonEvent(id, event.name as XnapButtonEventName);
   } else if (event.type === UserInputEventType.FormSubmitEvent) {
     await handleFormEvent(id, event.name as XnapFormEventName, event.value);
-  }
-};
-
-const handleButtonEvent = async (id: string, name?: XnapButtonEventName) => {
-  if (!name) return;
-  switch (name) {
-    case XnapButtonEvents.ADD_ACCOUNT:
-      await AccountManager.addAccount();
-    // fall through
-    case XnapButtonEvents.BACK:
-    case XnapButtonEvents.REFRESH_TXS:
-      await refreshHomepage(id);
-      break;
-    case XnapButtonEvents.SHOW_KEYS_CONFIRM:
-      await showKeysConfirmation(id);
-      break;
-    case XnapButtonEvents.SHOW_KEYS:
-      await showKeys(id);
-      break;
-    case XnapButtonEvents.SEND_PAGE:
-      await sendPage(id);
-      break;
-    case XnapButtonEvents.RECEIVE_PAGE:
-      await receivePage(id);
-      break;
-    case XnapButtonEvents.SETTINGS_PAGE:
-      await settingsPage(id);
-      break;
-    case XnapButtonEvents.SWITCH_ACCOUNT:
-      await selectAccount(id);
-      break;
-    case XnapButtonEvents.SWITCH_RPC:
-      await selectRpc(id);
-      break;
-    case XnapButtonEvents.SWITCH_BLOCK_EXPLORER:
-      await selectBlockExplorer(id);
-      break;
-    case XnapButtonEvents.RECEIVE_FUNDS_CONFIRM:
-      await receiveFundsConfirmation(id);
-      break;
-    case XnapButtonEvents.RECEIVE_FUNDS:
-      await handleReceiveFunds(id);
-      break;
-  }
-};
-
-const handleFormEvent = async (id: string, name: XnapFormEventName, value: any) => {
-  switch (name) {
-    case XnapFormEvents.SEND_XNO_FORM:
-      await handleSendXnoForm(value);
-      break;
-    case XnapFormEvents.SWITCH_ACCOUNT_FORM:
-      await handleSwitchAccountForm(value, id);
-      break;
-    case XnapFormEvents.SWITCH_RPC_FORM:
-      await handleSwitchRpcForm(value, id);
-      break;
-    case XnapFormEvents.SWITCH_EXPLORER_FORM:
-      await handleSwitchExplorerForm(value, id);
-      break;
-    case XnapFormEvents.SETTINGS_FORM:
-      await handleSettingsForm(value, id);
-      break;
   }
 };
