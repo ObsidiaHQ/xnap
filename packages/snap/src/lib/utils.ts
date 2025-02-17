@@ -310,12 +310,24 @@ export function createJazzicon(seed: string, size = 30): string {
  * converts given raw amount to nano
  * @param raw
  */
-export function rawToNano(raw: any): string {
+export function rawToNano(raw?: string): string {
   if (!raw) {
     return '0';
   }
-  const mrai = 1000000000000000000000000000000;
-  return (raw / mrai).toFixed(6).replace(/\.0+$|(\.\d*[1-9])0+$/, '$1');
+  const mrai = BigInt("1000000000000000000000000000000");
+  const rawBigInt = BigInt(raw);
+  
+  // Calculate whole units
+  const whole = rawBigInt / mrai;
+  
+  // Calculate decimal places
+  const decimal = ((rawBigInt * BigInt(1000000)) / mrai) % BigInt(1000000);
+  
+  // Convert to string and trim trailing zeros
+  const decimalStr = decimal.toString().padStart(6, '0');
+  const trimmed = `${whole}.${decimalStr}`.replace(/\.?0+$/, '');
+  
+  return trimmed === '' ? '0' : trimmed;
 }
 
 /**

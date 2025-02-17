@@ -127,7 +127,7 @@ export async function sendConfirmation(tx: {
 export async function sendFunds(tx: { to: string, value: string, from: string }) {
   let from = await AccountManager.getAccountByAddress(tx.from);
   if (!from)
-    throw new Error('Account not found');
+    throw SnapError.of(RequestErrors.ResourceNotFound);
 
   const hash = await processSendBlock(from, tx.to, tx.value);
   if (hash)
@@ -297,27 +297,27 @@ export async function signMessage(message: string) {
 }
 
 export const handleReceiveFunds = async (id: string) => {
-  await snap.request({
-    method: 'snap_updateInterface',
-    params: {
-      id,
-      ui: <ConfirmDialog question='Do you want to receive the funds?' event='receive-funds' loading={true} />,
-    },
-  });
+  try {
+    await snap.request({
+      method: 'snap_updateInterface',
+      params: {
+        id,
+        ui: <ConfirmDialog question='Do you want to receive the funds?' event='receive-funds' loading={true} />,
+      },
+    });
 
-  receiveFunds().then(() => {
-    refreshHomepage(id);
-  }).catch(() => {
-    throw new Error('Error receiving funds');
-  }).finally(() => {
-    refreshHomepage(id);
-  });
+    await receiveFunds();
+  } catch (error) {
+    throw SnapError.of(RequestErrors.TransactionFailed);
+  } finally {
+    await refreshHomepage(id);
+  }
 };
 
 export const handleSwitchAccountForm = async (value: { selectedAddress: string }, id: string) => {
   const account = (await AccountManager.getAccounts()).find(acc => acc.address === value.selectedAddress);
   if (!account)
-    throw new Error('Selected account not found');
+    throw SnapError.of(RequestErrors.ResourceNotFound);
 
   await AccountManager.setActiveAccount(account);
   await snap.request({
@@ -334,7 +334,7 @@ export const handleSwitchRpcForm = async (value: { api?: string, auth?: string, 
   const selected = RpcEndpoints.find(opt => opt.value === selectedRpc) as RpcEndpoint;
 
   if (!api)
-    throw new Error('API is required');
+    throw SnapError.of(RequestErrors.ResourceNotFound); // should never throw
 
   if (selectedRpc === 'custom') {
     selected.name = 'Custom';

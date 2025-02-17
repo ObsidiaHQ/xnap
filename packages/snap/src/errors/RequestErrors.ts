@@ -63,4 +63,12 @@ export const RequestErrors = {
     code: 4001,
     message: 'The user has rejected the request.',
   },
+  TransactionFailed: {
+    code: 5000,
+    message: 'Transaction has failed. Try a different RPC.',
+  },
+  WorkGenerationFailed: {
+    code: 5001,
+    message: 'Work generation has failed. Try a different RPC.',
+  },
 };

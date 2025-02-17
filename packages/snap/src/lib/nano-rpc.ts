@@ -1,6 +1,6 @@
 import { ReceiveBlock, SendBlock, Tools } from 'libnemo';
 
-import { RequestError } from '../errors';
+import { RequestError, RequestErrors, SnapError } from '../errors';
 import { AccountManager } from './account-manager';
 import { RpcAction, ZERO_HASH, StoreKeys } from './constants';
 import { StateManager } from './state-manager';
@@ -115,25 +115,25 @@ export async function processSendBlock(
     !isValidAddress(toAddress) ||
     !walletAccount.privateKey
   ) {
-    throw new Error(`Invalid wallet address or key`);
+    throw SnapError.of(RequestErrors.ResourceNotFound);
   }
 
   const fromAccount = await accountInfo(walletAccount.address);
   if (!fromAccount || fromAccount.error) {
-    throw new Error(`Unable to get account information for ${walletAccount.address}.`);
+    throw SnapError.of(RequestErrors.ResourceUnavailable);
   }
 
   nanoAmount = await Tools.convert(nanoAmount, 'nano', 'raw');
 
   if (BigInt(fromAccount.confirmed_balance) < BigInt(nanoAmount)) {
-    throw new Error(`Insufficient balance`);
+    throw SnapError.of(RequestErrors.InvalidParams);
   }
 
   const representative = fromAccount.confirmed_representative || getRandomRepresentative();
 
   const work = (await generateWork(fromAccount.confirmed_frontier))?.work;
   if (!work) {
-    throw new Error(`Unable to generate work`);
+    throw SnapError.of(RequestErrors.WorkGenerationFailed);
   }
 
   const send = new SendBlock(
@@ -156,7 +156,7 @@ export async function processSendBlock(
 }
 
 /**
- * processes receive blocks for given account address
+ * processes receive blocks for active account
  * @link https://docs.nano.org/commands/rpc-protocol/#process
  */
 export async function processReceiveBlocks(): Promise<number> {
@@ -166,10 +166,10 @@ export async function processReceiveBlocks(): Promise<number> {
   const readyBlocks = await receivables(activeAccount.address);
 
   if (!activeInfo) {
-    throw new Error(`Unable to get account information for ${activeAccount.address}`);
+    throw SnapError.of(RequestErrors.ResourceUnavailable);
   }
   if (!activeAccount.privateKey) {
-    throw new Error(`Unable to get private key for ${activeAccount.address}`);
+    throw SnapError.of(RequestErrors.ResourceNotFound);
   }
   if (!Object.keys(readyBlocks).length) {
     return 0;
@@ -196,7 +196,7 @@ export async function processReceiveBlocks(): Promise<number> {
       block.work =
         (await generateWork(currentFrontier === ZERO_HASH ? activeAccountPubKey : currentFrontier))?.work || '';
       if (!block.work) {
-        throw new Error(`Unable to generate work`);
+        throw SnapError.of(RequestErrors.WorkGenerationFailed);
       }
 
       await block.sign(activeAccount.privateKey);
@@ -216,8 +216,7 @@ export async function processReceiveBlocks(): Promise<number> {
 
     return processedHashes.length;
   } catch (error) {
-    console.error('Error processing receive blocks:', error);
-    throw error;
+    throw SnapError.of(RequestErrors.TransactionFailed);
   }
 }
 
