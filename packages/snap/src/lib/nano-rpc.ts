@@ -10,6 +10,7 @@ import type {
   RequestOptions,
   RpcAccountHistory,
   RpcAccountInfo,
+  RpcActionParamsMap,
   RpcResponseTypeMap,
 } from './types';
 import {
@@ -47,7 +48,7 @@ export async function accountHistory(
   offset = 0,
   reverse = false,
 ): Promise<RpcAccountHistory[]> {
-  if (!isValidAddress(account)) {
+  if (!account || !isValidAddress(account)) {
     account = (await AccountManager.getActiveAccount())?.address;
   }
 
@@ -65,7 +66,7 @@ export async function accountHistory(
  * @param account
  */
 export async function accountBalance(account?: string): Promise<{ balance: string; receivable: string }> {
-  if (!isValidAddress(account)) {
+  if (!account || !isValidAddress(account)) {
     return { balance: '0', receivable: '0' };
   }
   return request(RpcAction.ACCOUNT_BALANCE, { account }).then((res) => ({
@@ -89,7 +90,7 @@ export async function blocksInfo(blocks: string[]): Promise<{ blocks: any; error
  * @param account
  */
 export async function receivables(account?: string): Promise<Record<string, { amount: string; source: string }>> {
-  if (!isValidAddress(account)) {
+  if (!account || !isValidAddress(account)) {
     return {};
   }
   return request(RpcAction.RECEIVABLE, { account, source: true, include_only_confirmed: true, sorting: true }).then(
@@ -215,7 +216,7 @@ export async function processReceiveBlocks(): Promise<number> {
     }
 
     return processedHashes.length;
-  } catch (error) {
+  } catch {
     throw SnapError.of(RequestErrors.TransactionFailed);
   }
 }
@@ -277,7 +278,7 @@ export async function resolveNanoIdentifier(identifier: string): Promise<{ resol
  */
 async function request<T extends RpcAction>(
   action: T,
-  data: any,
+  data: RpcActionParamsMap[T],
   options: RequestOptions = {},
 ): Promise<RpcResponseTypeMap[T] | null> {
   const { maxRetries = 3, timeout = 20000, skipError = false } = options;
@@ -285,7 +286,7 @@ async function request<T extends RpcAction>(
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       return await executeRequest(action, data, timeout);
-    } catch (error: any) {
+    } catch (error: unknown) {
       const isLastAttempt = attempt === maxRetries - 1;
 
       if (error instanceof RequestError && error.isValidationFailure) {
@@ -315,12 +316,16 @@ async function request<T extends RpcAction>(
  * @param data
  * @param timeout
  */
-async function executeRequest(action: RpcAction, data: any, timeout: number): Promise<any> {
+async function executeRequest<T extends RpcAction>(
+  action: T,
+  data: RpcActionParamsMap[T],
+  timeout: number,
+): Promise<RpcResponseTypeMap[T] | null> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
   const isAliasRequest = action === RpcAction.RESOLVE_ALIAS;
 
-  const defaultRpc = (await StateManager.getState(StoreKeys.DEFAULT_RPC))!;
+  const defaultRpc = (await StateManager.getState(StoreKeys.DEFAULT_RPC));
   if (!isAliasRequest && !defaultRpc) {
     return null;
   }
@@ -332,15 +337,18 @@ async function executeRequest(action: RpcAction, data: any, timeout: number): Pr
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            ...(defaultRpc.auth && { Authorization: defaultRpc.auth }),
+            ...(defaultRpc?.auth && { Authorization: defaultRpc.auth }),
           },
           body: JSON.stringify({ ...data, action }),
           signal: controller.signal,
         };
 
-    const endpoint = isAliasRequest ? data.aliasDomain : defaultRpc.api;
-    const response = await fetch(endpoint, options);
+    const endpoint = isAliasRequest ? (data as { aliasDomain: string }).aliasDomain : defaultRpc?.api;
+    if (!endpoint) {
+      return null;
+    }
 
+    const response = await fetch(endpoint, options);
     if (!response.ok) {
       throw new RequestError(`HTTP error! status: ${response.status}`, response.status);
     }

@@ -39,6 +39,22 @@ export type RpcResponseTypeMap = {
   [RpcAction.RESOLVE_ALIAS]: { names: NanoAlias[] };
 };
 
+export type RpcActionParamsMap = {
+  [RpcAction.ACCOUNT_INFO]: { account: string; receivable: boolean; include_confirmed: boolean };
+  [RpcAction.ACCOUNT_HISTORY]: { account: string; count: number; raw: boolean; offset: number; reverse: boolean };
+  [RpcAction.ACCOUNT_BALANCE]: { account: string };
+  [RpcAction.BLOCKS_INFO]: { hashes: string[]; pending: boolean; source: boolean };
+  [RpcAction.RECEIVABLE]: { account: string; source: boolean; include_only_confirmed: boolean; sorting: boolean };
+  [RpcAction.PROCESS]: {
+    block: Record<string, string>;
+    watch_work: 'true' | 'false';
+    subtype: 'send' | 'receive';
+    json_block: 'true' | 'false';
+  };
+  [RpcAction.WORK_GENERATE]: { hash: string };
+  [RpcAction.RESOLVE_ALIAS]: { aliasDomain: string };
+};
+
 export type Account = {
   address: string;
   publicKey: string;

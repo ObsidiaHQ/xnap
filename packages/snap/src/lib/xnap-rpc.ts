@@ -27,16 +27,16 @@ import {
 import { createJazzicon, isNanoIdentifier, isValidAddress, isValidAmount } from './utils';
 
 export class XnapRPC {
-  static async getCurrentAddress() {
+  static async getCurrentAddress(): Promise<{ address: string; icon: string }> {
     const address = (await AccountManager.getActiveAccount())?.address;
     if (!address) {
       throw SnapError.of(RequestErrors.ResourceNotFound);
     }
-    const icon = await createJazzicon(address, 64);
+    const icon = createJazzicon(address, 64);
     return { address, icon };
   }
 
-  static async makeTransaction({ to, value }: { to: string; value: string }, origin: string) {
+  static async makeTransaction({ to, value }: { to: string; value: string }, origin: string): Promise<{ hash: string | undefined }> {
     if ((!isNanoIdentifier(to) && !isValidAddress(to)) || !isValidAmount(value)) {
       throw SnapError.of(RequestErrors.InvalidParams);
     }
@@ -54,7 +54,7 @@ export class XnapRPC {
     return { hash };
   }
 
-  static async signMessage({ message }: { message: string }, origin: string) {
+  static async signMessage({ message }: { message: string }, origin: string): Promise<{ signature: string }> {
     if (!message || typeof message !== 'string') {
       throw SnapError.of(RequestErrors.InvalidParams);
     }

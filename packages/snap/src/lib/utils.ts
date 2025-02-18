@@ -1,5 +1,6 @@
 import { ALPHABET, BlockExplorers, RepAccounts, RpcEndpoints } from './constants';
 import MersenneTwister from 'mersenne-twister';
+import { BlockExplorer, RpcEndpoint } from './types';
 
 /**
  * checks if given address is a valid nano address
@@ -211,16 +212,16 @@ export function createJazzicon(seed: string, size = 30): string {
     return HSLToHex(hsl);
   }
 
-  function hueShift(colors: string[]) {
+  function hueShift(fromColors: string[]) {
     const wobble = 30;
     const amount = generator.random() * 30 - wobble / 2;
     const rotate = (hex: string) => colorRotate(hex, amount);
-    return colors.map(rotate);
+    return fromColors.map(rotate);
   }
 
-  function genColor(colors: string[]) {
-    const idx = Math.floor(colors.length * generator.random());
-    const color = colors.splice(idx, 1)[0];
+  function genColor(fromColors: string[]) {
+    const idx = Math.floor(fromColors.length * generator.random());
+    const color = fromColors.splice(idx, 1)[0];
     return color;
   }
 
@@ -333,21 +334,21 @@ export function rawToNano(raw?: string): string {
 /**
  * gets a random representative
  */
-export function getRandomRepresentative() {
+export function getRandomRepresentative(): string {
   return RepAccounts[Math.floor(Math.random() * RepAccounts.length)]!;
 }
 
 /**
  * gets a random rpc endpoint
  */
-export function getRandomRPC() {
+export function getRandomRPC(): RpcEndpoint {
   return RpcEndpoints[Math.floor(Math.random() * RpcEndpoints.length)]!;
 }
 
 /**
  * gets a random block explorer
  */
-export function getRandomBlockExplorer() {
+export function getRandomBlockExplorer(): BlockExplorer {
   return BlockExplorers[Math.floor(Math.random() * BlockExplorers.length)]!;
 }
 
@@ -356,7 +357,7 @@ export function getRandomBlockExplorer() {
  * @param nanoAddress
  * @returns The hex string representation of a given Nano address.
  */
-export function nanoAddressToHex(nanoAddress: string) {
+export function nanoAddressToHex(nanoAddress: string): string {
   if (!isValidAddress(nanoAddress)) {
     throw new Error('Invalid Nano address');
   }
@@ -374,7 +375,7 @@ export function nanoAddressToHex(nanoAddress: string) {
   const pubKeyEncoded = accountPart.substring(0, 52);
 
   // Build a mapping from character to value.
-  const charMap: any = {};
+  const charMap: Record<string, number> = {};
   for (let i = 0; i < ALPHABET.length; i++) {
     charMap[ALPHABET[i]!] = i;
   }

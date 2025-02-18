@@ -27,7 +27,7 @@ export class AccountManager {
       await StateManager.setState(StoreKeys.DEFAULT_BLOCK_EXPLORER, getRandomBlockExplorer());
     }
 
-    if (!accounts?.length || accounts.some((a) => !this.isValidAccount(a))) {
+    if (!accounts?.length || accounts.some((a) => !this.#isValidAccount(a))) {
       await StateManager.setState(StoreKeys.ACCOUNTS, []);
       await this.addAccount();
     }
@@ -38,7 +38,7 @@ export class AccountManager {
    * @returns A promise that resolves to the newly created account.
    */
   public static async addAccount(): Promise<Account> {
-    const hdNode = await this.getHDNode();
+    const hdNode = await this.#getHDNode();
     const accounts = await this.getAccounts();
 
     const newIndex = accounts.length;
@@ -139,7 +139,7 @@ export class AccountManager {
    * Retrieves the master Hierarchical Deterministic (HD) node on-demand, based on the BIP44 nano derivation path.
    * @returns A promise that resolves to the master HD node.
    */
-  private static async getHDNode(): Promise<BIP44Node> {
+  static async #getHDNode(): Promise<BIP44Node> {
     const hdNode = (await snap.request({
       method: 'snap_getBip32Entropy',
       params: {
@@ -155,7 +155,7 @@ export class AccountManager {
    * Basic validatation of an account object
    * @param account
    */
-  private static isValidAccount(account: any): boolean {
+  static #isValidAccount(account: any): boolean {
     return account && typeof account.address === 'string' && isValidAddress(account.address);
   }
 }

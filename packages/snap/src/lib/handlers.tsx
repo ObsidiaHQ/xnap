@@ -154,7 +154,7 @@ export const handleSendXnoForm = async (formValue: { value: string, to: string, 
     try {
       await sendFunds({ from, to, value });
     } catch (error) {
-      console.error('Error sending transaction:', error);
+      await notifyUser(`Failed to send ${value} XNO. Please try again.`);
     }
   }
 };
@@ -381,7 +381,7 @@ export async function notifyUser(message: string) {
       },
     });
   } catch {
-    // limit exceeded
+    // limit exceeded, do nothing
   }
 
   await snap.request({

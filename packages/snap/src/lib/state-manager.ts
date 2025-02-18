@@ -24,7 +24,7 @@ export class StateManager {
     return this.#state[key];
   }
 
-  public static async setState<K extends StateKey>(key: K, value: StateValue<K>) {
+  public static async setState<K extends StateKey>(key: K, value: StateValue<K>): Promise<void> {
     if (!this.#state) {
       this.#state = await this.#retrieveState();
     }
@@ -49,7 +49,7 @@ export class StateManager {
   /**
    * Saves the current state in the Snap
    */
-  static async #persistState() {
+  static async #persistState(): Promise<void> {
     if (this.#state !== null) {
       await snap.request({
         method: 'snap_manageState',
