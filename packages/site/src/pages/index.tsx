@@ -111,7 +111,8 @@ const Index = () => {
     : snapsDetected;
 
   const handleSendHelloClick = async () => {
-    await invokeSnap({ method: 'hello' });
+    const result: any = await invokeSnap({ method: 'xno_getCurrentAddress' });
+    alert(result.address);
   };
 
   return (
@@ -173,9 +174,9 @@ const Index = () => {
         )}
         <Card
           content={{
-            title: 'Send Hello message',
+            title: 'Get active address',
             description:
-              'Display a custom message within a confirmation screen in MetaMask.',
+              'Display the active address in MetaMask.',
             button: (
               <SendHelloButton
                 onClick={handleSendHelloClick}
