@@ -8,6 +8,7 @@ Xnap provides several RPC methods that websites can use to interact with the Nan
 const result: any = await window.ethereum.request({
   method: 'wallet_requestSnaps',
   params: {
+    // the snapId
     'npm:@obsidia/xnap': {
       // Version is optional, use it to specify the version range of the snap or leave as empty object
       version: '1.0.0',
@@ -15,6 +16,8 @@ const result: any = await window.ethereum.request({
   },
 });
 ```
+
+More information about connecting to a snap can be found in MetaMask's [docs](https://docs.metamask.io/snaps/how-to/allow-automatic-connections/).
 
 ## JSON-RPC Methods
 

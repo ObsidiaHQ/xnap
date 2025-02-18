@@ -8,7 +8,7 @@ import { AccountManager } from './account-manager';
 import { BlockExplorers, RpcEndpoints, StoreKeys } from './constants';
 import { StateManager } from './state-manager';
 import { accountBalance, accountHistory, processReceiveBlocks, processSendBlock, resolveNanoIdentifier } from './nano-rpc';
-import { getRandomBlockExplorer, isNanoIdentifier } from './utils';
+import { delay, getRandomBlockExplorer, isNanoIdentifier } from './utils';
 import { RequestErrors, SnapError } from '../errors';
 
 declare let snap: Snap;
@@ -126,14 +126,21 @@ export async function sendConfirmation(tx: {
  */
 export async function sendFunds(tx: { to: string, value: string, from: string }) {
   let from = await AccountManager.getAccountByAddress(tx.from);
-  if (!from)
+  if (!from) {
     throw SnapError.of(RequestErrors.ResourceNotFound);
+  }
 
-  const hash = await processSendBlock(from, tx.to, tx.value);
-  if (hash)
-    await notifyUser(`Successfully sent ${tx.value} XNO.`);
+  try {
+    const hash = await processSendBlock(from, tx.to, tx.value);
+    
+    if (hash) {
+      await notifyUser(`Successfully sent ${tx.value} XNO.`);
+    }
 
-  return hash;
+    return hash;
+  } catch (error) {
+    await notifyUser(`Failed to send ${tx.value} XNO. Please try again.`);
+  }
 }
 
 export const handleSendXnoForm = async (formValue: { value: string, to: string, selectedAddress: string }) => {
@@ -310,6 +317,7 @@ export const handleReceiveFunds = async (id: string) => {
   } catch (error) {
     throw SnapError.of(RequestErrors.TransactionFailed);
   } finally {
+    await delay(500);
     await refreshHomepage(id);
   }
 };
@@ -364,13 +372,17 @@ export async function notifyUser(message: string) {
     StateManager.getState(StoreKeys.DEFAULT_BLOCK_EXPLORER) || getRandomBlockExplorer()
   ]);
 
-  await snap.request({
-    method: 'snap_notify',
-    params: {
-      type: NotificationType.Native,
-      message,
-    },
-  });
+  try {
+    await snap.request({
+      method: 'snap_notify',
+      params: {
+        type: NotificationType.Native,
+        message,
+      },
+    });
+  } catch {
+    // limit exceeded
+  }
 
   await snap.request({
     method: 'snap_notify',
