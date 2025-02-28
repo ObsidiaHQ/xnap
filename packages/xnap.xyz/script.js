@@ -40,10 +40,10 @@ async function fetchAccountBalance() {
                 })
             })
                 .then(response => response.json())
-                .then(data => Math.round(data.market_data?.current_price?.usd || 1))
+                .then(data => data.market_data?.current_price?.usd || 1)
         ]);
 
-        const balanceUSD = balanceXNO * rate;
+        const balanceUSD = Math.round(balanceXNO * rate);
         const progressBar = document.getElementById('auditProgress');
         const progressAmount = document.getElementById('progressAmount');
         const progressPct = document.getElementById('auditProgressPct');
