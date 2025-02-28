@@ -20,7 +20,9 @@
         <nav>
             <div class="logo">Xnap</div>
             <div class="nav-links">
-                <a href="https://github.com/ObsidiaHQ/xnap" target="_blank">GitHub</a>
+                <a href="#features">Features</a>
+                <a href="#gallery">Gallery</a>
+                <a href="#qa">FAQ</a>
                 <a href="https://docs.metamask.io/snaps/" target="_blank">About Snaps</a>
             </div>
         </nav>
@@ -57,15 +59,17 @@
         <section class="audit-status">
             <h3>Security Audit Status</h3>
             <p style="margin-top: 12px;">Xnap is required to be audited by a 3rd party security firm before it can be listed in the MetaMask Snap Directory for public use.</p>
-            <p style="margin-top: 8px;">Security audit costs typically range from $3,000 to $15,000 USD for snaps. We will update the funding target as soon as we receive an official quote.</p>
+            <p style="margin-top: 8px;">The security audit will be done by <a href="https://osec.io" target="_blank">OtterSec</a> and will cost $5,500.</p>
+            <p style="margin-top: 8px;">The crowdfunding campaign will run until the end of 2025. If by then we're still far from reaching the goal, then we will refund the contributions due to lack of interest.</p>
             
             <div class="progress-container">
                 <div class="progress-bar">
                     <div class="progress" id="auditProgress"></div>
+                    <span id="auditProgressPct" style="top: -21px; position: relative; font-size: 9px;">0%</span>
                 </div>
                 <div class="progress-stats">
-                    <span id="progressAmount">0.00 XNO</span>
-                    <span>/ 3,000 XNO</span>
+                    <span id="progressAmount">0.00 USD</span>
+                    <span>/ 5,500 USD</span>
                 </div>
             </div>
 
@@ -79,7 +83,25 @@
             </div>
         </section>
 
-        <section class="current-features">
+        <section class="qa-section" id="qa">
+            <h2>Frequently Asked Questions</h2>
+            <div class="qa-container">
+                <div class="qa-item">
+                    <h4>Why is this important to me?</h4>
+                    <p>The MetaMask <a href="https://snaps.metamask.io/explore/" target="_blank">Snap Directory</a> currently has 104 listed Snaps, some with close to 1 million downloads. Listing Xnap there would provide great exposure for Nano to MetaMask's massive user base.</p>
+                </div>
+                <div class="qa-item">
+                    <h4>Do I need to manage another seed phrase?</h4>
+                    <p>Nope. That's the beauty of Xnap. Your existing MetaMask seed phrase can automatically (and privately) generate Nano addresses whenever needed. No additional seed phrases to backup or manage.</p>
+                </div>
+                <div class="qa-item">
+                    <h4>What makes Nano different from other cryptocurrencies?</h4>
+                    <p>Nano offers instant, feeless transactions with minimal energy consumption. It's designed for everyday payments and microtransactions where traditional cryptocurrencies struggle due to fees and confirmation times.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="current-features" id="features">
             <h2>Current Features</h2>
             <div class="feature-grid">
                 <div class="current-feature-card">
@@ -113,7 +135,7 @@
             </div>
         </section>
 
-        <section class="gallery">
+        <section class="gallery" id="gallery">
             <h2>Preview</h2>
             <div class="gallery-grid">
                 <div class="gallery-item">
