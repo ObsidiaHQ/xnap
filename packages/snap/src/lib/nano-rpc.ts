@@ -334,14 +334,16 @@ async function executeRequest<T extends RpcAction>(
     const options: RequestInit = isAliasRequest
       ? {}
       : {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(defaultRpc?.auth && { Authorization: defaultRpc.auth }),
-          },
-          body: JSON.stringify({ ...data, action }),
-          signal: controller.signal,
-        };
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(defaultRpc?.auth && { Authorization: defaultRpc.auth }),
+        },
+        body: JSON.stringify({ ...data, action }),
+      };
+
+    options.signal = controller.signal;
+    options.redirect = 'error';
 
     const endpoint = isAliasRequest ? (data as { aliasDomain: string }).aliasDomain : defaultRpc?.api;
     if (!endpoint) {

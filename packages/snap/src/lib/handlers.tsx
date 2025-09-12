@@ -8,7 +8,7 @@ import { AccountManager } from './account-manager';
 import { BlockExplorers, RpcEndpoints, StoreKeys } from './constants';
 import { StateManager } from './state-manager';
 import { accountBalance, accountHistory, processReceiveBlocks, processSendBlock, resolveNanoIdentifier } from './nano-rpc';
-import { delay, getRandomBlockExplorer, isNanoIdentifier } from './utils';
+import { delay, getRandomBlockExplorer, isNanoIdentifier, stripWhitespace } from './utils';
 import { RequestErrors, SnapError } from '../errors';
 
 declare let snap: Snap;
@@ -97,10 +97,10 @@ export async function sendConfirmation(tx: {
   const { balance } = await accountBalance(senderAddress);
 
   const dialogProps = {
-    from: senderAddress,
-    to: recepient.resolved,
-    value: tx.value,
-    origin: tx.origin || null,
+    from: stripWhitespace(senderAddress),
+    to: stripWhitespace(recepient.resolved),
+    value: stripWhitespace(tx.value),
+    origin: stripWhitespace(tx.origin) || null,
     alias: recepient.identifier,
     balance
   };
@@ -270,19 +270,19 @@ export async function signConfirmation(message: string, origin: string) {
       type: DialogType.Confirmation,
       content: (
         <Box>
-          {origin ? <Box><Text color='muted'>Origin: {origin}</Text><Divider /></Box> : null}
+          {origin ? <Box><Text color='muted'>Origin: {stripWhitespace(origin)}</Text><Divider /></Box> : null}
 
           <Heading size='md'>Signature request</Heading>
 
           <Section>
-            <Address address={active.address} prefix="Signing account: "></Address>
+            <Address address={stripWhitespace(active.address)} prefix="Signing account: "></Address>
           </Section>
 
           <Divider />
 
           <Text color='warning'>Only sign this message if you fully understand the content of it and trust the requesting site.</Text>
           <Text>Message:</Text>
-          <Copyable value={message} />
+          <Copyable value={stripWhitespace(message)} />
         </Box>
       ),
     },

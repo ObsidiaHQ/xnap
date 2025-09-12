@@ -317,17 +317,17 @@ export function rawToNano(raw?: string): string {
   }
   const mrai = BigInt("1000000000000000000000000000000");
   const rawBigInt = BigInt(raw);
-  
+
   // Calculate whole units
   const whole = rawBigInt / mrai;
-  
+
   // Calculate decimal places
   const decimal = ((rawBigInt * BigInt(1000000)) / mrai) % BigInt(1000000);
-  
+
   // Convert to string and trim trailing zeros
   const decimalStr = decimal.toString().padStart(6, '0');
   const trimmed = `${whole}.${decimalStr}`.replace(/\.?0+$/, '');
-  
+
   return trimmed === '' ? '0' : trimmed;
 }
 
@@ -440,4 +440,8 @@ export function isNanoIdentifier(identifier: string): boolean {
  */
 export function isValidAmount(amount: string): boolean {
   return /^\d{1,9}(\.\d+)?$/.test(amount);
+}
+
+export function stripWhitespace(text?: string): string {
+  return text?.replace(/[\r\n]/gu, '').replace(/\s+/gu, ' ').trim() || '';
 }
