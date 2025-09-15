@@ -35,7 +35,7 @@ export const SettingsPage: SnapComponent<{ defaultRpc: string, blockExplorer: { 
             <Image src={IdIcon} alt='Alias support' />
             <Checkbox name="aliasSupport" variant="toggle" checked={aliasSupport} />
           </Box>
-          <Text color='muted'>
+          <Text color='muted' size='sm'>
             Aliases are resolved through <Link href="https://github.com/mistakia/nano-community/blob/cae1dd3938fa1ca3e51c8d672187294bf3bcc8da/docs/getting-started-devs/integrations.md#nano-internet-identifiers">Nano Internet Identifiers</Link>.
             This requires sending requests to alias domains that may record your IP address.
           </Text>

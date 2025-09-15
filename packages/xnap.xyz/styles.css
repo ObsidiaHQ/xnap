@@ -58,11 +58,16 @@ a {
 
 /* Header Styles */
 header {
-    padding: 1.2rem;
+    padding: 1rem 2rem;
     position: fixed;
-    width: 100%;
-    top: 0;
-    backdrop-filter: blur(18px);
+    width: 90%;
+    max-width: 1000px;
+    border-radius: 50px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    top: 10px;
+    backdrop-filter: blur(35px);
     z-index: 100;
 }
 
@@ -120,59 +125,50 @@ h1 {
 
 .hero-buttons {
     display: flex;
-    gap: 1rem;
+    gap: 1.5rem;
     justify-content: center;
 }
 
 /* Button Styles */
 .primary-btn, .secondary-btn {
     padding: 0.8rem 2rem;
-    border-radius: var(--border-radius);
+    border-radius: 30px;
     font-size: 1rem;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: opacity 0.2s;
 }
 
 .primary-btn {
     background: var(--gradient);
     border: none;
     color: white;
-}
-
-.primary-btn:disabled {
-    opacity: 0.75;
-    cursor: not-allowed;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
 .secondary-btn {
     background: transparent;
-    border: 1px solid var(--primary-color);
-    color: var(--text-color);
+    border: 1px solid #59A583;
+    color: #caf7e2;
 }
 
 .primary-btn:hover, .secondary-btn:hover {
-    transform: translateY(-2px);
-}
-
-.copy-btn {
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    border-radius: var(--border-radius-sm);
-    background: transparent;
-    border: 1px solid var(--secondary-color);
-    color: var(--text-color);
-    cursor: pointer;
+    opacity: 0.8;
 }
 
 /* Card Styles */
 .feature-card, .current-feature-card, .gallery-item, .qa-item {
     background: var(--card-background);
+    border: 1px solid transparent;
     border-radius: var(--border-radius-lg);
-    transition: transform var(--transition-standard);
+    transition: border var(--transition-standard);
 }
 
 .feature-card:hover, .current-feature-card:hover, .gallery-item:hover, .qa-item:hover {
-    transform: var(--card-hover-transform);
+    border: 1px solid rgba(111, 207, 151, 0.5);
 }
 
 /* Features Section */
@@ -223,7 +219,7 @@ h1 {
 }
 
 /* Section Styles */
-.audit-status, .gallery, .current-features, .qa-section {
+.gallery, .current-features, .qa-section {
     padding: 4rem 0;
     text-align: center;
 }
@@ -231,46 +227,6 @@ h1 {
 .gallery h2, .current-features h2, .qa-section h2 {
     margin-bottom: 2rem;
     color: #fff;
-}
-
-/* Audit Status Section */
-.progress-container {
-    max-width: 600px;
-    margin: 2rem auto;
-}
-
-.progress-bar {
-    height: 12px;
-    background: var(--card-background);
-    border-radius: var(--border-radius-sm);
-    overflow: hidden;
-    margin: 1rem 0;
-}
-
-.progress {
-    height: 100%;
-    background: var(--gradient);
-    width: 0%;
-    transition: width 1s ease-in-out;
-}
-
-.progress-stats {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.9rem;
-    opacity: 0.8;
-}
-
-.donation-info {
-    margin-top: 2rem;
-}
-
-.donation-address {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 1rem;
 }
 
 /* Gallery Section */
@@ -312,7 +268,6 @@ h1 {
     padding: 1.5rem;
     text-align: left;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform var(--transition-standard), box-shadow var(--transition-standard);
 }
 
 .qa-item:hover {
@@ -358,16 +313,12 @@ footer {
         flex-direction: column;
     }
 
-    .nav-links {
+    .nav-links a:nth-of-type(3), .nav-links a:nth-of-type(4) {
         display: none;
     }
 
     .gallery-grid {
         grid-template-columns: 1fr;
         max-width: 400px;
-    }
-    
-    .donation-address {
-        flex-direction: column;
     }
 }

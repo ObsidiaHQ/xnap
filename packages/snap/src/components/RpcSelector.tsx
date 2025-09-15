@@ -51,13 +51,15 @@ export const RpcSelector: SnapComponent<Options> = ({ options, active }) => {
           <Field label='Server'>
             <Input name="api" value={active?.api || ''} />
           </Field>
-          <Text color='muted'>
+          <Text color='muted' size='sm'>
             Enter a valid <Link href="https://docs.nano.org/commands/rpc-protocol/">nano RPC endpoint</Link> or an API compliant with it.
           </Text>
           <Field label='Authorization'>
             <Input name="auth" value={active?.auth || ''} placeholder='Optional' />
           </Field>
-          <Text color='muted'>Enter a valid Authorization header, for example: Basic xyz..</Text>
+          <Text color='muted' size='sm'>Enter a valid Authorization header, for example: Basic xyz..</Text>
+          <Divider />
+          <Text color='warning' size='sm'>Only use RPC providers you trust. The default endpoints are provided by the Nano Community and are not affiliated with Xnap.</Text>
           <Divider />
           <Box alignment="space-around" direction="horizontal">
             <Button name={XnapButtonEvents.BACK}>Back</Button>
