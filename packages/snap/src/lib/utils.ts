@@ -442,6 +442,12 @@ export function isValidAmount(amount: string): boolean {
   return /^\d{1,9}(\.\d+)?$/.test(amount);
 }
 
+/**
+ * normalizes whitespace characters to single spaces and keeps one at most
+ */
 export function stripWhitespace(text?: string): string {
-  return text?.replace(/[\r\n]/gu, '').replace(/\s+/gu, ' ').trim() || '';
+  return (text ?? '')
+    ?.replace(/[\r\n\u000A\u000D\u001C\u001D\u001E\u0085\u2029\u000C\u1680\u0020\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u205F\u3000\u202F\u00A0]/gu, ' ')
+    .replace(/\s+/gu, ' ')
+    .trim();
 }
