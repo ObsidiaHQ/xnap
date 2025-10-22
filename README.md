@@ -1,6 +1,7 @@
 # XNAP: MetaMask Snap for Nano
 
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-6FCF97.svg)
+![NPM Downloads](https://img.shields.io/npm/d18m/@obsidia/xnap?color=4A90E2)
 
 MetaMask Snaps is a system that allows anyone to safely expand the capabilities
 of MetaMask. A _snap_ is a program that runs in an isolated environment that

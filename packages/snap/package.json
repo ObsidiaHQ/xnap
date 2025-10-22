@@ -1,7 +1,7 @@
 {
   "name": "@obsidia/xnap",
   "version": "1.0.0",
-  "description": "Xnap: Metamask snap to manage your Nano",
+  "description": "Send and receive Nano (XNO) directly from MetaMask",
   "homepage": "https://xnap.xyz",
   "repository": {
     "type": "git",
