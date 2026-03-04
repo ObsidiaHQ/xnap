@@ -33,7 +33,7 @@ export const BlockExplorerSelector: SnapComponent<{ explorers: BlockExplorer[], 
           <Divider />
           <Box alignment="space-around" direction="horizontal">
             <Button name={XnapButtonEvents.BACK}>Back</Button>
-            <Button type="submit">Select</Button>
+            <Button type="submit" name="select">Select</Button>
           </Box>
         </Form>
       </Box>

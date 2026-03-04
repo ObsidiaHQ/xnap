@@ -339,16 +339,23 @@ export const handleSwitchAccountForm = async (value: { selectedAddress: string }
 
 export const handleSwitchRpcForm = async (value: { api?: string, auth?: string, selectedRpc: string }, id: string) => {
   const { api, auth, selectedRpc } = value;
-  const selected = RpcEndpoints.find(opt => opt.value === selectedRpc) as RpcEndpoint;
 
-  if (!api)
-    throw SnapError.of(RequestErrors.ResourceNotFound); // should never throw
+  let selected: RpcEndpoint;
 
   if (selectedRpc === 'custom') {
-    selected.name = 'Custom';
-    selected.value = 'custom';
-    selected.api = api;
-    selected.auth = auth || null;
+    if (!api?.trim())
+      throw SnapError.of(RequestErrors.ResourceNotFound);
+    selected = {
+      name: 'Custom',
+      value: 'custom',
+      api: api.trim(),
+      auth: auth?.trim() || null,
+    };
+  } else {
+    const found = RpcEndpoints.find(opt => opt.value === selectedRpc);
+    if (!found)
+      throw SnapError.of(RequestErrors.ResourceNotFound);
+    selected = { ...found };
   }
 
   await StateManager.setState(StoreKeys.DEFAULT_RPC, selected);

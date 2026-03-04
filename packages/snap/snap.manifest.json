@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Send and receive Nano (XNO) directly from MetaMask",
   "proposedName": "Xnap: Nano Wallet",
   "repository": {
@@ -7,7 +7,7 @@
     "url": "https://github.com/ObsidiaHQ/xnap.git"
   },
   "source": {
-    "shasum": "QB+pPN18cdO++DaUNIzbJHVNv28zMbiBmE1J/nXcEgs=",
+    "shasum": "xwFsIKEVpt/4wZWXBaIXVn3XnfD2U0k92HMRv0hPxdA=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
@@ -34,6 +34,6 @@
       "snaps": false
     }
   },
-  "platformVersion": "6.17.1",
+  "platformVersion": "10.4.0",
   "manifestVersion": "0.1"
 }

@@ -6,7 +6,7 @@ import { StoreKeys } from './constants';
 import { accountInfo } from './nano-rpc';
 import { StateManager } from './state-manager';
 import type { Account } from './types';
-import { getRandomBlockExplorer, getRandomRPC, isValidAddress } from './utils';
+import { getRandomBlockExplorer, getRandomRPC, isRPCDeprecated, isValidAddress } from './utils';
 
 export class AccountManager {
   /**
@@ -19,7 +19,7 @@ export class AccountManager {
       StateManager.getState(StoreKeys.DEFAULT_BLOCK_EXPLORER),
     ]);
 
-    if (!rpc) {
+    if (!rpc || isRPCDeprecated(rpc)) {
       await StateManager.setState(StoreKeys.DEFAULT_RPC, getRandomRPC());
     }
 

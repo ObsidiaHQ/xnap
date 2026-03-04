@@ -51,9 +51,15 @@ export type XnapFormEventName = (typeof XnapFormEvents)[keyof typeof XnapFormEve
 
 export const RpcEndpoints: RpcEndpoint[] = [
   {
-    name: 'Rainstorm City',
-    value: 'rainstorm',
-    api: 'https://rainstorm.city/api',
+    name: 'Nano.to',
+    value: 'nanoto',
+    api: 'https://rpc.nano.to',
+    auth: null,
+  },
+  {
+    name: 'XnoPay',
+    value: 'xnopay',
+    api: 'https://uk1.public.xnopay.com/proxy',
     auth: null,
   },
   {
@@ -69,9 +75,9 @@ export const RpcEndpoints: RpcEndpoint[] = [
     auth: null,
   },
   {
-    name: 'SpyNano',
-    value: 'spynano',
-    api: 'https://node.spynano.org/proxy',
+    name: 'Rainstorm City',
+    value: 'rainstorm',
+    api: 'https://rainstorm.city/api',
     auth: null,
   },
 ] as const;

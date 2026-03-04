@@ -346,6 +346,23 @@ export function getRandomRPC(): RpcEndpoint {
 }
 
 /**
+ * Determines whether a given RPC endpoint is deprecated.
+ *
+ * An RPC endpoint is considered deprecated if:
+ * - It is undefined or does not have a `value` property.
+ * - Its value is not "custom" and it does not exist in the predefined list of RpcEndpoints.
+ *
+ * @param rpc - The RPC endpoint to check.
+ * @returns {boolean} - Returns true if the RPC endpoint is deprecated, otherwise false.
+ */
+export function isRPCDeprecated(rpc: RpcEndpoint): boolean {
+  if (!rpc || !rpc.value) {
+    return true;
+  }
+  return rpc.value !== 'custom' && !RpcEndpoints.some(r => r.value === rpc.value);
+}
+
+/**
  * gets a random block explorer
  */
 export function getRandomBlockExplorer(): BlockExplorer {

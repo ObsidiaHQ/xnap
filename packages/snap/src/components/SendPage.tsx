@@ -31,7 +31,7 @@ export const SendPage: SnapComponent<{ accounts: Account[] }> = ({ accounts }) =
           <Divider />
           <Box alignment="space-around" direction="horizontal">
             <Button name={XnapButtonEvents.BACK}>Back</Button>
-            <Button type="submit">Continue</Button>
+            <Button type="submit" name="continue">Continue</Button>
           </Box>
         </Form>
       </Box>

@@ -63,7 +63,7 @@ export const RpcSelector: SnapComponent<Options> = ({ options, active }) => {
           <Divider />
           <Box alignment="space-around" direction="horizontal">
             <Button name={XnapButtonEvents.BACK}>Back</Button>
-            <Button type="submit">Save</Button>
+            <Button type="submit" name="save">Save</Button>
           </Box>
         </Form>
       </Box>

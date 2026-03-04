@@ -116,6 +116,10 @@ export const handleButtonEvent = async (id: string, name?: XnapButtonEventName) 
 
 // helper function for handling form events
 export const handleFormEvent = async (id: string, name: XnapFormEventName, value: any) => {
+  // Firefox can send null for form value in edge cases; skip processing to avoid crashes
+  if (value === null || value === undefined || typeof value !== 'object') {
+    return;
+  }
   switch (name) {
     case XnapFormEvents.SEND_XNO_FORM:
       await handleSendXnoForm(value);
@@ -131,6 +135,8 @@ export const handleFormEvent = async (id: string, name: XnapFormEventName, value
       break;
     case XnapFormEvents.SETTINGS_FORM:
       await handleSettingsForm(value, id);
+      break;
+    default:
       break;
   }
 };
