@@ -23,14 +23,31 @@ type Options = {
 }
 
 export const RpcSelector: SnapComponent<Options> = ({ options, active }) => {
+  const orderedOptions = active?.value && active.value !== 'custom'
+    ? [...options].sort(
+      (a, b) => Number(b.value === active.value) - Number(a.value === active.value),
+    )
+    : options;
+
+  const customOption = (
+    <SelectorOption value='custom' key='custom'>
+      <Card
+        value=''
+        title={'Custom' + (active?.value === 'custom' ? ' ⭐' : '')}
+        description={(active?.value === 'custom') ? active?.api : ''}
+      />
+    </SelectorOption>
+  );
+
   return (
     <Container>
       <Box>
         <Heading>Select an RPC endpoint</Heading>
         <Form name={XnapFormEvents.SWITCH_RPC_FORM}>
           <Selector name="selectedRpc" title="Select an RPC endpoint">
-            {options.map((option) => (
-              <SelectorOption value={option.value}>
+            {active?.value === 'custom' ? customOption : null}
+            {orderedOptions.map((option) => (
+              <SelectorOption value={option.value} key={option.value}>
                 <Card
                   value=''
                   title={(option.name) + (option.value === active?.value ? ' ⭐' : '')}
@@ -38,13 +55,7 @@ export const RpcSelector: SnapComponent<Options> = ({ options, active }) => {
                 />
               </SelectorOption>
             ))}
-            <SelectorOption value='custom'>
-              <Card
-                value=''
-                title={'Custom' + (active?.value === 'custom' ? ' ⭐' : '')}
-                description={(active?.value === 'custom') ? active?.api : ''}
-              />
-            </SelectorOption>
+            {active?.value !== 'custom' ? customOption : null}
           </Selector>
           <Divider />
           <Text color='alternative'>Custom configuration:</Text>
