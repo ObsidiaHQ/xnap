@@ -1,4 +1,4 @@
-import { Card, Image, Row, SnapComponent } from "@metamask/snaps-sdk/jsx";
+import { Button, Card, Image, Row, SnapComponent } from "@metamask/snaps-sdk/jsx";
 import { createJazzicon, truncateAddress } from "../lib/utils";
 
 type AddressProps = {
@@ -8,12 +8,23 @@ type AddressProps = {
   balance?: string;
   compact?: boolean;
   insufficient?: boolean;
+  onClickName?: string;
 };
 
-export const Address: SnapComponent<AddressProps> = ({ address, alias, prefix, balance, compact = true, insufficient = false }) => {
+export const Address: SnapComponent<AddressProps> = ({ address, alias, prefix, balance, compact = true, insufficient = false, onClickName }) => {
   const balanceText = (balance || '0') + ' XNO';
+  const compactLabel = (prefix || '') + truncateAddress(address);
+
+  if (compact && onClickName) {
+    return (
+      <Button name={onClickName}>
+        <Image src={createJazzicon(address, 24)} />{'\u00A0\u00A0'}{compactLabel}
+      </Button>
+    );
+  }
+
   return compact ? (
-    <Row label={(prefix || '') + truncateAddress(address)} tooltip={alias || undefined}>
+    <Row label={compactLabel} tooltip={alias || undefined}>
       <Image src={createJazzicon(address, 24)} />
     </Row>
   ) : (
